@@ -1,0 +1,23 @@
+# Large / private / generated
+*.xlsx
+RMG_*_protected.html
+__pycache__/
+*.pyc
+
+# Local scratch
+_peek_hist.py
+_test.js
+_geom_snip.js
+ROLLBACK_water_diag.md
+Новый текстовый документ.txt
+
+# Development dumps (folder names contain brackets)
+2БС10 [is development object]/
+БС9_1 [is development object]/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
