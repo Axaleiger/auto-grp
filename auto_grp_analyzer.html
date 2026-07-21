@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Авто-ГРП</title>
 <style>
@@ -53,21 +54,21 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
 .tog{display:flex;align-items:center;gap:4px;cursor:pointer}
 .map-box{flex:1;position:relative;min-height:0;background:#06080c;display:flex;flex-direction:column}
 #cv{width:100%;flex:1;min-height:0;display:block;cursor:grab}
-.p-legend{flex-shrink:0;padding:8px 16px 10px;background:rgba(8,11,16,.95);border-top:1px solid var(--border);display:none}
+.p-legend{display:none;position:absolute;right:10px;top:10px;z-index:4;padding:5px 8px 6px;background:rgba(10,14,20,.92);border:1px solid var(--border);border-radius:7px;width:148px;box-sizing:border-box;pointer-events:none}
 .p-legend.on{display:block}
-.p-legend-title{font-size:.68rem;color:var(--muted);text-align:center;margin-bottom:5px}
-.p-legend-row{display:flex;align-items:center;gap:10px}
-.p-legend-row span{font-size:.72rem;font-weight:600;min-width:52px}
+.p-legend-title{font-size:.58rem;color:var(--muted);text-align:center;margin-bottom:3px;letter-spacing:.02em}
+.p-legend-row{display:flex;align-items:center;gap:5px}
+.p-legend-row span{font-size:.58rem;font-weight:600;min-width:28px}
 .p-legend-row span.lo{text-align:right;color:#6eb5ff}
 .p-legend-row span.hi{color:#f87171}
-#pLegBar{flex:1;height:14px;border-radius:4px;border:1px solid var(--border)}
+#pLegBar{flex:1;height:8px;border-radius:3px;border:1px solid var(--border);min-width:0;width:70px}
 .legend{position:absolute;left:10px;top:10px;background:rgba(10,14,20,.92);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-size:.68rem;pointer-events:auto;max-width:300px;line-height:1.45;z-index:4}
 .legend-row{display:flex;flex-wrap:wrap;gap:4px 2px;align-items:center}
 .legend-tog{cursor:pointer;padding:1px 5px;border-radius:4px;user-select:none;border:1px solid transparent;color:var(--text)}
 .legend-tog:hover{background:rgba(255,255,255,.06)}
 .legend-tog.off{opacity:.35;text-decoration:line-through;color:var(--muted)}
-.legend-factors{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:3px 8px}
-.legend-factors .legend-tog{display:inline-flex;align-items:center;gap:5px;color:var(--muted);white-space:nowrap;font-size:.65rem}
+.legend-factors{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:4px 8px;max-width:520px}
+.legend-factors .legend-tog{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:.62rem;line-height:1.2}
 .legend-factors canvas{width:12px;height:12px;flex-shrink:0;pointer-events:none}
 .tip{position:absolute;display:none;background:#0a0e14;border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-size:.68rem;pointer-events:none;z-index:5}
 .welcome{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);text-align:center;gap:8px}
@@ -81,6 +82,21 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
 #panelBlocks{overflow:auto}
 
 #panelData{display:none;flex:1;min-height:0;padding:12px;overflow:auto}
+.time-bar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--border);background:#0c1018;flex-shrink:0}
+.time-bar input[type=range]{flex:1;accent-color:var(--accent)}
+.time-bar .time-lab{font-size:.72rem;color:var(--muted);min-width:88px;text-align:right}
+.diag-stack{min-height:200px;height:200px;width:100%;background:#0a0e16;border-radius:8px;display:block}
+.stack-legend{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:8px;font-size:.62rem;color:var(--muted);line-height:1.3}
+.stack-legend span{display:inline-flex;align-items:center;gap:4px}
+.stack-legend i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.diag-reco{font-size:.72rem;line-height:1.45;color:var(--text)}
+.diag-reco li{margin:4px 0 4px 14px;color:var(--muted)}
+.diag-reco b{color:var(--text)}
+.legend-status{margin-top:4px;font-size:.62rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 10px}
+.legend-status span{display:inline-flex;align-items:center;gap:4px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot-inj{background:#38bdf8}.dot-inj-off{background:#7dd3fc;opacity:.45}
+.dot-prod{background:#111;border:1px solid #ccc}.dot-prod-off{background:#6b7280}
 .data-wrap{max-width:980px;display:flex;flex-direction:column;gap:10px}
 .data-note{font-size:.75rem;color:var(--muted);line-height:1.45;margin:0 0 4px}
 .data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
@@ -138,14 +154,12 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
   <header class="hdr">
     <div style="display:flex;align-items:center;gap:10px">
       <div class="logo">Г</div>
-      <div><h1>Авто-ГРП</h1><p>Карта · обводнённость · диагностика · блоки · данные</p></div>
+      <div><h1>Авто-ГРП</h1><p>Данные · карта · диагностика %В</p></div>
     </div>
     <div class="tabs">
-      <button class="tab on" data-t="map">Карта</button>
-      <button class="tab" data-t="wc">Обводнённость</button>
-      <button class="tab" data-t="diag">Диагностика</button>
-      <button class="tab" data-t="blocks">Блоки / Pпл</button>
       <button class="tab" data-t="data">Данные</button>
+      <button class="tab on" data-t="map">Карта</button>
+      <button class="tab" data-t="diag">Диагностика %В</button>
     </div>
   </header>
 
@@ -159,8 +173,7 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
         <h3>Параметры</h3>
         <div class="field"><label>Пласт</label><select id="selLayer"></select></div>
         <div class="field"><label>Месяц</label><select id="selMonth"></select></div>
-        <div class="field"><label>Азимут °</label><input type="number" id="az" value="45"/></div>
-        <div class="field"><label>X0 (при наличии ГРП), м</label><input type="number" id="x0in" value="160" title="Длина закрепления вдоль ствола. Применяется только если скважина есть во фрак-листе (порты МГРП)"/></div>
+        <div class="field"><label>Азимут °</label><input type="number" id="az" value="160"/></div>
       </div>
       <div class="card" id="cardRes" style="display:none">
         <div class="stats">
@@ -201,6 +214,7 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
           <div class="legend" id="mapLegend">
             <div class="legend-row" id="mapLegendMain"></div>
             <div class="legend-factors" id="mapFactorLegend"></div>
+            <div class="legend-status" id="mapStatusLegend"></div>
           </div>
           <div class="p-legend" id="pLegend">
             <div class="p-legend-title">Pпл, атм</div>
@@ -217,8 +231,13 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
             <div style="font-size:.7rem;margin-top:4px">Или запустите <b>start.bat</b></div>
           </div>
         </div>
+        <div class="time-bar" id="timeBar">
+          <span style="font-size:.68rem;color:var(--muted)">t</span>
+          <input type="range" id="timeSlider" min="0" max="0" value="0" step="1"/>
+          <span class="time-lab" id="timeLabel">—</span>
+        </div>
       </div>
-      <div id="panelWc">
+      <div id="panelWc" style="display:none!important">
         <div class="wc-list" id="wcList"></div>
         <div class="wc-chart">
           <h3 id="wcT" style="font-size:.88rem;margin-bottom:6px">Обводнённость</h3>
@@ -245,6 +264,16 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
             <div class="card">
               <h3>Индексы Чана</h3>
               <div id="chanIdx" style="font-size:.72rem;color:var(--muted)">—</div>
+            </div>
+            <div class="card">
+              <h3>Динамика вкладов во времени</h3>
+              <p style="font-size:.65rem;color:var(--muted);margin:0 0 6px;line-height:1.35">Сумма факторов = 100% · по оси Y доля вклада</p>
+              <canvas id="factorStack" class="diag-stack"></canvas>
+              <div class="stack-legend" id="factorStackLegend"></div>
+            </div>
+            <div class="card">
+              <h3>Автодиагноз · мероприятия</h3>
+              <div class="diag-reco" id="diagReco">Выберите скважину</div>
             </div>
           </div>
           <div class="diag-main">
@@ -280,7 +309,7 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
           <div class="data-grid" id="dataFieldsGrid"></div>
         </div>
       </div>
-      <div id="panelBlocks">
+      <div id="panelBlocks" style="display:none!important">
         <div class="card" style="max-width:720px">
           <h3>Pпл по контурам (средневзвешенное по площади)</h3>
           <div class="block-list" id="blockList"></div>
@@ -301,7 +330,7 @@ function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 
 /* ═══ Данные и расчёт ═══ */
 var S = { data:null, layer:null, grd:null, pCache:null, pCacheKey:'', trunks:[], blocks:{}, mor:[], tr:[], history:null,
-  res:[], br:[], potBr:[], potBreakPts:[], breakPts:[], fracInRd:[], zoneFills:[], inj:{}, prod:{}, prodRd:{}, prodEll:{}, grpPorts:{}, blockStats:[], highlightBlock:null, wells:[], wcWell:null, diagWell:null, highlightWell:null, ruler:null, view:{s:1,ox:0,oy:0,s0:1}, month:null, factorScores:{}, wellBestFactor:{}, coneRisk:{}, etalonHV:{}, dataParams:null,
+  res:[], br:[], potBr:[], potBreakPts:[], breakPts:[], fracInRd:[], zoneFills:[], inj:{}, prod:{}, prodRd:{}, prodEll:{}, grpPorts:{}, blockStats:[], highlightBlock:null, wells:[], wcWell:null, diagWell:null, highlightWell:null, ruler:null, view:{s:1,ox:0,oy:0,s0:1}, month:null, factorScores:{}, wellBestFactor:{}, coneRisk:{}, etalonHV:{}, dataParams:null, wellStatus:{}, zkcSignal:{},
   mapVis:{ inj:true, prod:true, ports:true, rd:true, agrp:true, inRd:true, pot:true, brk:true,
     f_front:true, f_cone:true, f_streak:true, f_mirror:true, f_frac:true, f_leak:true }
 };
@@ -363,12 +392,14 @@ function initLayers() {
   onLayerChange();
 }
 
-function monthsFromLayer(L) {
+/** Месяцы шкалы/селекта — только из МЭР (не из карт Pпл) */
+function monthsFromMor(L) {
   var seen = {}, out = [];
-  Object.keys(L.maps).forEach(function(fn) {
-    var m = fn.match(/(20\d{2})[_-](\d{2})/);
+  (L.mor || []).forEach(function(r) {
+    var d = String(r[1] || '');
+    var m = d.match(/(\d{2})\.(\d{2})\.(\d{4})/);
     if (!m) return;
-    var key = m[2] + '_' + m[1];
+    var key = m[2] + '_' + m[3]; // MM_YYYY
     if (!seen[key]) { seen[key] = 1; out.push(key); }
   });
   out.sort(function(a, b) {
@@ -378,13 +409,147 @@ function monthsFromLayer(L) {
   return out;
 }
 
-function grdFileForMonth(L, monthKey) {
-  if (!monthKey) return Object.keys(L.maps)[0];
-  var p = monthKey.split('_');
-  if (p.length !== 2) return Object.keys(L.maps)[0];
+/** @deprecated alias — шкала времени = МЭР */
+function monthsFromLayer(L) {
+  return monthsFromMor(L);
+}
+
+/** Список ключей карт MM_YYYY (сейчас 01_2026, 04_2026) */
+function mapMonthKeys(L) {
+  var seen = {}, out = [];
+  Object.keys(L.maps || {}).forEach(function(fn) {
+    var m = fn.match(/(20\d{2})[_-](\d{2})/);
+    if (!m) return;
+    var key = m[2] + '_' + m[1];
+    if (!seen[key]) { seen[key] = 1; out.push(key); }
+  });
+  out.sort(function(a, b) { return monthKeyOrder(a, b); });
+  return out;
+}
+
+function monthIndex(key) {
+  var p = String(key).split('_');
+  if (p.length !== 2) return 0;
+  return (+p[1]) * 12 + (+p[0] - 1);
+}
+
+function mapFileForKey(L, monthKey) {
+  var p = String(monthKey).split('_');
+  if (p.length !== 2) return null;
   var tag = p[1] + '_' + p[0];
-  var maps = Object.keys(L.maps);
-  return maps.find(function(m) { return m.indexOf(tag) >= 0; }) || maps[0];
+  return Object.keys(L.maps || {}).find(function(m) { return m.indexOf(tag) >= 0; }) || null;
+}
+
+function gridFromMapName(L, name) {
+  var g = L.maps[name];
+  if (!g) return null;
+  return {
+    nx: g.nx, ny: g.ny, xmin: g.xmin, xmax: g.xmax, ymin: g.ymin, ymax: g.ymax,
+    data: g.data, label: g.label || name
+  };
+}
+
+/** Линейная смесь двух сеток (интерполяция по t ∈ (0,1)) */
+function blendGrids(g0, g1, t) {
+  var n = Math.min(g0.data.length, g1.data.length);
+  var data = new Array(n);
+  var i, a, b;
+  for (i = 0; i < n; i++) {
+    a = g0.data[i];
+    b = g1.data[i];
+    if (a == null && b == null) data[i] = null;
+    else if (a == null) data[i] = b;
+    else if (b == null) data[i] = a;
+    else data[i] = Math.round((a * (1 - t) + b * t) * 10) / 10;
+  }
+  return {
+    nx: g0.nx, ny: g0.ny,
+    xmin: g0.xmin, xmax: g0.xmax, ymin: g0.ymin, ymax: g0.ymax,
+    data: data,
+    interpolated: true
+  };
+}
+
+/**
+ * Вид покрытия Pпл для месяца (без сборки сетки):
+ * - exact — есть загруженная карта
+ * - interp — месяц строго между соседними картами (напр. 02–03 при 01 и 04)
+ * - null — вне диапазона карт / одна карта не на этот месяц → без Pпл
+ */
+function pressureMapKind(L, monthKey) {
+  if (!L || !monthKey) return null;
+  var keys = mapMonthKeys(L);
+  if (!keys.length) return null;
+  if (mapFileForKey(L, monthKey)) return 'exact';
+  if (keys.length < 2) return null;
+  if (monthKeyOrder(monthKey, keys[0]) <= 0) return null;
+  if (monthKeyOrder(monthKey, keys[keys.length - 1]) >= 0) return null;
+  return 'interp';
+}
+
+function pressureMapTag(L, monthKey) {
+  var k = pressureMapKind(L, monthKey);
+  if (k === 'exact') return ' · карта';
+  if (k === 'interp') return ' · интерп.';
+  return ' · нет Pпл';
+}
+
+/**
+ * Резолв карты Pпл:
+ * - exact — загруженная карта
+ * - interp — линейная смесь только между соседними загруженными (02–03 при 01 и 04)
+ * - null — вне диапазона карт (до первой / после последней) — карту не показываем
+ */
+function resolvePressureGrid(L, monthKey) {
+  if (!L || !monthKey) return null;
+  var keys = mapMonthKeys(L);
+  if (!keys.length) return null;
+
+  var exactName = mapFileForKey(L, monthKey);
+  if (exactName) {
+    return { kind: 'exact', name: exactName, g: gridFromMapName(L, exactName) };
+  }
+
+  // вне диапазона карт или одна карта — без Pпл (не тянем крайнюю карту на весь МЭР)
+  if (pressureMapKind(L, monthKey) !== 'interp') return null;
+
+  var i0 = -1, i1 = -1, i;
+  for (i = 0; i < keys.length; i++) {
+    if (monthKeyOrder(keys[i], monthKey) < 0) i0 = i;
+    if (monthKeyOrder(keys[i], monthKey) > 0 && i1 < 0) i1 = i;
+  }
+  if (i0 < 0 || i1 < 0) return null;
+
+  var k0 = keys[i0], k1 = keys[i1];
+  var n0 = mapFileForKey(L, k0), n1 = mapFileForKey(L, k1);
+  var g0 = gridFromMapName(L, n0), g1 = gridFromMapName(L, n1);
+  if (!g0 || !g1) return null;
+  var t = (monthIndex(k1) !== monthIndex(k0))
+    ? (monthIndex(monthKey) - monthIndex(k0)) / (monthIndex(k1) - monthIndex(k0))
+    : 0;
+  var blended = blendGrids(g0, g1, t);
+  blended.label = 'интерп. ' + monthKey.replace('_', '.') + ' ← ' + k0.replace('_', '.') + '…' + k1.replace('_', '.');
+  return { kind: 'interp', name: 'interp|' + monthKey, g: blended, t: t, from: k0, to: k1 };
+}
+
+function clearGrd() {
+  S.grd = null;
+  S.pCache = null;
+  S.pCacheKey = '';
+  S.mapKind = null;
+  updatePressureLegend(0, 0);
+}
+
+function loadGrdObject(g, cacheKey) {
+  S.grd = {
+    nx: g.nx, ny: g.ny, xmin: g.xmin, xmax: g.xmax, ymin: g.ymin, ymax: g.ymax,
+    data: g.data, label: g.label || '', interpolated: !!g.interpolated
+  };
+  if (!S.pCache || S.pCacheKey !== cacheKey) {
+    S.pCache = buildPressureCache(S.grd);
+    S.pCacheKey = cacheKey;
+  }
+  updatePressureLegend(S.pCache.lo, S.pCache.hi);
 }
 
 function syncMonthAndGrd() {
@@ -393,21 +558,45 @@ function syncMonthAndGrd() {
   S.month = p.length === 2 ? ('01.' + p[0] + '.' + p[1]) : null;
   if (!S.layer || !S.data) return;
   var L = S.data.layers[S.layer];
-  loadGrd(grdFileForMonth(L, key));
+  var resolved = resolvePressureGrid(L, key);
+  if (!resolved || !resolved.g) {
+    clearGrd();
+    S.mapMonthExact = false;
+  } else {
+    S.mapMonthExact = resolved.kind === 'exact';
+    S.mapKind = resolved.kind;
+    loadGrdObject(resolved.g, S.layer + '|' + resolved.name);
+  }
+  var lab = document.getElementById('timeLabel');
+  if (lab && key) {
+    var parts = key.split('_');
+    lab.textContent = parts[0] + '.' + parts[1] + pressureMapTag(L, key);
+  }
 }
 
 function onLayerChange() {
   S.layer = document.getElementById('selLayer').value;
   var L = S.data.layers[S.layer];
   if (!Object.keys(L.maps).length) throw new Error('Нет карт в пласте ' + S.layer + '. Запустите: python build_data.py');
-  var months = monthsFromLayer(L);
+  var months = monthsFromMor(L);
+  if (!months.length) throw new Error('Нет месяцев МЭР в пласте ' + S.layer);
   var sel = document.getElementById('selMonth');
   sel.innerHTML = '';
   months.forEach(function(m) {
     var o = document.createElement('option');
-    o.value = m; o.textContent = m;
+    o.value = m;
+    var pp = m.split('_');
+    o.textContent = pp[0] + '.' + pp[1] + pressureMapTag(L, m);
     sel.appendChild(o);
   });
+  // по умолчанию — последний месяц МЭР, у которого есть карта; иначе конец ряда
+  var mapKeys = mapMonthKeys(L);
+  var def = months[months.length - 1];
+  var mi;
+  for (mi = months.length - 1; mi >= 0; mi--) {
+    if (mapKeys.indexOf(months[mi]) >= 0) { def = months[mi]; break; }
+  }
+  sel.value = def;
   S.trunks = L.trunks; S.blocks = L.blocks; S.mor = L.mor; S.tr = L.tr || [];
   S.history = S.data.history || null;
   syncMonthAndGrd();
@@ -760,26 +949,54 @@ function ellipseSamplePoints(ell, n) {
   return pts;
 }
 
-/** АГРП: вертикаль ±Xf; ГС — от пятки Т1 вдоль ствола на X0, затем крыло по азимуту */
-function buildAgrpPath(iw, xf, azDeg, x0) {
+/** АГРП: ВС — одна трещина ±Xf; ГС — крыло от КАЖДОГО порта, длина max у пятки, ↓ к носу (трение) */
+function buildAgrpPath(iw, xf, azDeg) {
   var az = azDeg * Math.PI / 180;
   var ux = Math.sin(az), uy = Math.cos(az);
   if (!iw.hz || !isFinite(iw.x3)) {
     var half = xf;
     return {
-      segs: [{ x1: iw.x - ux * half, y1: iw.y - uy * half, x2: iw.x + ux * half, y2: iw.y + uy * half, kind: 'free' }],
+      segs: [{ x1: iw.x - ux * half, y1: iw.y - uy * half, x2: iw.x + ux * half, y2: iw.y + uy * half, kind: 'free', xf: xf }],
       funnelCx: iw.x, funnelCy: iw.y, heelX: iw.x, heelY: iw.y
     };
   }
   var L = dist(iw.x, iw.y, iw.x3, iw.y3) || 1;
-  var sx = (iw.x3 - iw.x) / L, sy = (iw.y3 - iw.y) / L;
-  var propped = Math.min(x0, L, xf);
-  var freeLen = Math.max(0, xf - propped);
-  var mx = iw.x + sx * propped, my = iw.y + sy * propped;
+  var gp = (S.grpPorts && (S.grpPorts[iw.w] || S.grpPorts[String(iw.w)])) || null;
+  var nPorts = gp ? Math.min(Math.round(gp.ports || 0), 28) : 0;
   var segs = [];
-  if (propped > 1) segs.push({ x1: iw.x, y1: iw.y, x2: mx, y2: my, kind: 'propped' });
-  if (freeLen > 1) segs.push({ x1: mx, y1: my, x2: mx + ux * freeLen, y2: my + uy * freeLen, kind: 'free' });
-  return { segs: segs, funnelCx: iw.x, funnelCy: iw.y, heelX: iw.x, heelY: iw.y, hingeX: mx, hingeY: my };
+  var i, t, px, py, sAlong, decay, xf_i;
+
+  function addWing(cx, cy, len, portIdx) {
+    if (len < 2) return;
+    segs.push({
+      x1: cx - ux * len, y1: cy - uy * len,
+      x2: cx + ux * len, y2: cy + uy * len,
+      kind: 'free', port: portIdx, xf: len
+    });
+  }
+
+  if (nPorts <= 0) {
+    // нет фрак-листа — одно крыло от пятки
+    addWing(iw.x, iw.y, xf, 0);
+  } else {
+    for (i = 1; i <= nPorts; i++) {
+      t = i / (nPorts + 1);
+      px = iw.x + (iw.x3 - iw.x) * t;
+      py = iw.y + (iw.y3 - iw.y) * t;
+      sAlong = L * t;
+      // потери на трение вдоль ГС: пятка ≈ 100%, нос ≈ 30–40%
+      decay = Math.exp(-1.15 * sAlong / L);
+      xf_i = Math.max(xf * 0.28, xf * decay);
+      addWing(px, py, xf_i, i);
+    }
+  }
+  return {
+    segs: segs,
+    funnelCx: iw.x, funnelCy: iw.y,
+    heelX: iw.x, heelY: iw.y,
+    hingeX: segs.length ? (segs[0].x1 + segs[0].x2) / 2 : iw.x,
+    hingeY: segs.length ? (segs[0].y1 + segs[0].y2) / 2 : iw.y
+  };
 }
 
 function fracAt(cx, cy, xf, azDeg) {
@@ -841,6 +1058,65 @@ function morLiq(well) {
   return q;
 }
 
+/** Сравнение ключей месяца: поддержка MM_YYYY и 01.MM.YYYY */
+function monthParts(m) {
+  var s = String(m || '');
+  if (s.indexOf('_') >= 0) {
+    var p = s.split('_');
+    return { mo: +p[0], yr: +p[1] };
+  }
+  var q = s.split('.');
+  if (q.length >= 3) return { mo: +q[1], yr: +q[2] };
+  return { mo: 0, yr: 0 };
+}
+function monthKeyOrder(a, b) {
+  var pa = monthParts(a), pb = monthParts(b);
+  return (pa.yr - pb.yr) || (pa.mo - pb.mo);
+}
+
+/** Статус скважин на месяц: работа / остановлена / не показывать */
+function buildWellStatusMap(month) {
+  var map = {};
+  (S.mor || []).forEach(function(r) {
+    var w = r[0], m = r[1];
+    if (!map[w]) map[w] = { injOn: false, prodOn: false, injEver: false, prodEver: false };
+    var injQ = +r[2] || 0, liq = +r[3] || 0;
+    var cmp = monthKeyOrder(m, month);
+    if (cmp < 0) {
+      if (injQ > 0) map[w].injEver = true;
+      if (liq > 0) map[w].prodEver = true;
+    } else if (cmp === 0) {
+      if (injQ > 0) { map[w].injOn = true; map[w].injEver = true; }
+      if (liq > 0) { map[w].prodOn = true; map[w].prodEver = true; }
+    }
+  });
+  Object.keys(map).forEach(function(w) {
+    var s = map[w];
+    s.injOff = s.injEver && !s.injOn;
+    s.prodOff = s.prodEver && !s.prodOn;
+    s.show = s.injOn || s.injOff || s.prodOn || s.prodOff;
+  });
+  return map;
+}
+
+function syncTimeSlider() {
+  var L = S.data && S.data.layers[S.layer];
+  if (!L) return;
+  var months = monthsFromMor(L);
+  var sl = document.getElementById('timeSlider');
+  var lab = document.getElementById('timeLabel');
+  if (!sl) return;
+  sl.max = Math.max(0, months.length - 1);
+  var selVal = document.getElementById('selMonth').value;
+  var idx = months.indexOf(selVal);
+  if (idx < 0) idx = months.length - 1;
+  sl.value = idx;
+  if (lab && months[idx]) {
+    var parts = months[idx].split('_');
+    lab.textContent = parts[0] + '.' + parts[1] + pressureMapTag(L, months[idx]);
+  }
+}
+
 function producerCenter(pw) {
   return {
     cx: pw.hz ? (pw.x + pw.x3) / 2 : pw.x,
@@ -882,8 +1158,7 @@ function doCalc() {
   syncMonthAndGrd();
   var pzabMap = buildPzabMap();
   var az = +document.getElementById('az').value;
-  var x0User = +document.getElementById('x0in').value;
-  if (!isFinite(x0User)) x0User = 160;
+  if (!isFinite(az)) az = 160;
   var re = +getData('re', 300), slope = +getData('slope_agrp', 0.03), sr = +getData('sr', 800);
   var inj = {}, prod = {};
   S.mor.forEach(function(r) {
@@ -897,10 +1172,11 @@ function doCalc() {
   var producers = wells.filter(function(w) { return prod[w.w] && !inj[w.w]; });
   S.res = []; S.br = []; S.potBr = []; S.potBreakPts = []; S.breakPts = []; S.fracInRd = []; S.zoneFills = [];
   S.prodRd = {}; S.prodEll = {}; S.inj = inj; S.prod = prod;
+  S.wellStatus = buildWellStatusMap(S.month);
 
   var liqs = producers.map(function(pw) { return morLiq(pw.w); }).filter(function(q) { return q > 0; });
   liqs.sort(function(a, b) { return a - b; });
-  var qRef = liqs.length ? liqs[liqs.length >> 1] : 400;
+  var qRef = liqs.length ? liqs[Math.floor(liqs.length / 2)] : 400;
   producers.forEach(function(pw) {
     var ell = calcProducerEllipse(pw, re, qRef);
     S.prodEll[pw.w] = ell;
@@ -912,23 +1188,20 @@ function doCalc() {
     if (pzab == null || !isFinite(pzab)) return;
     var ppl = sampleP(iw.cx, iw.cy), pcm = 0.81 * ppl + 108, pnet = pzab - pcm;
     var id = pnet <= 0 ? 1 : 1 + slope * pnet;
-    // X0 только если скважина есть во фрак-листе (порты МГРП / ГРП)
     var hasFrac = !!(S.grpPorts && S.grpPorts[iw.w] && S.grpPorts[iw.w].ports > 0);
-    var x0 = hasFrac ? Math.max(0, x0User) : 0;
-    var xfBase = hasFrac ? Math.max(x0, 50) : 50;
+    var xfBase = hasFrac ? 50 : 50;
     var xf = pnet <= 0 ? xfBase : Math.min((2 * re) / Math.exp((1 / id) * Math.log((2 * re) / Math.max(xfBase, 1))), 2 * re);
     if (!hasFrac) {
-      // без ГРП во фрак-листе — свободное крыло от устья/пятки, без закреплённого X0
       xf = pnet <= 0 ? +getData('xf_no_frac', 80) : Math.min(xf, 2 * re);
     }
-    var path = buildAgrpPath(iw, xf, az, x0);
+    var path = buildAgrpPath(iw, xf, az);
     var frac = path.segs.length ? path.segs[0] : fracAt(iw.cx, iw.cy, xf, az);
-    var freeSeg = null;
+    var maxSeg = null;
     path.segs.forEach(function(s) {
-      if (s.kind === 'free' && (!freeSeg || dist(s.x1, s.y1, s.x2, s.y2) > dist(freeSeg.x1, freeSeg.y1, freeSeg.x2, freeSeg.y2))) freeSeg = s;
+      var dlen = dist(s.x1, s.y1, s.x2, s.y2);
+      if (!maxSeg || dlen > dist(maxSeg.x1, maxSeg.y1, maxSeg.x2, maxSeg.y2)) maxSeg = s;
     });
-    if (freeSeg) frac = freeSeg;
-    else if (path.segs[0]) frac = path.segs[0];
+    if (maxSeg) frac = maxSeg;
 
     var hits = [];
     var potHits = findPotentialHits(iw, xf, producers, S.prodEll, sr);
@@ -994,9 +1267,10 @@ function doCalc() {
   updateWellDatalist();
   updateDiagWellList();
   buildWc();
-  computeAllConeRisks();
   buildEtalonHV();
   computeWellBestFactors();
+  syncTimeSlider();
+  renderMapStatusLegend();
   if (S.diagWell) refreshDiagnostics(S.diagWell);
 }
 
@@ -1013,7 +1287,7 @@ function fit() {
   var box=document.querySelector('.map-box'), c=document.getElementById('cv');
   var r=box.getBoundingClientRect();
   if (r.width < 80 || r.height < 80) return false;
-  var legH=document.getElementById('pLegend').classList.contains('on')?52:0;
+  var legH=0;
   c.width=Math.max(400,r.width|0);
   c.height=Math.max(220,(r.height-legH)|0);
   var b=bounds(), p=40, w=b.x2-b.x1||1, h=b.y2-b.y1||1;
@@ -1114,7 +1388,7 @@ function zoomToWell(w) {
     x1 -= margin; x2 += margin; y1 -= margin; y2 += margin;
   }
   var pad = 56;
-  var legH = document.getElementById('pLegend').classList.contains('on') ? 52 : 0;
+  var legH = 0;
   var vw = c.width - 2 * pad;
   var vh = c.height - 2 * pad - legH;
   var boxW = Math.max(x2 - x1, 80);
@@ -1200,54 +1474,69 @@ function updatePressureLegend(lo, hi) {
   var show=document.getElementById('vP').checked && S.grd;
   leg.className='p-legend'+(show?' on':'');
   if(!show) return;
+  var title = document.querySelector('#pLegend .p-legend-title');
+  if (title) {
+    title.textContent = (S.grd && S.grd.interpolated) ? 'Pпл интерп., атм' : 'Pпл, атм';
+  }
   document.getElementById('pLo').textContent=lo.toFixed(0);
   document.getElementById('pHi').textContent=hi.toFixed(0);
   var bar=document.getElementById('pLegBar');
-  var bw=bar.parentElement.clientWidth-120;
-  if(bw<100) bw=200;
-  bar.width=bw; bar.height=14;
+  var bw=70;
+  bar.width=bw; bar.height=8;
   var ctx=bar.getContext('2d');
   for(var x=0;x<bw;x++){
     var rgb=pressureColor(x/(bw-1||1));
     ctx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
-    ctx.fillRect(x,0,1,14);
+    ctx.fillRect(x,0,1,8);
   }
 }
 
+/**
+ * Порты ГРП:
+ * - центры на стволе T1–T3 (ствол не съезжает);
+ * - угол по Азимут(град) из файла (az+90), как в НИБИРУ;
+ * - длина тика разная вдоль ГС: короче у пятки → длиннее к носу
+ *   (как на скрине НИБИРУ: нижний/дальний порт длиннее).
+ */
 function drawGrpPorts(ctx) {
   if (!S.grpPorts || !S.wells.length) return;
-  var portHalf = 45; // м — полудлина чёрной линии порта (как тики в НИБИРУ)
+  var portHalfMax = 52;
+  var portHalfMin = 22;
   ctx.save();
   ctx.strokeStyle = '#111111';
   ctx.lineWidth = Math.max(1.2, 1.6 * Math.min(2.5, S.view.s / (S.view.s0 || S.view.s)));
   ctx.lineCap = 'round';
   ctx.setLineDash([]);
   S.wells.forEach(function(w) {
-    var g = S.grpPorts[w.w];
+    if (!isWellVisibleOnMap(w)) return;
+    var g = S.grpPorts[w.w] || S.grpPorts[String(w.w)];
     if (!g || !(g.ports > 0)) return;
     var n = Math.min(Math.round(g.ports), 28);
     if (n < 1) return;
-    var x1, y1, x2, y2, azRad;
+    var x1, y1, x2, y2;
     if (w.hz && isFinite(w.x3) && isFinite(w.y3)) {
       x1 = w.x; y1 = w.y; x2 = w.x3; y2 = w.y3;
-      azRad = Math.atan2(x2 - x1, y2 - y1);
     } else if (g.L > 50) {
-      azRad = (g.az || 45) * Math.PI / 180;
+      var az0 = (isFinite(+g.az) ? +g.az : 45) * Math.PI / 180;
       x1 = w.x; y1 = w.y;
-      x2 = w.x + Math.sin(azRad) * g.L;
-      y2 = w.y + Math.cos(azRad) * g.L;
+      x2 = w.x + Math.cos(az0) * g.L;
+      y2 = w.y - Math.sin(az0) * g.L;
     } else {
       return;
     }
-    var perp = azRad + Math.PI / 2;
-    var dx = Math.sin(perp) * portHalf;
-    var dy = Math.cos(perp) * portHalf;
+    var az = (isFinite(+g.az) ? +g.az : 45) * Math.PI / 180;
+    var portAng = az + Math.PI / 2;
+    var ux = Math.cos(portAng);
+    var uy = -Math.sin(portAng);
     for (var i = 1; i <= n; i++) {
       var t = i / (n + 1);
       var px = x1 + (x2 - x1) * t;
       var py = y1 + (y2 - y1) * t;
-      var a = w2s(px - dx, py - dy);
-      var b = w2s(px + dx, py + dy);
+      // пятка t→0 короче, нос t→1 длиннее (как в НИБИРУ на скрине)
+      var grow = Math.exp(-1.25 * (1 - t));
+      var half = portHalfMin + (portHalfMax - portHalfMin) * grow;
+      var a = w2s(px - ux * half, py - uy * half);
+      var b = w2s(px + ux * half, py + uy * half);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -1262,9 +1551,8 @@ function draw() {
   if (!c.width || !S.view.s0) { if (!fit()) return; }
   var ctx=c.getContext('2d');
   ctx.fillStyle='#06080c'; ctx.fillRect(0,0,c.width,c.height);
-  if (!S.grd) return;
 
-  if (document.getElementById('vP').checked && S.pCache) {
+  if (S.grd && document.getElementById('vP').checked && S.pCache) {
     var g=S.grd;
     var tl=w2s(g.xmin,g.ymax), br=w2s(g.xmax,g.ymin);
     var iw=br.x-tl.x, ih=br.y-tl.y;
@@ -1312,6 +1600,10 @@ function draw() {
   }
   if (document.getElementById('vRd').checked && mapVisOn('rd')) S.wells.forEach(function(w) {
     if (!S.prod[w.w] || S.inj[w.w]) return;
+    var stRd = S.wellStatus && S.wellStatus[w.w];
+    if (stRd && stRd.prodOff) return;
+    var fidRd = S.wellBestFactor && S.wellBestFactor[w.w];
+    if (fidRd && !mapVisOn('f_' + fidRd)) return;
     var ell = S.prodEll[w.w];
     if (!ell) return;
     ctx.save();
@@ -1390,43 +1682,50 @@ function draw() {
     });
   }
   if (document.getElementById('vW').checked) S.wells.forEach(function(w) {
-    var isInj=S.inj[w.w], isProd=S.prod[w.w];
-    if (isInj && !mapVisOn('inj')) return;
-    if (isProd && !isInj && !mapVisOn('prod')) return;
-    if (!isInj && !isProd && !(mapVisOn('inj') || mapVisOn('prod'))) return;
-    if (w.hz) {
-      var a=w2s(w.x,w.y), b=w2s(w.x3,w.y3);
-      if (isInj) {
-        ctx.strokeStyle='#38bdf8'; ctx.lineWidth=2.5;
-      } else if (isProd) {
-        ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=4;
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-        ctx.strokeStyle='#111111'; ctx.lineWidth=2.5;
-      } else {
-        ctx.strokeStyle='#555'; ctx.lineWidth=1.5;
-      }
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    if (!isWellVisibleOnMap(w)) return;
+    var st = (S.wellStatus && S.wellStatus[w.w]) || null;
+    if (!st) {
+      st = { injOn: !!S.inj[w.w], prodOn: !!S.prod[w.w], injOff: false, prodOff: false };
     }
-    var p=w2s(w.x,w.y);
-    var lblCol = isInj ? '#7dd3fc' : isProd ? '#f3f4f6' : '#9ca3af';
-    var lblX = p.x, lblY = p.y;
+    var isInj = st.injOn || st.injOff;
+    var isProd = st.prodOn || st.prodOff;
+    var injCol = st.injOn ? '#38bdf8' : '#7dd3fc';
+    var injAlpha = st.injOn ? 1 : 0.45;
+    var prodCol = st.prodOn ? '#111111' : '#6b7280';
+    var lblCol = isInj ? (st.injOn ? '#7dd3fc' : 'rgba(125,211,252,0.55)') : (st.prodOn ? '#f3f4f6' : '#9ca3af');
+    var a, b;
     if (w.hz) {
+      a = w2s(w.x, w.y); b = w2s(w.x3, w.y3);
+      if (isInj) {
+        ctx.globalAlpha = injAlpha;
+        ctx.strokeStyle = injCol; ctx.lineWidth = 2.5;
+      } else if (isProd) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        ctx.strokeStyle = prodCol; ctx.lineWidth = 2.5;
+      } else {
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5;
+      }
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    var p = w2s(w.x, w.y);
+    var lblX = p.x, lblY = p.y;
+    if (w.hz && a && b) {
       lblX = (a.x + b.x) / 2;
       lblY = (a.y + b.y) / 2;
     }
     if (isInj) {
-      ctx.fillStyle='#38bdf8';
-      ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha = injAlpha;
+      ctx.fillStyle = injCol;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
     } else if (isProd) {
-      ctx.fillStyle='#111111'; ctx.strokeStyle='#cccccc'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill(); ctx.stroke();
-    } else {
-      ctx.fillStyle='#555';
-      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = prodCol; ctx.strokeStyle = st.prodOn ? '#cccccc' : '#4b5563'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     }
     drawWellLabel(ctx, lblX, lblY, String(w.w), lblCol);
-    // значок справа от номера скважины
-    if (isProd) {
+    if (st.prodOn) {
       var fid = S.wellBestFactor && S.wellBestFactor[w.w];
       if (fid && mapVisOn('f_' + fid)) {
         var s0l = S.view.s0 || S.view.s || 1;
@@ -1962,17 +2261,54 @@ function exportCSV() {
 
 /* ═══ Легенда карты: клик = вкл/выкл слоя ═══ */
 var MAP_LEGEND_ITEMS = [
-  { key: 'inj', label: '🔵 нагнет' },
-  { key: 'prod', label: '⚫ добыча' },
-  { key: 'ports', label: '| порты' },
-  { key: 'rd', label: '<span style="color:#34d399">- -</span> дренир.' },
-  { key: 'agrp', label: '🟡 АГРП' },
-  { key: 'inRd', label: '<span style="color:#ef4444">━</span> в Rд' },
-  { key: 'pot', label: '🟠 потенц.' },
-  { key: 'brk', label: '🔴 прорыв' }
+  { key: 'inj', label: '🔵 нагнетательная (работа)' },
+  { key: 'prod', label: '⚫ добывающая (работа)' },
+  { key: 'ports', label: '| порты МГРП' },
+  { key: 'rd', label: '<span style="color:#34d399">- -</span> зона дренирования' },
+  { key: 'agrp', label: '🟡 трещина авто-ГРП' },
+  { key: 'inRd', label: '<span style="color:#ef4444">━</span> АГРП в зоне Rд' },
+  { key: 'pot', label: '🟠 потенциальный прорыв' },
+  { key: 'brk', label: '🔴 подтверждённый прорыв' }
 ];
 
 function mapVisOn(key) { return !!(S.mapVis && S.mapVis[key]); }
+
+/** Та же видимость, что у ствола на карте (легенда + статус МЭР на месяц) */
+function isWellVisibleOnMap(w) {
+  if (!w) return false;
+  if (!document.getElementById('vW') || !document.getElementById('vW').checked) return false;
+  var st = (S.wellStatus && S.wellStatus[w.w]) || null;
+  if (st && !st.show) return false;
+  if (!st) {
+    if (!(S.inj[w.w] || S.prod[w.w])) return false;
+    st = { injOn: !!S.inj[w.w], prodOn: !!S.prod[w.w], injOff: false, prodOff: false };
+  }
+  var isInj = st.injOn || st.injOff;
+  var isProd = st.prodOn || st.prodOff;
+  if (isInj && !mapVisOn('inj')) return false;
+  if (isProd && !isInj && !mapVisOn('prod')) return false;
+  if (!isInj && !isProd && !(mapVisOn('inj') || mapVisOn('prod'))) return false;
+  if (st.prodOn && !st.injOn) {
+    var fidHide = S.wellBestFactor && S.wellBestFactor[w.w];
+    if (fidHide && !mapVisOn('f_' + fidHide)) return false;
+  }
+  if (st.injOn && !mapVisOn('agrp')) {
+    var hasAgrp = (S.res || []).some(function(r) { return r.w === w.w; });
+    if (hasAgrp) return false;
+  }
+  return true;
+}
+
+function renderMapStatusLegend() {
+  var box = document.getElementById('mapStatusLegend');
+  if (!box) return;
+  box.innerHTML =
+    '<span><i class="dot dot-inj"></i>нагнет. закачка</span>' +
+    '<span><i class="dot dot-inj-off"></i>нагнет. остановлена</span>' +
+    '<span><i class="dot dot-prod"></i>добыча</span>' +
+    '<span><i class="dot dot-prod-off"></i>добыча остановлена</span>' +
+    '<span style="opacity:.7">нет МЭР — скрыта</span>';
+}
 
 function renderMapLegend() {
   var box = document.getElementById('mapLegendMain');
@@ -2343,7 +2679,7 @@ var FACTORS = [
   { id:'streak', name:'Прорыв по высокопроницаемому пропластку', short:'Пропласток', color:'#ef4444' },
   { id:'mirror', name:'Подход ВНК',                            short:'ВНК',       color:'#0284c7' },
   { id:'frac',   name:'Прорыв авто-ГРП',                       short:'Авто-ГРП',  color:'#f59e0b' },
-  { id:'leak',   name:'ЗКЦ / Негерметичность',                 short:'ЗКЦ',       color:'#2563eb' }
+  { id:'leak',   name:'ЗКЦ / Негерметичность',                 short:'ЗКЦ',       color:'#a855f7' }
 ];
 
 var SECTION = { well:null, scores:null, hits:[], anim:0, raf:0, hoverInj:null, hoverKind:null };
@@ -2645,7 +2981,8 @@ function buildEtalonHV() {
   return S.etalonHV;
 }
 
-/** Оверлеи эталона для текущей скважины: A (индекс→logWOR), C (Np→WOR) */
+/** Оверлеи эталона для текущей скважины: A (индекс→logWOR), C (Np→WOR).
+ *  Ограничены фактическим Np / длиной ряда скважины — без ухода к экон. пределу. */
 function etalonOverlaysForWell(rows) {
   var et = S.etalonHV;
   var empty = { a: [], c: [], meta: null };
@@ -2654,6 +2991,7 @@ function etalonOverlaysForWell(rows) {
   var fit = fitSipachev(rows);
   var NpEst = fit && fit.NpEst;
   var last = rows[rows.length - 1];
+  var npFact = Math.max(last.np || 0, 1e-6);
   if (!(NpEst > 0)) {
     if (et.meanB > 0 && isFinite(last.logWor) && last.np > 0) {
       var aEst = last.logWor - et.meanB * last.np;
@@ -2661,6 +2999,8 @@ function etalonOverlaysForWell(rows) {
     }
     if (!(NpEst > last.np * 0.35)) NpEst = Math.max(last.np / 0.65, last.np + 1);
   }
+  // нормировка эталона: по фактическому Np скважины, не по далёкому NpEst
+  var NpScale = Math.max(npFact, npFact / 0.95);
 
   var gMean = et.grid.map(function(g) { return { n: g.n, wor: g.wor }; });
   var gLo = et.grid.map(function(g) { return { n: g.n, wor: g.p10 }; });
@@ -2668,15 +3008,26 @@ function etalonOverlaysForWell(rows) {
 
   var cMean = [], cLo = [], cHi = [];
   et.grid.forEach(function(g) {
-    var np = g.n * NpEst;
+    var np = g.n * NpScale;
+    if (np > npFact * 1.001) return;
     cMean.push({ x: np, y: g.wor });
     cLo.push({ x: np, y: g.p10 });
     cHi.push({ x: np, y: g.p90 });
   });
+  // точка на конце фактической истории
+  var nEnd = Math.min(0.95, npFact / NpScale);
+  var wEnd = interpOnGrid(gMean, nEnd);
+  var w10e = interpOnGrid(gLo, nEnd);
+  var w90e = interpOnGrid(gHi, nEnd);
+  if (isFinite(wEnd) && wEnd > 0 && (!cMean.length || cMean[cMean.length - 1].x < npFact * 0.995)) {
+    cMean.push({ x: npFact, y: wEnd });
+    if (isFinite(w10e)) cLo.push({ x: npFact, y: w10e });
+    if (isFinite(w90e)) cHi.push({ x: npFact, y: w90e });
+  }
 
   var aMean = [], aLo = [], aHi = [];
   rows.forEach(function(r, i) {
-    var nn = r.np / NpEst;
+    var nn = Math.min(0.95, r.np / NpScale);
     if (nn < 0.03) return;
     var w = interpOnGrid(gMean, nn);
     var w10 = interpOnGrid(gLo, nn);
@@ -2688,16 +3039,16 @@ function etalonOverlaysForWell(rows) {
 
   return {
     a: [
-      { label: 'эталон P10–P90', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: aLo, xMode: 'index' },
-      { label: 'эталон ХВ', color: '#c4b5fd', dash: [6, 4], points: aMean, xMode: 'index', width: 2.2 },
-      { label: '', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: aHi, xMode: 'index' }
+      { label: 'эталон P10–P90', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: aLo, xMode: 'index', noExpandX: true },
+      { label: 'эталон ХВ', color: '#c4b5fd', dash: [6, 4], points: aMean, xMode: 'index', width: 2.2, noExpandX: true },
+      { label: '', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: aHi, xMode: 'index', noExpandX: true }
     ],
     c: [
-      { label: 'эталон P10–P90', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: cLo },
-      { label: 'эталон ХВ', color: '#c4b5fd', dash: [6, 4], points: cMean, width: 2.2 },
-      { label: '', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: cHi }
+      { label: 'эталон P10–P90', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: cLo, noExpandX: true },
+      { label: 'эталон ХВ', color: '#c4b5fd', dash: [6, 4], points: cMean, width: 2.2, noExpandX: true },
+      { label: '', color: 'rgba(196,181,253,0.4)', dash: [2, 3], points: cHi, noExpandX: true }
     ],
-    meta: { NpEst: NpEst, nWells: et.n }
+    meta: { NpEst: NpEst, npFact: npFact, nWells: et.n }
   };
 }
 
@@ -2760,6 +3111,211 @@ function findWellObj(well) {
   return null;
 }
 
+function medianFinite(arr) {
+  var a = [], i;
+  for (i = 0; i < arr.length; i++) if (isFinite(arr[i])) a.push(arr[i]);
+  if (!a.length) return NaN;
+  a.sort(function(x, y) { return x - y; });
+  var m = Math.floor(a.length / 2);
+  return a.length % 2 ? a[m] : 0.5 * (a[m - 1] + a[m]);
+}
+
+function monthKeyFromDate(d) {
+  var p = String(d).split('.');
+  if (p.length < 3) return '';
+  return p[1] + '_' + p[2];
+}
+
+function daysInMonthDate(d) {
+  var p = String(d).split('.');
+  if (p.length < 3) return 30;
+  return new Date(+p[2], +p[1], 0).getDate() || 30;
+}
+
+/**
+ * Ряд Кпрод / обводнённости / Pзаб по месяцам (МЭР + ТР).
+ * Кпрод ≈ Qж(т/сут) / max(Pпл − Pзаб, 1).
+ * opts.untilDate — обрезать ряд (для динамики факторов).
+ */
+function buildPiWcSeries(well, untilDate) {
+  var pw = findWellObj(well);
+  var ppl = NaN;
+  if (pw) ppl = sampleP(pw.cx || pw.x, pw.cy || pw.y);
+
+  var pzByDate = {}, qTrByDate = {};
+  (S.tr || []).forEach(function(r) {
+    if (String(r[0]) !== String(well)) return;
+    var pz = +r[2];
+    if (!isFinite(pz)) return;
+    pzByDate[r[1]] = pz;
+    // расширенный ТР: [well, date, pzab, qliq, ...]
+    if (r.length > 3 && isFinite(+r[3]) && +r[3] > 0) qTrByDate[r[1]] = +r[3];
+  });
+
+  var untilT = untilDate ? parseMorDate(untilDate) : null;
+  var byMonth = {};
+
+  function acceptDate(date) {
+    if (!untilT) return true;
+    var t = parseMorDate(date);
+    return !(t && t.getTime() > untilT.getTime());
+  }
+
+  if (S.history && S.history.dates && S.history.wells) {
+    var series = S.history.wells[well] || S.history.wells[String(well)];
+    if (series && series.liq && series.oil) {
+      for (var hi = 0; hi < S.history.dates.length; hi++) {
+        var hd = S.history.dates[hi];
+        if (!acceptDate(hd)) continue;
+        var hLiq = +series.liq[hi] || 0, hOil = +series.oil[hi] || 0;
+        if (hLiq <= 0) continue;
+        byMonth[hd] = { date: hd, liq: hLiq, oil: hOil, fromHist: true };
+      }
+    }
+  }
+  (S.mor || []).forEach(function(r) {
+    if (String(r[0]) !== String(well)) return;
+    var date = r[1], liq = +r[3] || 0, oil = +r[4] || 0;
+    if (liq <= 0 || !acceptDate(date)) return;
+    byMonth[date] = { date: date, liq: liq, oil: oil, fromHist: false };
+  });
+
+  var pzVals = [];
+  Object.keys(pzByDate).forEach(function(d) {
+    if (acceptDate(d)) pzVals.push(pzByDate[d]);
+  });
+  var pzMax = -Infinity, pi;
+  for (pi = 0; pi < pzVals.length; pi++) if (pzVals[pi] > pzMax) pzMax = pzVals[pi];
+  var dpDef = +getData('dp_default', 25) || 25;
+  var pref = isFinite(ppl) ? ppl : (isFinite(pzMax) ? pzMax + dpDef : NaN);
+
+  var rows = [], dates = Object.keys(byMonth);
+  function lookupByMonth(map, date) {
+    if (map[date] != null && isFinite(map[date])) return map[date];
+    var mk = monthKeyFromDate(date), dk;
+    for (dk in map) {
+      if (monthKeyFromDate(dk) === mk && isFinite(map[dk])) return map[dk];
+    }
+    return NaN;
+  }
+  dates.forEach(function(date) {
+    var m = byMonth[date];
+    var days = daysInMonthDate(date);
+    var qDay = lookupByMonth(qTrByDate, date);
+    if (!(qDay > 0)) qDay = m.liq / days;
+    var pz = lookupByMonth(pzByDate, date);
+    var wc = m.liq > 1e-6 ? Math.max(0, Math.min(0.99, 1 - m.oil / m.liq)) : NaN;
+    var dp = NaN, kProd = NaN;
+    if (isFinite(pz) && isFinite(pref)) {
+      // если карта Pпл ниже Pзаб — берём запас от макс. Pзаб
+      var pres = Math.max(pref, pz + Math.max(5, 0.35 * dpDef));
+      dp = Math.max(pres - pz, 1);
+      kProd = qDay / dp;
+    } else if (isFinite(pz)) {
+      kProd = qDay / Math.max(dpDef, 5);
+      dp = dpDef;
+    }
+    rows.push({
+      date: date, t: parseMorDate(date),
+      qDay: qDay, pzab: pz, ppl: pref, dp: dp, pi: kProd, wc: wc,
+      liq: m.liq, oil: m.oil
+    });
+  });
+  rows.sort(function(a, b) {
+    return (a.t ? a.t.getTime() : 0) - (b.t ? b.t.getTime() : 0);
+  });
+  return rows;
+}
+
+/**
+ * Сигнал ЗКЦ: резкий рост Кпрод + скачок обводнённости при стабильном режиме (Pзаб)
+ * и при отсутствии/минимуме риска авто-ГРП.
+ * score ∈ [0..1]
+ */
+function assessZkcSignal(well, opts) {
+  opts = opts || {};
+  var geo = geometryFracPrior(well);
+  var empty = {
+    score: 0, geo: geo, agrpBlocked: false,
+    piJump: 0, wcJump: 0, regimeOk: false,
+    date: null, detail: ''
+  };
+  // подтверждённый/сильный риск АГРП — ЗКЦ не присваиваем
+  if (geo >= 0.35) {
+    empty.agrpBlocked = true;
+    empty.detail = 'отсев: риск авто-ГРП ' + (100 * geo).toFixed(0) + '%';
+    return empty;
+  }
+
+  var series = buildPiWcSeries(well, opts.untilDate);
+  var usable = series.filter(function(r) {
+    return isFinite(r.pi) && isFinite(r.wc) && isFinite(r.pzab) && r.pi > 0;
+  });
+  if (usable.length < 8) {
+    empty.detail = 'мало точек Кпрод/ТР (' + usable.length + ')';
+    return empty;
+  }
+
+  var best = null, i, j;
+  for (i = 7; i < usable.length; i++) {
+    var beforePi = [], afterPi = [], beforeWc = [], afterWc = [], beforePz = [], afterPz = [];
+    for (j = i - 7; j <= i - 3; j++) {
+      beforePi.push(usable[j].pi);
+      beforeWc.push(usable[j].wc);
+      beforePz.push(usable[j].pzab);
+    }
+    for (j = i - 2; j <= i; j++) {
+      afterPi.push(usable[j].pi);
+      afterWc.push(usable[j].wc);
+      afterPz.push(usable[j].pzab);
+    }
+    var pi0 = medianFinite(beforePi), pi1 = medianFinite(afterPi);
+    var wc0 = medianFinite(beforeWc), wc1 = medianFinite(afterWc);
+    var pz0 = medianFinite(beforePz), pz1 = medianFinite(afterPz);
+    if (!(pi0 > 1e-6) || !isFinite(pi1) || !isFinite(wc0) || !isFinite(wc1)) continue;
+    if (!isFinite(pz0) || !isFinite(pz1)) continue;
+
+    var piRatio = pi1 / pi0;
+    var wcJump = wc1 - wc0;
+    var pzRel = Math.abs(pz1 - pz0) / Math.max(Math.abs(pz0), 1);
+    // режим не менялся: Pзаб стабилен; падение Pзаб = рост депрессии → не ЗКЦ
+    var regimeOk = pzRel <= 0.08 && (pz0 - pz1) <= 5;
+    if (!regimeOk) continue;
+    if (piRatio < 1.25) continue;
+    if (wcJump < 0.06) continue;
+
+    var piScore = Math.min(1, (piRatio - 1.25) / 0.75);
+    var wcScore = Math.min(1, (wcJump - 0.06) / 0.20);
+    var stabScore = Math.min(1, (0.08 - pzRel) / 0.08);
+    var score = 0.45 * piScore + 0.40 * wcScore + 0.15 * stabScore;
+    if (geo > 0.15) score *= Math.max(0.35, 1 - (geo - 0.15) / 0.35);
+
+    if (!best || score > best.score) {
+      best = {
+        score: Math.max(0, Math.min(1, score)),
+        geo: geo,
+        agrpBlocked: false,
+        piJump: piRatio,
+        wcJump: wcJump,
+        regimeOk: true,
+        pzRel: pzRel,
+        date: usable[i].date,
+        pi0: pi0, pi1: pi1, wc0: wc0, wc1: wc1,
+        detail: ''
+      };
+    }
+  }
+
+  if (!best) {
+    empty.detail = 'нет скачка Кпрод+обв. при стабильном Pзаб';
+    return empty;
+  }
+  best.detail = 'Кпрод ×' + best.piJump.toFixed(2) +
+    ', Δобв. +' + (100 * best.wcJump).toFixed(0) + ' п.п.' +
+    (best.date ? ' · ' + shortDateLabel(best.date) : '');
+  return best;
+}
+
 /** Ближайшая нагнетательная: связи прорыва/потенциала, иначе геометрия */
 function nearestInjectorForProd(well) {
   var counts = {}, best = null, bestN = 0;
@@ -2782,21 +3338,19 @@ function nearestInjectorForProd(well) {
   return iw || null;
 }
 
-function buildFactorScores(well, chan) {
+function buildFactorScores(well, chan, opts) {
+  opts = opts || {};
   var geo = geometryFracPrior(well);
-  var coneBoost = 0;
-  var cr = S.coneRisk && S.coneRisk[well];
-  if (cr && isFinite(cr.Itotal)) {
-    // I_total > 0 → вклад конуса растёт
-    coneBoost = Math.min(40, 55 * Math.tanh(cr.Itotal));
-  }
+  var zkc = assessZkcSignal(well, opts);
+  if (!S.zkcSignal) S.zkcSignal = {};
+  if (!opts.untilDate) S.zkcSignal[well] = zkc;
   var scores = {
     front: 12 + 50 * (chan.frontal || 0),
-    cone: 10 + 55 * (chan.coning || 0) + coneBoost,
+    cone: 10 + 55 * (chan.coning || 0),
     streak: 8 + 55 * (chan.channel || 0),
     mirror: 8 + 18 * (chan.coning || 0) + 10 * (chan.frontal || 0),
     frac: 8 + 70 * geo,
-    leak: 5
+    leak: 4 + 82 * (zkc.score || 0)
   };
   if ((chan.channel || 0) > 0.45 && geo < 0.2) scores.streak += 15;
   if ((chan.frontal || 0) > 0.5 && geo < 0.15) scores.front += 12;
@@ -2844,7 +3398,7 @@ function renderMapFactorLegend() {
   box.innerHTML = FACTORS.map(function(f) {
     var key = 'f_' + f.id;
     var off = mapVisOn(key) ? '' : ' off';
-    return '<span class="legend-tog' + off + '" data-vis="' + key + '"><canvas width="12" height="12" data-fid="' + f.id + '"></canvas>' + f.short + '</span>';
+    return '<span class="legend-tog' + off + '" data-vis="' + key + '" title="' + f.name + '"><canvas width="12" height="12" data-fid="' + f.id + '"></canvas>' + f.name + '</span>';
   }).join('');
   box.querySelectorAll('canvas').forEach(function(cv) {
     var ctx = cv.getContext('2d');
@@ -2929,16 +3483,16 @@ function drawFactorIcon(ctx, x, y, factorId, scale) {
     ctx.quadraticCurveTo(s * 0.35, s * 0.8, s, s * 0.35);
     ctx.stroke();
   } else {
-    // ○ ЗКЦ
-    ctx.beginPath();
-    ctx.arc(0, 0, s * 0.7, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(-s * 0.35, -s * 0.35);
-    ctx.lineTo(s * 0.35, s * 0.35);
-    ctx.moveTo(s * 0.35, -s * 0.35);
-    ctx.lineTo(-s * 0.35, s * 0.35);
-    ctx.stroke();
+    // ЗКЦ — ствол + фиолетовая муфта у кровли
+    ctx.fillStyle = '#e2e8f0';
+    ctx.fillRect(-s * 0.18, -s, s * 0.36, s * 2);
+    ctx.fillStyle = '#a855f7';
+    ctx.globalAlpha = 0.95;
+    ctx.fillRect(-s * 0.62, -s * 0.42, s * 1.24, s * 0.84);
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#c084fc';
+    ctx.lineWidth = Math.max(1, 1.1 * (scale || 1));
+    ctx.strokeRect(-s * 0.62, -s * 0.42, s * 1.24, s * 0.84);
   }
   ctx.restore();
 }
@@ -2950,7 +3504,7 @@ function renderFactorBars(scores) {
   box.innerHTML = sorted.map(function(f) {
     var v = scores[f.id] || 0;
     return '<div class="factor-row"><span class="factor-sw" style="background:' + f.color + '"></span>' +
-      '<span style="width:78px">' + f.short + '</span>' +
+      '<span style="flex:1;min-width:0;font-size:.68rem" title="' + f.name + '">' + f.name + '</span>' +
       '<div class="factor-bar"><i style="width:' + v.toFixed(1) + '%;background:' + f.color + '"></i></div>' +
       '<span style="width:32px;text-align:right;color:var(--muted)">' + v.toFixed(0) + '%</span></div>';
   }).join('');
@@ -2960,6 +3514,9 @@ function renderSectionLegend() {
   var box = document.getElementById('sectionLegend');
   if (!box) return;
   box.innerHTML = FACTORS.map(function(f) {
+    if (f.id === 'leak') {
+      return '<span title="' + f.name + '"><i style="background:linear-gradient(#e2e8f0,#e2e8f0) center/3px 100% no-repeat,#a855f7;border:1px solid #c084fc"></i>' + f.name + '</span>';
+    }
     return '<span><i style="background:' + f.color + '"></i>' + f.name + '</span>';
   }).join('');
 }
@@ -3061,6 +3618,7 @@ function drawChanPlot(canvasId, points, xKey, yKey, opts) {
     opts.overlays.forEach(function(ov) {
       (ov.points || []).forEach(function(pt) {
         if (isFinite(pt.y)) { y0 = Math.min(y0, pt.y); y1 = Math.max(y1, pt.y); }
+        if (ov.noExpandX) return;
         if (isFinite(pt.x) && !(opts.xDates || opts.xIndex) && ov.xMode !== 'index') {
           x0 = Math.min(x0, pt.x); x1 = Math.max(x1, pt.x);
         }
@@ -3401,22 +3959,31 @@ function drawDiagSection(well, scores, animPhase) {
   var wellX = w * 0.48;
   var perfTop, perfBot, wellY;
   var wellLeft = padL + 36, wellRight = w - padR - 36;
+  var hzEntryX = wellLeft; // точка входа ствола через кровлю (ГС)
   if (hz) {
     wellY = formTop + formH * 0.42;
-    wellLeft = padL + 36;
+    wellLeft = padL + 52;
     // Т3 не у правого края — справа место под языки пропластка
     wellRight = padL + (w - padL - padR) * 0.58;
-    // horizontal wellbore
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(wellLeft, wellY);
-    ctx.lineTo(wellRight, wellY);
-    ctx.stroke();
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
+    hzEntryX = wellLeft - 22;
+    var trunkTopY = Math.max(4, top - 2); // белый ствол уходит выше кровли
+
+    // путь ствола ГС: вертикаль сверху → дуга → горизонт Т1…Т3
+    function strokeHzWell(strokeCol, width) {
+      ctx.strokeStyle = strokeCol;
+      ctx.lineWidth = width;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      ctx.moveTo(hzEntryX, trunkTopY);
+      ctx.lineTo(hzEntryX, formTop - 2);
+      ctx.quadraticCurveTo(hzEntryX, wellY, wellLeft, wellY);
+      ctx.lineTo(wellRight, wellY);
+      ctx.stroke();
+    }
+    strokeHzWell('#e2e8f0', 5.5);
+    strokeHzWell('#64748b', 1.6);
+
     // heel / toe marks
     ctx.fillStyle = '#94a3b8';
     ctx.font = '9px Segoe UI';
@@ -3448,12 +4015,12 @@ function drawDiagSection(well, scores, animPhase) {
   } else {
     perfTop = formTop + formH * 0.32;
     perfBot = formTop + formH * 0.62;
-    // vertical casing
+    // vertical casing — продлеваем выше кровли
     ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(wellX - 5, top + 4, 10, formBot - top - 4);
+    ctx.fillRect(wellX - 5, top - 2, 10, formBot - top + 6);
     ctx.fillStyle = '#64748b';
-    ctx.fillRect(wellX - 7, top + 4, 2, formBot - top - 4);
-    ctx.fillRect(wellX + 5, top + 4, 2, formBot - top - 4);
+    ctx.fillRect(wellX - 7, top - 2, 2, formBot - top + 6);
+    ctx.fillRect(wellX + 5, top - 2, 2, formBot - top + 6);
     // perforations
     ctx.strokeStyle = '#f1f5f9';
     ctx.lineWidth = 2;
@@ -3502,41 +4069,55 @@ function drawDiagSection(well, scores, animPhase) {
     }
   }
 
-  // 1.1 конусы: высота по индексу риска I_i (методика ΔP vs ΔPcrit)
+  // 1.1 конусы снизу (голубые) — от подошвенной воды вверх, высота по Pпл
   if (cone > 0.03) {
     var baseY = Math.min(formBot - 1, waterY + 2);
     var wellTipY = hz ? wellY : perfBot;
     var fullH = Math.max(28, baseY - wellTipY);
     var coneList = [];
     var ci;
-    var risk = (S.coneRisk && S.coneRisk[well]) || null;
 
-    if (hz && nPorts > 0) {
-      if (risk && risk.ports && risk.ports.length) {
-        for (ci = 0; ci < risk.ports.length; ci++) {
-          var rp = risk.ports[ci];
-          var tipXc = wellLeft + (wellRight - wellLeft) * (rp.t != null ? rp.t : ((ci + 1) / (nPorts + 1)));
-          coneList.push({ tipX: tipXc, reach: rp.reach, I: rp.I, idx: rp.idx });
-        }
-      } else {
-        for (ci = 1; ci <= nPorts; ci++) {
-          coneList.push({
-            tipX: wellLeft + (wellRight - wellLeft) * (ci / (nPorts + 1)),
-            reach: 0.35 + 0.4 * cone,
-            I: 0,
-            idx: ci
-          });
-        }
+    if (hz && nPorts > 0 && pw && isFinite(pw.x3)) {
+      for (ci = 1; ci <= nPorts; ci++) {
+        var tPort = ci / (nPorts + 1);
+        var tipX = wellLeft + (wellRight - wellLeft) * tPort;
+        var wx = pw.x + (pw.x3 - pw.x) * tPort;
+        var wy = pw.y + (pw.y3 - pw.y) * tPort;
+        coneList.push({ tipX: tipX, p: sampleP(wx, wy), idx: ci });
       }
     } else {
-      // ВС: один конус только к нижнему порту / подошве перфорации
-      var r0 = 0.55 + 0.45 * cone;
-      if (risk && risk.ports && risk.ports.length) r0 = risk.ports[0].reach;
-      coneList.push({ tipX: wellX, reach: r0, I: risk && risk.Imax || 0, idx: 0 });
+      coneList.push({
+        tipX: wellX,
+        p: pw ? sampleP(pw.cx || pw.x, pw.cy || pw.y) : NaN,
+        idx: 0
+      });
+    }
+
+    var pMax = -Infinity, pMin = Infinity, nValid = 0;
+    for (ci = 0; ci < coneList.length; ci++) {
+      if (isFinite(coneList[ci].p)) {
+        pMax = Math.max(pMax, coneList[ci].p);
+        pMin = Math.min(pMin, coneList[ci].p);
+        nValid++;
+      }
     }
 
     for (ci = 0; ci < coneList.length; ci++) {
-      coneList[ci].reach = Math.max(0.12, Math.min(1, coneList[ci].reach * (0.7 + 0.3 * cone)));
+      var C = coneList[ci];
+      if (nValid < 1) {
+        var mid = (coneList.length - 1) / 2;
+        var dMid = coneList.length > 1 ? Math.abs(ci - mid) / Math.max(mid, 1e-6) : 0;
+        C.reach = 1 - 0.55 * Math.min(1, dMid);
+      } else if (pMax <= pMin + 1e-6) {
+        var mid2 = (coneList.length - 1) / 2;
+        var d2 = coneList.length > 1 ? Math.abs(ci - mid2) / Math.max(mid2, 1e-6) : 0;
+        C.reach = 0.45 + 0.55 * (1 - Math.min(1, d2));
+      } else if (!isFinite(C.p)) {
+        C.reach = 0.28;
+      } else {
+        C.reach = 0.18 + 0.82 * ((C.p - pMin) / (pMax - pMin));
+      }
+      C.reach *= 0.65 + 0.35 * cone;
     }
 
     var order = coneList.slice().sort(function(a, b) { return a.reach - b.reach; });
@@ -3575,7 +4156,7 @@ function drawDiagSection(well, scores, animPhase) {
     }
   }
 
-  // 1.3 пропласток — отдельные языки справа от Т3: разнесены по вертикали, длины хаотичны
+  // 1.3 пропласток — единый силуэт с ОБЩИМ основанием справа (как на скрине)
   if (streak > 0.03) {
     var injList = [];
     var seenInj = {};
@@ -3589,16 +4170,15 @@ function drawDiagSection(well, scores, animPhase) {
     if (!injList.length && nearInj) addInj(nearInj);
     if (!injList.length) injList = ['?'];
 
-    var dashX = hz ? wellRight : (wellX + 14);
-    var tipMinX = dashX + 6; // не пересекаем ствол
-    var baseX = w - padR - 4;
-    var avail = Math.max(90, baseX - tipMinX - 6);
-    var yTop = formTop + 14;
-    var yBot = formBot - 14;
-    var H = Math.max(100, yBot - yTop);
+    var tipMinX = (hz ? wellRight : (wellX + 14)) + 8;
+    var baseX = w - padR - 1; // общая вертикальная стенка справа
+    var avail = Math.max(100, baseX - tipMinX - 4);
+    var yTop = formTop + 8;
+    var yBot = formBot - 8;
+    var H = Math.max(110, yBot - yTop);
 
     var seed = 2166136261;
-    var ws = String(well || '') + '|' + String(Math.round(streak * 100));
+    var ws = String(well || '') + '|flame|' + String(Math.round(streak * 100));
     var si;
     for (si = 0; si < ws.length; si++) {
       seed ^= ws.charCodeAt(si);
@@ -3611,128 +4191,132 @@ function drawDiagSection(well, scores, animPhase) {
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     }
 
-    var nLobes = 5 + Math.floor(rnd() * 3); // 5..7
-    var dominant = Math.floor(rnd() * nLobes);
-    var lobes = [];
-    var li;
-    for (li = 0; li < nLobes; li++) {
-      // равномерно по высоте + лёгкий джиттер (не стягиваем к midY)
-      var t0 = (li + 0.35 + rnd() * 0.3) / nLobes;
-      t0 = Math.max(0.05, Math.min(0.95, t0));
-      var r0;
-      if (li === dominant) {
-        r0 = 0.88 + rnd() * 0.12; // один доминирующий прорыв почти до Т3
-      } else if (rnd() < 0.35) {
-        r0 = 0.18 + rnd() * 0.22; // короткие
-      } else {
-        r0 = 0.35 + rnd() * 0.35; // средние
-      }
-      lobes.push({
-        t: t0,
-        r: r0,
-        lean: rnd() > 0.5 ? 1 : -1,
-        curl: 0.55 + rnd() * 1.1,
-        wiggle: (rnd() - 0.5) * 0.35
+    // пики: один длинный в середине, соседние короче — плотный «гребень»
+    var nPeaks = 8 + Math.floor(rnd() * 3);
+    var dom = Math.floor(nPeaks * 0.4 + rnd() * 0.25 * nPeaks);
+    var peaks = [];
+    var pi;
+    for (pi = 0; pi < nPeaks; pi++) {
+      var t = 0.04 + 0.92 * pi / Math.max(1, nPeaks - 1);
+      var r;
+      var d = Math.abs(pi - dom);
+      if (d === 0) r = 0.78 + rnd() * 0.18;
+      else if (d === 1) r = 0.38 + rnd() * 0.22;
+      else if (d === 2) r = 0.22 + rnd() * 0.18;
+      else r = 0.1 + rnd() * 0.16;
+      r *= 0.8 + 0.2 * streak;
+      peaks.push({
+        y: yTop + H * t,
+        tipX: tipMinX + (1 - r) * avail,
+        r: r,
+        dom: d === 0
       });
     }
-    lobes.sort(function(a, b) { return a.t - b.t; });
 
-    // пересчитать индекс доминанта после сортировки
-    var maxR = -1, domIdx = 0;
-    for (li = 0; li < lobes.length; li++) {
-      if (lobes[li].r > maxR) { maxR = lobes[li].r; domIdx = li; }
+    var baseTop = peaks[0].y - 14;
+    var baseBot = peaks[peaks.length - 1].y + 14;
+
+    /** Непрерывный силуэт: стенка справа → пики влево → обратно к стенке */
+    function buildFlamePath(inset, shorten) {
+      var bx = baseX - inset;
+      var i;
+      ctx.beginPath();
+      ctx.moveTo(bx, baseTop + inset);
+      // верхний угол → первый пик
+      var first = peaks[0];
+      var tip0 = first.tipX + shorten * avail * 0.15 + inset * 2;
+      tip0 = Math.min(tip0, bx - 12);
+      ctx.bezierCurveTo(
+        bx - avail * 0.08, baseTop + inset,
+        tip0 + (bx - tip0) * 0.55, first.y - 10,
+        tip0, first.y
+      );
+      for (i = 1; i < peaks.length; i++) {
+        var P = peaks[i - 1];
+        var Q = peaks[i];
+        var tipP = P.tipX + shorten * avail * (P.dom ? 0.02 : 0.12) + inset * 2;
+        var tipQ = Q.tipX + shorten * avail * (Q.dom ? 0.02 : 0.12) + inset * 2;
+        tipP = Math.min(tipP, bx - 12);
+        tipQ = Math.min(tipQ, bx - 12);
+        // впадина почти у основания (общее тело), затем следующий пик
+        var valleyX = bx - avail * (0.06 + 0.1 * Math.min(P.r, Q.r)) - inset * 3;
+        var valleyY = (P.y + Q.y) * 0.5;
+        ctx.bezierCurveTo(
+          tipP + 18, P.y + 8,
+          valleyX - 4, valleyY - 4,
+          valleyX, valleyY
+        );
+        ctx.bezierCurveTo(
+          valleyX - 6, valleyY + 6,
+          tipQ + (bx - tipQ) * 0.45, Q.y - 8,
+          tipQ, Q.y
+        );
+      }
+      var last = peaks[peaks.length - 1];
+      var tipL = last.tipX + shorten * avail * 0.12 + inset * 2;
+      tipL = Math.min(tipL, bx - 12);
+      ctx.bezierCurveTo(
+        tipL + (bx - tipL) * 0.5, last.y + 14,
+        bx - 8, baseBot - inset,
+        bx, baseBot - inset
+      );
+      // закрываем общей вертикальной стенкой
+      ctx.lineTo(bx, baseTop + inset);
+      ctx.closePath();
     }
 
-    lobes.forEach(function(L, idx) {
-      L.by = yTop + H * L.t;
-      // острие на своей высоте (чуть сдвинуто), без сходимости к точке Т3
-      L.ty = L.by + L.lean * (4 + rnd() * 10) + L.wiggle * 18;
-      L.ty = Math.max(yTop + 4, Math.min(yBot - 4, L.ty));
-      L.tx = tipMinX + (1 - L.r) * avail * (0.92 + rnd() * 0.08);
-      L.mx = L.tx + (baseX - L.tx) * (0.4 + rnd() * 0.2);
-      L.my = L.ty + (L.by - L.ty) * 0.5 + L.lean * (6 + 8 * L.curl);
-      L.thick = (7 + 10 * streak) * (0.55 + 0.55 * L.r) * (idx === domIdx ? 1.25 : 0.85);
-      L.dom = idx === domIdx;
-    });
+    // слой 1: розовая «масса» у основания (короче)
+    buildFlamePath(0, 0.35);
+    var gPink = ctx.createLinearGradient(tipMinX, (baseTop + baseBot) / 2, baseX, (baseTop + baseBot) / 2);
+    gPink.addColorStop(0, 'rgba(251,113,133,0.55)');
+    gPink.addColorStop(0.45, 'rgba(254,205,211,0.7)');
+    gPink.addColorStop(0.85, 'rgba(255,255,255,0.55)');
+    gPink.addColorStop(1, 'rgba(255,255,255,0.65)');
+    ctx.fillStyle = gPink;
+    ctx.fill();
 
-    // рисуем каждый язык отдельно — слева острие, справа основание
-    lobes.forEach(function(L, idx) {
-      var injId = injList[idx % injList.length];
-      var half = L.thick;
-      var bx = baseX - (L.dom ? 0 : 4 + rnd() * 10);
-      var by = L.by;
+    // слой 2: основной красный силуэт — сплошная стенка справа
+    buildFlamePath(0, 0);
+    var gRed = ctx.createLinearGradient(tipMinX, (baseTop + baseBot) / 2, baseX, (baseTop + baseBot) / 2);
+    gRed.addColorStop(0, 'rgba(185,28,28,0.98)');
+    gRed.addColorStop(0.2, 'rgba(220,38,38,0.95)');
+    gRed.addColorStop(0.45, 'rgba(239,68,68,0.85)');
+    gRed.addColorStop(0.72, 'rgba(252,165,165,0.7)');
+    gRed.addColorStop(1, 'rgba(254,226,226,0.75)');
+    ctx.fillStyle = gRed;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(153,27,27,0.45)';
+    ctx.lineWidth = 1.4;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
 
-      ctx.beginPath();
-      ctx.moveTo(L.tx, L.ty);
-      ctx.bezierCurveTo(
-        L.tx + (bx - L.tx) * 0.35, L.ty - half * 0.9 * L.lean,
-        L.mx, L.my - half * (0.7 + 0.4 * L.curl),
-        bx, by - half * 0.55
-      );
-      ctx.lineTo(bx, by + half * 0.55);
-      ctx.bezierCurveTo(
-        L.mx, L.my + half * (0.7 + 0.4 * L.curl),
-        L.tx + (bx - L.tx) * 0.35, L.ty + half * 0.9 * L.lean,
-        L.tx, L.ty
-      );
-      ctx.closePath();
+    // слой 3: внутренний яркий (чуть укорочен)
+    buildFlamePath(6, 0.12);
+    var gIn = ctx.createLinearGradient(tipMinX + 20, (baseTop + baseBot) / 2, baseX - 8, (baseTop + baseBot) / 2);
+    gIn.addColorStop(0, 'rgba(239,68,68,0.55)');
+    gIn.addColorStop(0.5, 'rgba(252,165,165,0.4)');
+    gIn.addColorStop(1, 'rgba(255,255,255,0.25)');
+    ctx.fillStyle = gIn;
+    ctx.fill();
 
-      var g = ctx.createLinearGradient(L.tx, L.ty, bx, by);
-      if (L.dom) {
-        g.addColorStop(0, 'rgba(185,28,28,0.98)');
-        g.addColorStop(0.25, 'rgba(239,68,68,0.9)');
-        g.addColorStop(0.55, 'rgba(252,165,165,0.7)');
-        g.addColorStop(1, 'rgba(255,255,255,0.45)');
-      } else {
-        g.addColorStop(0, 'rgba(220,38,38,0.75)');
-        g.addColorStop(0.4, 'rgba(248,113,113,0.55)');
-        g.addColorStop(1, 'rgba(254,226,226,0.28)');
-      }
-      ctx.fillStyle = g;
-      ctx.fill();
-      ctx.strokeStyle = L.dom ? 'rgba(153,27,27,0.7)' : 'rgba(185,28,28,0.4)';
-      ctx.lineWidth = L.dom ? 1.8 : 1.2;
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-
-      // внутренний блик у длинного языка
-      if (L.dom) {
-        ctx.beginPath();
-        ctx.moveTo(L.tx + 4, L.ty);
-        ctx.bezierCurveTo(
-          L.tx + (bx - L.tx) * 0.4, L.ty - half * 0.35,
-          L.mx, L.my - half * 0.25,
-          bx - 8, by
-        );
-        ctx.bezierCurveTo(
-          L.mx, L.my + half * 0.25,
-          L.tx + (bx - L.tx) * 0.4, L.ty + half * 0.35,
-          L.tx + 4, L.ty
-        );
-        ctx.closePath();
-        var gIn = ctx.createLinearGradient(L.tx, L.ty, bx, by);
-        gIn.addColorStop(0, 'rgba(254,202,202,0.55)');
-        gIn.addColorStop(1, 'rgba(255,255,255,0.05)');
-        ctx.fillStyle = gIn;
-        ctx.fill();
-      }
-
+    // hit-зоны по пикам
+    peaks.forEach(function(P, idx) {
       SECTION.hits.push({
         type: 'streak',
-        inj: injId === '?' ? null : injId,
+        inj: injList[idx % injList.length] === '?' ? null : injList[idx % injList.length],
         poly: [
-          { x: L.tx, y: L.ty },
-          { x: L.mx, y: L.my - half },
-          { x: bx, y: by },
-          { x: L.mx, y: L.my + half }
+          { x: P.tipX, y: P.y },
+          { x: (P.tipX + baseX) / 2, y: P.y - 10 },
+          { x: baseX, y: P.y },
+          { x: (P.tipX + baseX) / 2, y: P.y + 10 }
         ]
       });
     });
   }
 
-
-  // 1.2 авто-ГРП — красная зигзаг-трещина (как на скрине), кончик к порту
+  // 1.2 авто-ГРП — жёлтая зигзаг-трещина; до ствола только при вкладе >30%
   if (frac > 0.03) {
+    var reachWell = frac >= 0.30;
     var injObj = nearInj ? findWellObj(nearInj) : null;
     var fromLeft = true;
     if (injObj && pw) fromLeft = injObj.cx <= pw.cx;
@@ -3744,28 +4328,33 @@ function drawDiagSection(well, scores, animPhase) {
         : Math.max(0, Math.floor(portXs.length * (0.7 - 0.3 * frac)));
       tipX = portXs[tipIdx];
     }
-    // старт над кровлей/у кровли, чуть в стороне от порта (сверху вниз к порту)
     var startX = tipX + (fromLeft ? -28 - 20 * frac : 28 + 20 * frac);
     var startY = formTop + 4;
+    var endX = tipX, endY = tipY;
+    if (!reachWell) {
+      // не дотягиваем до ствола — обрыв в пласте
+      endX = startX + (tipX - startX) * 0.55;
+      endY = startY + (tipY - startY) * 0.55;
+    }
     var segs = 7;
     var amp = 10 + 14 * frac;
     var pts = [{ x: startX, y: startY }];
     var si, t, px, py, zig;
     for (si = 1; si < segs; si++) {
       t = si / segs;
-      px = startX + (tipX - startX) * t;
-      py = startY + (tipY - startY) * t;
+      px = startX + (endX - startX) * t;
+      py = startY + (endY - startY) * t;
       zig = ((si % 2) ? -1 : 1) * amp * (1 - t * 0.35);
       pts.push({ x: px + zig, y: py });
     }
-    pts.push({ x: tipX, y: tipY });
+    pts.push({ x: endX, y: endY });
 
     ctx.save();
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 2.6 + 2.8 * frac;
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2.6 + 2.8 * Math.min(1, frac);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.shadowColor = 'rgba(239,68,68,0.5)';
+    ctx.shadowColor = 'rgba(251,191,36,0.45)';
     ctx.shadowBlur = 4 + 5 * frac;
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
@@ -3773,55 +4362,56 @@ function drawDiagSection(well, scores, animPhase) {
     ctx.stroke();
     ctx.restore();
 
-    ctx.fillStyle = '#fca5a5';
-    ctx.strokeStyle = '#ef4444';
+    ctx.fillStyle = '#fde68a';
+    ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.arc(tipX, tipY, 3.5, 0, Math.PI * 2);
+    ctx.arc(endX, endY, reachWell ? 3.5 : 2.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
     SECTION.hits.push({ type: 'frac', pts: pts, inj: nearInj, tol: 12 });
   }
 
-  // 1.7 ZKC / leak — fat blue animated flow along wellbore to perfs
+  // 1.7 ЗКЦ — фиолетовая муфта на стволе у кровли пласта
   if (leak > 0.04) {
-    var pulse = 0.5 + 0.5 * Math.sin(phase * 0.12);
+    var pulse = 0.55 + 0.45 * Math.sin(phase * 0.1);
+    var zkcX = hz ? hzEntryX : wellX;
+    var zkcHalfW = 7 + 6 * leak;
+    var zkcHalfH = 10 + 8 * leak;
     ctx.save();
-    ctx.strokeStyle = 'rgba(37,99,235,' + (0.45 + 0.45 * pulse * leak) + ')';
-    ctx.lineWidth = 3.5 + 3 * leak;
-    ctx.lineCap = 'round';
-    ctx.setLineDash([6, 8]);
-    ctx.lineDashOffset = -phase * 0.8;
-    if (hz) {
-      ctx.beginPath();
-      ctx.moveTo(padL + 36, wellY);
-      ctx.lineTo(wellX, wellY);
-      ctx.stroke();
+    // мягкое свечение
+    ctx.fillStyle = 'rgba(168,85,247,' + (0.18 + 0.22 * pulse * leak) + ')';
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(zkcX - zkcHalfW - 4, formTop - zkcHalfH - 4, (zkcHalfW + 4) * 2, (zkcHalfH + 4) * 2, 5);
     } else {
-      ctx.beginPath();
-      ctx.moveTo(wellX, top + 8);
-      ctx.lineTo(wellX, (perfTop + perfBot) / 2);
-      ctx.stroke();
+      ctx.rect(zkcX - zkcHalfW - 4, formTop - zkcHalfH - 4, (zkcHalfW + 4) * 2, (zkcHalfH + 4) * 2);
     }
-    ctx.setLineDash([]);
-    // droplets toward perfs
-    var di, tDrop;
-    for (di = 0; di < 4; di++) {
-      tDrop = ((phase * 0.02 + di * 0.25) % 1);
-      ctx.fillStyle = 'rgba(96,165,250,' + (0.35 + 0.5 * leak) + ')';
-      if (hz) {
-        var dx = (padL + 36) + (wellX - padL - 36) * tDrop;
-        ctx.beginPath();
-        ctx.arc(dx, wellY, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        var dy = top + 8 + ((perfTop + perfBot) / 2 - top - 8) * tDrop;
-        ctx.beginPath();
-        ctx.arc(wellX, dy, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    ctx.fill();
+    // муфта
+    ctx.fillStyle = 'rgba(168,85,247,' + (0.72 + 0.22 * pulse) + ')';
+    ctx.strokeStyle = 'rgba(216,180,254,' + (0.85 + 0.15 * pulse) + ')';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(zkcX - zkcHalfW, formTop - zkcHalfH, zkcHalfW * 2, zkcHalfH * 2, 3);
+    } else {
+      ctx.rect(zkcX - zkcHalfW, formTop - zkcHalfH, zkcHalfW * 2, zkcHalfH * 2);
     }
+    ctx.fill();
+    ctx.stroke();
+    // ствол поверх муфты (белый канал)
+    ctx.fillStyle = 'rgba(226,232,240,0.95)';
+    if (hz) {
+      ctx.fillRect(zkcX - 2.5, formTop - zkcHalfH - 2, 5, zkcHalfH * 2 + 4);
+    } else {
+      ctx.fillRect(zkcX - 3.5, formTop - zkcHalfH - 2, 7, zkcHalfH * 2 + 4);
+    }
+    ctx.fillStyle = '#e9d5ff';
+    ctx.font = '600 9px Segoe UI';
+    ctx.textAlign = 'left';
+    ctx.fillText('ЗКЦ', zkcX + zkcHalfW + 5, formTop + 3);
     ctx.restore();
   }
 
@@ -3938,12 +4528,12 @@ function pointInPoly(mx, my, poly) {
 function refreshDiagnostics(well) {
   if (!well) return;
   S.diagWell = well;
-  if (!S.coneRisk[well]) S.coneRisk[well] = computeConeRisk(well);
   var rows = buildChanSeries(well);
   var chan = classifyChan(rows);
   var scores = buildFactorScores(well, chan);
   S.factorScores = scores;
   var geo = geometryFracPrior(well);
+  var zkc = (S.zkcSignal && S.zkcSignal[well]) || assessZkcSignal(well);
   var bestF = bestFactorFromScores(scores);
   S.wellBestFactor[well] = bestF.id;
   document.getElementById('diagTitle').textContent =
@@ -3951,24 +4541,32 @@ function refreshDiagnostics(well) {
   document.getElementById('diagSub').textContent =
     'Chan: канал ' + (100 * chan.channel).toFixed(0) + '% · конус ' + (100 * chan.coning).toFixed(0) +
     '% · фронт ' + (100 * chan.frontal).toFixed(0) + '% · геом. априор ГРП ' + (100 * geo).toFixed(0) +
-    '% → ведущий фактор: ' + bestF.short;
+    '% · ЗКЦ ' + (100 * (zkc.score || 0)).toFixed(0) +
+    '% → ведущий фактор: ' + bestF.name;
   var etInfo = (S.etalonHV && S.etalonHV.n)
     ? ('<br/>эталон ХВ: <b>' + S.etalonHV.n + '</b> скв. (фронт)')
     : '<br/>эталон ХВ: недостаточно фронтальных скв.';
+  var zkcInfo = zkc.agrpBlocked
+    ? ('ЗКЦ: <b>отсев</b> (авто-ГРП)<br/>')
+    : (zkc.score > 0.05
+      ? ('ЗКЦ: <b>' + (100 * zkc.score).toFixed(0) + '%</b> — ' + (zkc.detail || '') + '<br/>')
+      : ('ЗКЦ: <span style="opacity:.85">' + (zkc.detail || 'сигнала нет') + '</span><br/>'));
   document.getElementById('chanIdx').innerHTML =
     'Channel Index: <b>' + (100 * chan.channel).toFixed(0) + '</b><br/>' +
     'Coning Index: <b>' + (100 * chan.coning).toFixed(0) + '</b><br/>' +
     'Frontal Index: <b>' + (100 * chan.frontal).toFixed(0) + '</b><br/>' +
+    zkcInfo +
     'точек ряда: ' + rows.length + (rows.some(function(r) { return r.fromHist; }) ? ' (с history)' : '') +
     etInfo;
   renderFactorBars(scores);
   renderSectionLegend();
+  renderAutoDiagnosis(well, scores, chan, bestF);
+  drawFactorStack('factorStack', buildFactorHistory(well, rows));
   var bTrends = [
     { label: 'конус (наклон ≈1)', color: '#38bdf8', dash: [6, 4], yAt: function(x) { return x + (chan.interceptB != null ? (chan.interceptB - (chan.slopeB || 0) + 0) : -1.2); } },
     { label: 'канал (крутой)', color: '#f472b6', dash: [4, 3], yAt: function(x) { return 1.6 * x - 0.4; } },
     { label: 'фронт (пологий)', color: '#a78bfa', dash: [2, 3], yAt: function(x) { return 0.25 * x - 1.8; } }
   ];
-  // выровнять «конус» как y = 1·x + b через медиану облака
   var okPts = rows.filter(function(r) { return r.chanOk; });
   if (okPts.length >= 3) {
     var midX = okPts[Math.floor(okPts.length / 2)].logWor;
@@ -3995,6 +4593,173 @@ function refreshDiagnostics(well) {
   ensureSectionAnim();
 }
 
+/** История вкладов факторов по месяцам ряда */
+function buildFactorHistory(well, rows) {
+  if (!rows || rows.length < 3) return [];
+  var out = [], step = Math.max(1, Math.floor(rows.length / 24));
+  var i;
+  for (i = Math.max(2, step); i < rows.length; i += step) {
+    var slice = rows.slice(0, i + 1);
+    var chan = classifyChan(slice);
+    out.push({ date: rows[i].date, scores: buildFactorScores(well, chan, { untilDate: rows[i].date }) });
+  }
+  if (out.length && out[out.length - 1].date !== rows[rows.length - 1].date) {
+    out.push({
+      date: rows[rows.length - 1].date,
+      scores: buildFactorScores(well, classifyChan(rows), { untilDate: rows[rows.length - 1].date })
+    });
+  }
+  return out;
+}
+
+function fmtStackDate(d) {
+  if (!d) return '';
+  var p = String(d).split('.');
+  if (p.length >= 3) return p[1] + '.' + p[2]; // MM.YYYY
+  return String(d);
+}
+
+function drawFactorStack(canvasId, hist) {
+  var cv = document.getElementById(canvasId);
+  var legBox = document.getElementById('factorStackLegend');
+  if (legBox) {
+    legBox.innerHTML = FACTORS.map(function(f) {
+      return '<span><i style="background:' + f.color + '"></i>' + f.short + '</span>';
+    }).join('');
+  }
+  if (!cv) return;
+  var pack = fitCanvas(cv);
+  if (!pack) return;
+  var ctx = pack.ctx, w = pack.w, h = pack.h;
+  ctx.fillStyle = '#0a0e16';
+  ctx.fillRect(0, 0, w, h);
+  if (!hist || hist.length < 2) {
+    ctx.fillStyle = '#8b9cb3';
+    ctx.font = '11px Segoe UI';
+    ctx.fillText('мало точек для динамики', 10, 22);
+    return;
+  }
+
+  var pad = { l: 36, r: 10, t: 12, b: 28 };
+  var plotW = w - pad.l - pad.r;
+  var plotH = h - pad.t - pad.b;
+  var n = hist.length;
+  var ids = FACTORS.map(function(f) { return f.id; });
+
+  // сетка %
+  ctx.strokeStyle = 'rgba(42,53,72,0.9)';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#8b9cb3';
+  ctx.font = '9px Segoe UI';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  [0, 25, 50, 75, 100].forEach(function(pct) {
+    var yy = pad.t + (1 - pct / 100) * plotH;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, yy);
+    ctx.lineTo(w - pad.r, yy);
+    ctx.stroke();
+    ctx.fillText(pct + '%', pad.l - 4, yy);
+  });
+
+  // stacked areas
+  var i, j;
+  for (i = 0; i < n - 1; i++) {
+    var x0 = pad.l + i / (n - 1) * plotW;
+    var x1 = pad.l + (i + 1) / (n - 1) * plotW;
+    var acc0 = 0, acc1 = 0;
+    for (j = 0; j < ids.length; j++) {
+      var id = ids[j];
+      var v0 = hist[i].scores[id] || 0;
+      var v1 = hist[i + 1].scores[id] || 0;
+      var y0a = pad.t + (1 - (acc0 + v0) / 100) * plotH;
+      var y0b = pad.t + (1 - acc0 / 100) * plotH;
+      var y1a = pad.t + (1 - (acc1 + v1) / 100) * plotH;
+      var y1b = pad.t + (1 - acc1 / 100) * plotH;
+      ctx.beginPath();
+      ctx.moveTo(x0, y0b);
+      ctx.lineTo(x0, y0a);
+      ctx.lineTo(x1, y1a);
+      ctx.lineTo(x1, y1b);
+      ctx.closePath();
+      ctx.fillStyle = FACTORS[j].color;
+      ctx.globalAlpha = 0.82;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      acc0 += v0;
+      acc1 += v1;
+    }
+  }
+
+  // оси
+  ctx.strokeStyle = '#64748b';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t);
+  ctx.lineTo(pad.l, h - pad.b);
+  ctx.lineTo(w - pad.r, h - pad.b);
+  ctx.stroke();
+
+  // даты по X — несколько подписей MM.YYYY
+  var nLab = Math.min(5, n);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '9px Segoe UI';
+  ctx.textBaseline = 'top';
+  for (i = 0; i < nLab; i++) {
+    var idx = Math.round(i * (n - 1) / Math.max(1, nLab - 1));
+    var xx = pad.l + idx / (n - 1) * plotW;
+    ctx.textAlign = i === 0 ? 'left' : (i === nLab - 1 ? 'right' : 'center');
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,.2)';
+    ctx.moveTo(xx, h - pad.b);
+    ctx.lineTo(xx, h - pad.b + 4);
+    ctx.stroke();
+    ctx.fillText(fmtStackDate(hist[idx].date), xx, h - pad.b + 6);
+  }
+  ctx.textAlign = 'left';
+}
+
+function renderAutoDiagnosis(well, scores, chan, bestF) {
+  var box = document.getElementById('diagReco');
+  if (!box) return;
+  var tips = [];
+  var f = scores.frac || 0, c = scores.cone || 0, s = scores.streak || 0;
+  var fr = scores.front || 0, m = scores.mirror || 0, l = scores.leak || 0;
+
+  tips.push('<b>Ведущий фактор:</b> ' + bestF.name + ' (' + (scores[bestF.id] || 0).toFixed(0) + '%)');
+
+  if (f >= 30) {
+    tips.push('Снизить Pзаб / приём нагнетателей-доноров АГРП; проверить азимут трещины и ограничить закачку в направлении добывающей ' + well + '.');
+    tips.push('Рассмотреть перераспределение закачки, отключение проблемных нагнетателей или выравнивание профиля приёмистости.');
+  } else if (f >= 15) {
+    tips.push('Контролировать рост авто-ГРП: мониторинг Pnet и приёмистости соседних нагнетателей.');
+  }
+  if (c >= 25) {
+    tips.push('Ограничить дебит / депрессию; рассмотреть селективную изоляцию нижних портов МГРП или снижение отбора.');
+  }
+  if (s >= 25) {
+    tips.push('Вероятен прорыв по высокопроницаемому пропластку: гелевые/потокоотклоняющие обработки на нагнетании, выравнивание фронта.');
+  }
+  if (fr >= 30) {
+    tips.push('Фронтальное вытеснение доминирует — оптимизировать систему ППД (циклы закачки, перенос фронта), без аварийных ограничений.');
+  }
+  if (m >= 20) {
+    tips.push('Признаки подхода ВНК: контроль обводнённости, возможна изоляция интервалов / перевод на вышележащий объект.');
+  }
+  if (l >= 15) {
+    var zkc = (S.zkcSignal && S.zkcSignal[well]) || null;
+    var zkcHint = zkc && zkc.detail ? ' (' + zkc.detail + ')' : '';
+    tips.push('Признаки ЗКЦ: рост Кпрод при стабильном Pзаб и скачке обводнённости' + zkcHint +
+      '. Проверить герметичность колонны (ГИС, РГД); при подтверждении — РИР.');
+  }
+  if (tips.length < 2) {
+    tips.push('Существенных аномалий не выявлено. Продолжать мониторинг Chan A/B/C и эталона ХВ.');
+  }
+  box.innerHTML = '<ul style="margin:0;padding:0;list-style:none">' +
+    tips.map(function(t) { return '<li style="margin:6px 0;padding-left:10px;border-left:2px solid var(--accent)">' + t + '</li>'; }).join('') +
+    '</ul>';
+}
+
 /* ═══ Привязка событий ═══ */
 document.getElementById('btnGo').addEventListener('click', mainCalc);
 document.getElementById('btnCsv').addEventListener('click', exportCSV);
@@ -4003,9 +4768,24 @@ document.getElementById('wellSearch').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); searchAndZoomWell(); }
 });
 document.getElementById('selLayer').addEventListener('change', function() { onLayerChange(); doCalc(); fit(); draw(); });
-document.getElementById('selMonth').addEventListener('change', function() { doCalc(); fit(); draw(); });
+document.getElementById('selMonth').addEventListener('change', function() {
+  doCalc(); fit(); draw();
+});
 document.getElementById('az').addEventListener('change', function() { doCalc(); draw(); });
-document.getElementById('x0in').addEventListener('change', function() { doCalc(); draw(); });
+var timeSlider = document.getElementById('timeSlider');
+if (timeSlider) {
+  timeSlider.addEventListener('input', function() {
+    var L = S.data && S.data.layers[S.layer];
+    if (!L) return;
+    var months = monthsFromMor(L);
+    var idx = +this.value;
+    if (idx < 0 || idx >= months.length) return;
+    var sel = document.getElementById('selMonth');
+    if (sel) sel.value = months[idx];
+    doCalc();
+    draw();
+  });
+}
 ['vP', 'vB', 'vBP', 'vW', 'vGrp', 'vRd', 'vF', 'vFn', 'vPot', 'vBrk'].forEach(function(id) {
   document.getElementById(id).addEventListener('change', function() {
     if (id === 'vP') updatePressureLegend(S.pCache ? S.pCache.lo : 0, S.pCache ? S.pCache.hi : 0);
@@ -4032,6 +4812,7 @@ document.getElementById('diagWell').addEventListener('change', function() {
 });
 renderMapLegend();
 renderMapFactorLegend();
+renderMapStatusLegend();
 S.dataParams = defaultDataParams();
 document.getElementById('btnDataApply').addEventListener('click', function() { applyDataParams(true); });
 document.getElementById('btnDataReset').addEventListener('click', function() { resetDataParams(); });

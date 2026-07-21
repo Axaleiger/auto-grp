@@ -84,8 +84,6 @@ def parse_mor(path):
     with open(path, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f, delimiter=";"):
             d = row["Дата"]
-            if not any(y in d for y in ("2024", "2025", "2026")):
-                continue
             inj = float(str(row.get("Закачка за месяц, м3", 0)).replace(",", ".") or 0)
             liq = float(str(row.get("Добыча жидкости за месяц, т", 0)).replace(",", ".") or 0)
             oil = float(str(row.get("Добыча нефти за месяц, т", 0)).replace(",", ".") or 0)
@@ -106,13 +104,19 @@ def parse_tr(path):
     with open(path, encoding="utf-8-sig") as f:
         for row in csv.DictReader(f, delimiter=";"):
             d = row["Дата"]
-            if not any(y in d for y in ("2024", "2025", "2026")):
-                continue
             pzab_s = (row.get("Забойное давление (ТР), атм") or "").strip()
             if not pzab_s:
                 continue
             pzab = float(pzab_s.replace(",", "."))
-            rows.append([row["Скважина"].strip(), norm_month_date(d), round(pzab, 1)])
+            qliq_s = (row.get("Дебит жидкости, т/сут") or "").strip()
+            qliq = float(qliq_s.replace(",", ".") or 0) if qliq_s else 0.0
+            # [well, date, pzab, qliq] — pzab остаётся индексом [2] для совместимости
+            rows.append([
+                row["Скважина"].strip(),
+                norm_month_date(d),
+                round(pzab, 1),
+                round(qliq, 2),
+            ])
     return rows
 
 
