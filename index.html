@@ -4,12 +4,11 @@
 <meta charset="UTF-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Романовское — выбор сервиса</title>
+<title>Выбор сервиса</title>
 <style>
 :root {
   --bg: #080b10;
   --card: #121824;
-  --card2: #1c2638;
   --border: #2a3548;
   --text: #f0f4fa;
   --muted: #8b9cb3;
@@ -22,8 +21,8 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(900px 500px at 15% -10%, rgba(91,141,239,.18), transparent 55%),
-    radial-gradient(700px 420px at 95% 10%, rgba(45,212,191,.12), transparent 50%),
+    radial-gradient(900px 500px at 15% -10%, rgba(45,212,191,.16), transparent 55%),
+    radial-gradient(700px 420px at 95% 10%, rgba(91,141,239,.12), transparent 50%),
     var(--bg);
   display: grid;
   place-items: center;
@@ -31,12 +30,7 @@ body {
 }
 .wrap { width: min(720px, 100%); }
 .hdr { text-align: center; margin-bottom: 22px; }
-.logo {
-  width: 44px; height: 44px; border-radius: 12px; margin: 0 auto 12px;
-  background: linear-gradient(135deg, var(--accent), var(--teal));
-  display: grid; place-items: center; font-weight: 800; font-size: 1rem;
-}
-h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; }
+h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
 .sub { margin-top: 6px; color: var(--muted); font-size: .85rem; line-height: 1.45; }
 .grid {
   display: grid;
@@ -55,11 +49,11 @@ h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; }
   min-height: 168px;
 }
 .card:hover {
-  border-color: var(--accent);
+  border-color: var(--teal);
   background: #162033;
   transform: translateY(-2px);
 }
-.card.comp:hover { border-color: var(--teal); }
+.card.second:hover { border-color: var(--accent); }
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: .68rem; font-weight: 700; letter-spacing: .04em;
@@ -67,43 +61,37 @@ h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; }
 }
 .dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent);
+  background: var(--teal);
 }
-.card.comp .dot { background: var(--teal); }
+.card.second .dot { background: var(--accent); }
 .card h2 { font-size: 1.15rem; font-weight: 650; }
 .card p { color: var(--muted); font-size: .8rem; line-height: 1.45; flex: 1; }
 .card .go {
-  font-size: .78rem; font-weight: 600; color: var(--accent);
+  font-size: .78rem; font-weight: 600; color: var(--teal);
 }
-.card.comp .go { color: var(--teal); }
-.foot {
-  margin-top: 16px; text-align: center;
-  color: var(--muted); font-size: .72rem;
-}
+.card.second .go { color: var(--accent); }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hdr">
-      <div class="logo">R</div>
-      <h1>Романовское</h1>
-      <p class="sub">Выберите сервис. Данные месторождения общие.</p>
+      <h1>Выберите сервис</h1>
+      <p class="sub">Данные месторождения общие</p>
     </div>
     <div class="grid">
-      <a class="card" href="auto_grp_analyzer.html">
-        <div class="badge"><span class="dot"></span>Сервис 1</div>
-        <h2>Авто-ГРП</h2>
-        <p>Трещины авто-ГРП, прорывы, карта давлений, диагностика обводнения %В.</p>
-        <span class="go">Открыть →</span>
-      </a>
-      <a class="card comp" href="compensation_dashboard.html">
-        <div class="badge"><span class="dot"></span>Сервис 2</div>
+      <a class="card" href="compensation_dashboard.html">
+        <div class="badge"><span class="dot"></span>Этап 1</div>
         <h2>Закачка</h2>
         <p>Компенсация закачки по блокам (коридор 90–120%), светофор скважин, рекомендации.</p>
         <span class="go">Открыть →</span>
       </a>
+      <a class="card second" href="auto_grp_analyzer.html">
+        <div class="badge"><span class="dot"></span>Этап 2</div>
+        <h2>Факторы обводнённости</h2>
+        <p>Трещины, прорывы, карта давлений, диагностика факторов обводнения.</p>
+        <span class="go">Открыть →</span>
+      </a>
     </div>
-    <p class="foot">GitHub Pages · axaleiger.github.io/auto-grp</p>
   </div>
 </body>
 </html>
