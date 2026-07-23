@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>Выбор сервиса</title>
 <style>
 :root {
@@ -14,11 +14,16 @@
   --muted: #8b9cb3;
   --accent: #5b8def;
   --teal: #2dd4bf;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text);
   background:
     radial-gradient(900px 500px at 15% -10%, rgba(45,212,191,.16), transparent 55%),
@@ -26,7 +31,8 @@ body {
     var(--bg);
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: max(20px, var(--safe-t)) max(16px, var(--safe-r)) max(20px, var(--safe-b)) max(16px, var(--safe-l));
+  -webkit-tap-highlight-color: transparent;
 }
 .wrap { width: min(720px, 100%); }
 .hdr { text-align: center; margin-bottom: 22px; }
@@ -37,7 +43,11 @@ h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
-@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 1.1rem; }
+  .card { min-height: 140px; padding: 18px 16px; }
+}
 .card {
   display: flex; flex-direction: column; gap: 10px;
   padding: 20px 18px;
@@ -48,12 +58,11 @@ h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
   transition: border-color .15s, transform .15s, background .15s;
   min-height: 168px;
 }
-.card:hover {
+.card:hover, .card:active {
   border-color: var(--teal);
   background: #162033;
-  transform: translateY(-2px);
 }
-.card.second:hover { border-color: var(--accent); }
+.card.second:hover, .card.second:active { border-color: var(--accent); }
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: .68rem; font-weight: 700; letter-spacing: .04em;

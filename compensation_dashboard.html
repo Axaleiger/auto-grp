@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <title>Закачка</title>
 <style>
 :root {
@@ -18,35 +18,52 @@
   --orange: #fb923c;
   --green: #34d399;
   --inj: #38bdf8;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; height: 100dvh; }
 body {
   font-family: "Segoe UI", system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  height: 100vh;
+  height: 100%; height: 100dvh;
   overflow: hidden;
+  padding: var(--safe-t) var(--safe-r) var(--safe-b) var(--safe-l);
+  -webkit-tap-highlight-color: transparent;
 }
-.app { display: flex; flex-direction: column; height: 100vh; }
+.app { display: flex; flex-direction: column; height: 100%; height: 100dvh; max-height: 100dvh; }
 .hdr {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 10px 16px; border-bottom: 1px solid var(--border); background: #0c1018; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 14px; border-bottom: 1px solid var(--border); background: #0c1018; flex-shrink: 0;
+  flex-wrap: wrap;
 }
-.hdr-left { display: flex; align-items: center; gap: 10px; }
+.hdr-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.hdr-links { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .logo {
   width: 30px; height: 30px; border-radius: 8px;
   background: linear-gradient(135deg, #0ea5e9, #34d399);
-  display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+  display: grid; place-items: center; font-weight: 700; font-size: .85rem; flex-shrink: 0;
 }
-.hdr h1 { font-size: .95rem; font-weight: 600; }
+.hdr h1 { font-size: .95rem; font-weight: 600; line-height: 1.2; }
 .hdr p { font-size: .7rem; color: var(--muted); }
-.hdr a { color: var(--accent); text-decoration: none; font-size: .75rem; }
+.hdr a { color: var(--accent); text-decoration: none; font-size: .75rem; white-space: nowrap; }
+.hdr a.muted { color: var(--muted); }
 .hdr a:hover { text-decoration: underline; }
-.body { display: grid; grid-template-columns: 300px 1fr; flex: 1; min-height: 0; }
+.btn-side {
+  display: none; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+  border-radius: 8px; min-width: 40px; min-height: 40px; padding: 0 10px; font: inherit;
+  font-size: .85rem; cursor: pointer;
+}
+.body { display: grid; grid-template-columns: 300px 1fr; flex: 1; min-height: 0; position: relative; }
 .side {
   padding: 12px; border-right: 1px solid var(--border);
   overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+  -webkit-overflow-scrolling: touch;
 }
+.side-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 40; }
 .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .map-box { flex: 1 1 auto; position: relative; min-height: 120px; background: #06080c; }
 .table-panel {
@@ -92,19 +109,19 @@ body {
 }
 .table-toolbar select {
   background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: .72rem;
+  border-radius: 6px; padding: 8px; font: inherit; font-size: 16px;
 }
-.table-wrap { flex: 1; overflow: auto; min-height: 0; }
+.table-wrap { flex: 1; overflow: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
 table.wells {
   width: 100%; border-collapse: collapse; font-size: .72rem;
 }
 table.wells th {
   position: sticky; top: 0; background: #0c1018; color: var(--muted);
-  text-align: left; padding: 6px 8px; font-weight: 600; border-bottom: 1px solid var(--border);
+  text-align: left; padding: 8px; font-weight: 600; border-bottom: 1px solid var(--border);
   white-space: nowrap; z-index: 1;
 }
 table.wells td {
-  padding: 5px 8px; border-bottom: 1px solid rgba(42,53,72,.7); white-space: nowrap;
+  padding: 8px; border-bottom: 1px solid rgba(42,53,72,.7); white-space: nowrap;
 }
 table.wells tr { cursor: pointer; }
 table.wells tr:hover { background: rgba(91,141,239,.1); }
@@ -131,18 +148,18 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 .field label { display: block; font-size: .7rem; color: var(--muted); margin-bottom: 3px; }
 .field input, .field select {
   width: 100%; background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text); border-radius: 7px; padding: 7px 9px; font: inherit;
+  color: var(--text); border-radius: 7px; padding: 10px 9px; font: inherit; font-size: 16px;
 }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .btn {
-  width: 100%; border: none; border-radius: 9px; padding: 10px;
-  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+  width: 100%; border: none; border-radius: 9px; padding: 12px;
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; min-height: 44px;
 }
 .btn-main { background: var(--accent); color: #fff; }
 .btn-main:disabled { opacity: .5; cursor: wait; }
 .btn-sec {
   background: var(--surface2); color: var(--muted);
-  border: 1px solid var(--border); padding: 7px; font-size: .74rem; margin-top: 5px;
+  border: 1px solid var(--border); padding: 10px; font-size: .74rem; margin-top: 5px; min-height: 40px;
 }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .stat {
@@ -157,19 +174,21 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 .hint { font-size: .68rem; color: var(--muted); line-height: 1.4; }
 .hint b { color: var(--text); }
 .toolbar {
-  display: flex; gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--border);
   font-size: .72rem; color: var(--muted); flex-wrap: wrap; align-items: center; flex-shrink: 0;
 }
+.toolbar label.hint { min-height: 32px; }
 .zoom-btn {
   border: 1px solid var(--border); background: var(--surface2); color: var(--text);
-  border-radius: 6px; width: 28px; height: 26px; cursor: pointer;
+  border-radius: 6px; width: 36px; height: 36px; cursor: pointer;
 }
 .map-box { flex: 1 1 auto; position: relative; min-height: 120px; background: #06080c; }
-#cv { width: 100%; height: 100%; display: block; cursor: grab; }
+#cv { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 .legend {
   position: absolute; left: 10px; top: 10px; z-index: 3;
   background: rgba(10,14,20,.92); border: 1px solid var(--border);
   border-radius: 7px; padding: 7px 10px; font-size: .68rem; line-height: 1.5;
+  max-width: min(280px, calc(100% - 16px)); max-height: 40%; overflow: auto;
 }
 .legend i {
   display: inline-block; width: 10px; height: 10px; border-radius: 2px;
@@ -178,14 +197,15 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 .tip {
   position: absolute; display: none; z-index: 5;
   background: #0a0e14; border: 1px solid var(--border); border-radius: 6px;
-  padding: 6px 9px; font-size: .68rem; pointer-events: none; max-width: 260px;
+  padding: 6px 9px; font-size: .68rem; pointer-events: none; max-width: min(260px, 80vw);
 }
 .welcome {
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center; color: var(--muted); gap: 8px; text-align: center;
+  padding: 16px;
 }
 .bi {
-  padding: 7px 8px; border-radius: 7px; border: 1px solid transparent;
+  padding: 8px; border-radius: 7px; border: 1px solid transparent;
   margin-bottom: 4px; cursor: pointer; font-size: .74rem;
 }
 .bi:hover { background: rgba(91,141,239,.1); }
@@ -208,10 +228,10 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 .reco li.green { border-left-color: var(--green); }
 .reco b { color: var(--text); }
 .time-bar {
-  display: flex; align-items: center; gap: 10px; padding: 7px 12px;
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
   border-top: 1px solid var(--border); background: #0c1018; flex-shrink: 0;
 }
-.time-bar input[type=range] { flex: 1; accent-color: var(--accent); }
+.time-bar input[type=range] { flex: 1; accent-color: var(--accent); min-height: 28px; }
 .time-lab { font-size: .72rem; color: var(--muted); min-width: 88px; text-align: right; }
 .statusbar {
   flex-shrink: 0; display: flex; align-items: center; gap: 10px;
@@ -220,26 +240,53 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 }
 .statusbar .ok { color: var(--green); }
 .statusbar .err { color: var(--red); }
+@media (max-width: 900px) {
+  .hdr { padding: 8px 10px; }
+  .hdr h1 { font-size: .88rem; }
+  .hdr p { display: none; }
+  .btn-side { display: inline-grid; place-items: center; }
+  .body { grid-template-columns: 1fr; }
+  .side {
+    position: fixed; top: 0; left: 0; bottom: 0; width: min(300px, 86vw); z-index: 50;
+    background: var(--bg); border-right: 1px solid var(--border);
+    transform: translateX(-105%); transition: transform .2s ease;
+    padding-top: calc(12px + var(--safe-t));
+  }
+  .side.open { transform: translateX(0); }
+  .side-backdrop.on { display: block; }
+  #mapHint { display: none; }
+  .table-panel { height: 200px; }
+  .legend { font-size: .6rem; left: 6px; top: 6px; padding: 5px 7px; max-height: 36%; }
+  .time-lab { min-width: 72px; font-size: .65rem; }
+  .statusbar { font-size: .65rem; padding: 6px 10px; flex-wrap: wrap; }
+}
+@media (max-width: 430px) {
+  .hdr a { font-size: .68rem; }
+  table.wells { font-size: .65rem; }
+  .table-panel { height: 180px; }
+}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="hdr">
     <div class="hdr-left">
+      <button type="button" class="btn-side" id="btnSide" aria-label="Параметры">☰</button>
       <div class="logo">K</div>
       <div>
         <h1>Закачка</h1>
         <p>Коридор компенсации · блоки · светофор скважин</p>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <a href="index.html" style="color:var(--muted);font-size:.75rem;text-decoration:none">← Сервисы</a>
-      <a href="auto_grp_analyzer.html" style="color:var(--accent);font-size:.75rem;text-decoration:none">Факторы обводнённости</a>
+    <div class="hdr-links">
+      <a class="muted" href="index.html">← Сервисы</a>
+      <a href="auto_grp_analyzer.html">Факторы обводнённости</a>
     </div>
   </header>
 
   <div class="body">
-    <aside class="side">
+    <div class="side-backdrop" id="sideBackdrop"></div>
+    <aside class="side" id="sidePanel">
       <div class="card">
         <h3>Параметры</h3>
         <div class="field">
@@ -1068,6 +1115,10 @@ function initUI() {
     if (!handle || !panel || !main) return;
     var saved = parseInt(localStorage.getItem('compTableH') || '', 10);
     if (isFinite(saved) && saved >= 80) panel.style.height = saved + 'px';
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      var mobileH = Math.min(panel.getBoundingClientRect().height || 200, Math.round(window.innerHeight * 0.28));
+      panel.style.height = Math.max(120, mobileH) + 'px';
+    }
 
     var drag = null;
     function clampH(h) {
@@ -1173,7 +1224,29 @@ function initUI() {
   });
 
   window.addEventListener('resize', function() { fit(); draw(); });
+  window.addEventListener('orientationchange', function() {
+    setTimeout(function() { fit(); draw(); }, 250);
+  });
 }
+
+(function setupSideDrawer() {
+  var side = document.getElementById('sidePanel');
+  var backdrop = document.getElementById('sideBackdrop');
+  var btn = document.getElementById('btnSide');
+  if (!side || !btn) return;
+  function closeSide() {
+    side.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('on');
+  }
+  function openSide() {
+    side.classList.add('open');
+    if (backdrop) backdrop.classList.add('on');
+  }
+  btn.addEventListener('click', function() {
+    if (side.classList.contains('open')) closeSide(); else openSide();
+  });
+  if (backdrop) backdrop.addEventListener('click', closeSide);
+})();
 
 function boot() {
   setStatus('Загрузка auto_grp_data.js…', 'busy');
