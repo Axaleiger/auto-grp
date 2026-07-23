@@ -240,6 +240,14 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 }
 .statusbar .ok { color: var(--green); }
 .statusbar .err { color: var(--red); }
+.toolbar-core { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%; }
+.toolbar-layers { display: contents; }
+.btn-layers { display: none; }
+.gesture-hint {
+  display: none; position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 6;
+  background: rgba(10,14,20,.88); border: 1px solid var(--border); border-radius: 999px;
+  padding: 6px 12px; font-size: .68rem; color: var(--muted); pointer-events: none; white-space: nowrap;
+}
 @media (max-width: 900px) {
   .hdr { padding: 8px 10px; }
   .hdr h1 { font-size: .88rem; }
@@ -255,10 +263,23 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
   .side.open { transform: translateX(0); }
   .side-backdrop.on { display: block; }
   #mapHint { display: none; }
+  .btn-layers { display: inline-grid; place-items: center; width: auto; min-width: 44px; padding: 0 10px; font-size: .72rem; }
+  .toolbar { position: relative; }
+  .toolbar-layers {
+    display: none; position: absolute; left: 8px; right: 8px; top: 46px; z-index: 8;
+    background: rgba(12,16,24,.96); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px; flex-wrap: wrap; gap: 8px;
+  }
+  .toolbar-layers.open { display: flex; }
+  .toolbar-layers label.hint {
+    min-height: 36px; padding: 6px 8px; background: var(--surface2); border-radius: 6px; margin: 0;
+  }
   .table-panel { height: 200px; }
   .legend { font-size: .6rem; left: 6px; top: 6px; padding: 5px 7px; max-height: 36%; }
   .time-lab { min-width: 72px; font-size: .65rem; }
   .statusbar { font-size: .65rem; padding: 6px 10px; flex-wrap: wrap; }
+  .gesture-hint.on { display: block; }
+  .split-v { flex: 0 0 14px; }
 }
 @media (max-width: 430px) {
   .hdr a { font-size: .68rem; }
@@ -336,21 +357,28 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
 
     <main class="main">
       <div class="toolbar">
-        <button class="zoom-btn" id="zIn" title="Приблизить">+</button>
-        <button class="zoom-btn" id="zOut" title="Отдалить">−</button>
-        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
-          <input type="checkbox" id="vLabels" checked /> подписи блоков
-        </label>
-        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
-          <input type="checkbox" id="vWellLabels" /> имена скважин
-        </label>
-        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
-          <input type="checkbox" id="vOnlyInj" /> только нагнетательные
-        </label>
-        <span style="margin-left:auto" id="mapHint">колёсико — масштаб · drag — сдвиг</span>
+        <div class="toolbar-core">
+          <button class="zoom-btn btn-layers" id="btnLayers" type="button" title="Слои">Слои</button>
+          <button class="zoom-btn" id="zIn" title="Приблизить">+</button>
+          <button class="zoom-btn" id="zOut" title="Отдалить">−</button>
+          <button class="zoom-btn" id="zFit" title="Вписать" style="width:auto;padding:0 8px;font-size:.72rem">⌂</button>
+          <span style="margin-left:auto" id="mapHint">палец — сдвиг · щипок — масштаб</span>
+        </div>
+        <div class="toolbar-layers" id="toolbarLayers">
+          <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+            <input type="checkbox" id="vLabels" checked /> подписи блоков
+          </label>
+          <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+            <input type="checkbox" id="vWellLabels" /> имена скважин
+          </label>
+          <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+            <input type="checkbox" id="vOnlyInj" /> только нагнетательные
+          </label>
+        </div>
       </div>
       <div class="map-box">
         <canvas id="cv"></canvas>
+        <div class="gesture-hint" id="gestureHint">Сдвиг одним пальцем · масштаб двумя</div>
         <div class="legend">
           <div><i style="background:rgba(248,113,113,.45)"></i>блок &gt; верх — снизить закачку</div>
           <div><i style="background:rgba(251,146,60,.45)"></i>блок &lt; низ — поднять закачку</div>
@@ -1078,8 +1106,9 @@ function draw() {
   });
 }
 
-function nearestWell(sx, sy) {
-  var best = null, bestD = 14;
+function nearestWell(sx, sy, maxPx) {
+  maxPx = maxPx == null ? 18 : maxPx;
+  var best = null, bestD = maxPx;
   S.wells.forEach(function(w) {
     var p = w2s(w.cx, w.cy);
     var d = Math.hypot(p.x - sx, p.y - sy);
@@ -1163,6 +1192,13 @@ function initUI() {
     zoomAt(c.width / 2, c.height / 2, 1 / 1.25);
     draw();
   };
+  var zFit = document.getElementById('zFit');
+  if (zFit) zFit.onclick = function() { fit(); draw(); };
+  var btnLayers = document.getElementById('btnLayers');
+  var layersBox = document.getElementById('toolbarLayers');
+  if (btnLayers && layersBox) {
+    btnLayers.onclick = function() { layersBox.classList.toggle('open'); };
+  }
   document.getElementById('monthRange').oninput = function() {
     var i = +this.value;
     S.month = S.months[i];
@@ -1171,29 +1207,26 @@ function initUI() {
   };
 
   var cv = document.getElementById('cv');
-  cv.addEventListener('wheel', function(e) {
-    e.preventDefault();
-    var rect = cv.getBoundingClientRect();
-    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    zoomAt(mx, my, e.deltaY < 0 ? 1.12 : 1 / 1.12);
-    draw();
-  }, { passive: false });
+  var mapMoved = false;
+  var pinch = null;
+  var touchTap = null;
+  var suppressClick = false;
 
-  cv.addEventListener('mousedown', function(e) {
-    S.drag = { x: e.clientX, y: e.clientY, ox: S.view.ox, oy: S.view.oy };
-    cv.style.cursor = 'grabbing';
-  });
-  window.addEventListener('mousemove', function(e) {
-    if (S.drag) {
-      var dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y;
-      S.view.ox = S.drag.ox + dx;
-      S.view.oy = S.drag.oy + dy;
-      draw();
-      return;
-    }
+  function cvXY(clientX, clientY) {
     var rect = cv.getBoundingClientRect();
-    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
-    var w = nearestWell(sx, sy);
+    return {
+      x: (clientX - rect.left) * (cv.width / Math.max(rect.width, 1)),
+      y: (clientY - rect.top) * (cv.height / Math.max(rect.height, 1))
+    };
+  }
+  function touchDist(a, b) {
+    var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+    return Math.sqrt(dx * dx + dy * dy) || 1;
+  }
+  function touchMid(a, b) {
+    return cvXY((a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2);
+  }
+  function tipForWell(w, sx, sy) {
     if (!w) { showTip(null); return; }
     var row = S.wellRows.filter(function(r) { return r.w === w.w; })[0];
     var html = '<b>' + w.w + '</b>';
@@ -1205,15 +1238,9 @@ function initUI() {
         '<br/>' + row.reco;
     }
     showTip(html, sx, sy);
-  });
-  window.addEventListener('mouseup', function() {
-    S.drag = null;
-    cv.style.cursor = 'grab';
-  });
-  cv.addEventListener('click', function(e) {
-    if (Math.abs(e.movementX) + Math.abs(e.movementY) > 4) return;
-    var rect = cv.getBoundingClientRect();
-    var w = nearestWell(e.clientX - rect.left, e.clientY - rect.top);
+  }
+  function selectAt(sx, sy) {
+    var w = nearestWell(sx, sy, 28);
     if (!w) return;
     S.highlightWell = w.w;
     var row = S.wellRows.filter(function(r) { return r.w === w.w; })[0];
@@ -1221,7 +1248,156 @@ function initUI() {
     renderBlocks();
     renderWells();
     draw();
+  }
+  function hideGestureHint() {
+    var h = document.getElementById('gestureHint');
+    if (h) h.classList.remove('on');
+  }
+
+  cv.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    var p = cvXY(e.clientX, e.clientY);
+    zoomAt(p.x, p.y, e.deltaY < 0 ? 1.12 : 1 / 1.12);
+    draw();
+  }, { passive: false });
+
+  cv.addEventListener('mousedown', function(e) {
+    mapMoved = false;
+    S.drag = { x: e.clientX, y: e.clientY, ox: S.view.ox, oy: S.view.oy };
+    cv.style.cursor = 'grabbing';
   });
+  window.addEventListener('mousemove', function(e) {
+    if (S.drag) {
+      var dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) mapMoved = true;
+      S.view.ox = S.drag.ox + dx;
+      S.view.oy = S.drag.oy + dy;
+      draw();
+      return;
+    }
+    var p = cvXY(e.clientX, e.clientY);
+    tipForWell(nearestWell(p.x, p.y, 22), p.x, p.y);
+  });
+  window.addEventListener('mouseup', function() {
+    S.drag = null;
+    cv.style.cursor = 'grab';
+  });
+  cv.addEventListener('click', function(e) {
+    if (suppressClick) { suppressClick = false; return; }
+    if (mapMoved) return;
+    var p = cvXY(e.clientX, e.clientY);
+    selectAt(p.x, p.y);
+  });
+
+  cv.addEventListener('touchstart', function(e) {
+    if (!e.touches.length) return;
+    e.preventDefault();
+    showTip(null);
+    hideGestureHint();
+    mapMoved = false;
+    if (e.touches.length >= 2) {
+      S.drag = null;
+      touchTap = null;
+      pinch = {
+        dist: touchDist(e.touches[0], e.touches[1]),
+        mid: touchMid(e.touches[0], e.touches[1])
+      };
+      return;
+    }
+    pinch = null;
+    var t = e.touches[0];
+    var p = cvXY(t.clientX, t.clientY);
+    S.drag = { x: t.clientX, y: t.clientY, ox: S.view.ox, oy: S.view.oy };
+    touchTap = { x: t.clientX, y: t.clientY, p: p, t: Date.now() };
+  }, { passive: false });
+
+  cv.addEventListener('touchmove', function(e) {
+    if (!e.touches.length) return;
+    e.preventDefault();
+    if (e.touches.length >= 2) {
+      var d = touchDist(e.touches[0], e.touches[1]);
+      var mid = touchMid(e.touches[0], e.touches[1]);
+      if (!pinch) {
+        pinch = { dist: d, mid: mid };
+        S.drag = null;
+        return;
+      }
+      zoomAt(mid.x, mid.y, d / pinch.dist);
+      S.view.ox += mid.x - pinch.mid.x;
+      S.view.oy += mid.y - pinch.mid.y;
+      pinch = { dist: d, mid: mid };
+      mapMoved = true;
+      draw();
+      return;
+    }
+    if (!S.drag) return;
+    var t = e.touches[0];
+    var dx = t.clientX - S.drag.x, dy = t.clientY - S.drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) mapMoved = true;
+    S.view.ox = S.drag.ox + dx;
+    S.view.oy = S.drag.oy + dy;
+    draw();
+  }, { passive: false });
+
+  function endMapTouch(e) {
+    if (e.touches && e.touches.length >= 2) return;
+    if (e.touches && e.touches.length === 1) {
+      pinch = null;
+      var t1 = e.touches[0];
+      S.drag = { x: t1.clientX, y: t1.clientY, ox: S.view.ox, oy: S.view.oy };
+      return;
+    }
+    var wasTap = touchTap && !mapMoved && (Date.now() - touchTap.t < 450);
+    var tap = touchTap;
+    S.drag = null;
+    pinch = null;
+    touchTap = null;
+    cv.style.cursor = 'grab';
+    if (wasTap && tap) {
+      suppressClick = true;
+      tipForWell(nearestWell(tap.p.x, tap.p.y, 32), tap.p.x, tap.p.y);
+      selectAt(tap.p.x, tap.p.y);
+    }
+  }
+  cv.addEventListener('touchend', endMapTouch);
+  cv.addEventListener('touchcancel', endMapTouch);
+
+  var gh = document.getElementById('gestureHint');
+  if (gh && window.matchMedia('(max-width:900px)').matches) {
+    gh.classList.add('on');
+    setTimeout(hideGestureHint, 4500);
+  }
+
+  // touch для вертикального сплиттера таблицы
+  (function() {
+    var handle = document.getElementById('splitTable');
+    var panel = document.getElementById('tablePanel');
+    var main = document.querySelector('.main');
+    if (!handle || !panel || !main) return;
+    var tdrag = null;
+    handle.addEventListener('touchstart', function(e) {
+      if (!e.touches.length) return;
+      e.preventDefault();
+      tdrag = { y: e.touches[0].clientY, h: panel.getBoundingClientRect().height };
+      handle.classList.add('drag');
+    }, { passive: false });
+    handle.addEventListener('touchmove', function(e) {
+      if (!tdrag || !e.touches.length) return;
+      e.preventDefault();
+      var mainH = main.getBoundingClientRect().height;
+      var maxH = Math.max(120, mainH - 180);
+      var h = Math.max(80, Math.min(maxH, tdrag.h + (tdrag.y - e.touches[0].clientY)));
+      panel.style.height = h + 'px';
+      fit();
+      draw();
+    }, { passive: false });
+    handle.addEventListener('touchend', function() {
+      if (!tdrag) return;
+      tdrag = null;
+      handle.classList.remove('drag');
+      localStorage.setItem('compTableH', String(Math.round(panel.getBoundingClientRect().height)));
+    });
+  })();
 
   window.addEventListener('resize', function() { fit(); draw(); });
   window.addEventListener('orientationchange', function() {

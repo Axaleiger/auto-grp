@@ -157,6 +157,12 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
   #panelWc{grid-template-columns:1fr}
   .wc-list{max-height:140px}
 }
+.toolbar-layers{display:contents}
+.btn-layers{display:none}
+.legend-toggle{display:none}
+.gesture-hint{display:none;position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:6;
+  background:rgba(10,14,20,.88);border:1px solid var(--border);border-radius:999px;padding:6px 12px;
+  font-size:.68rem;color:var(--muted);pointer-events:none;white-space:nowrap}
 @media(max-width:900px){
   .hdr{padding:8px 10px}
   .hdr h1{font-size:.88rem}
@@ -172,9 +178,30 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
   .side-backdrop.on{display:block}
   .tabs{width:100%;order:3;flex:1 0 100%}
   .tab{flex:1;text-align:center;padding:10px 6px;font-size:.72rem}
+  .toolbar{gap:6px;padding:6px 8px}
   .toolbar-hint{display:none}
-  .legend{font-size:.6rem;max-width:min(240px,70vw);max-height:36%}
-  .p-legend{width:120px;right:6px;top:6px}
+  .btn-layers{display:inline-grid;place-items:center;width:auto;min-width:44px;padding:0 10px;font-size:.72rem}
+  .toolbar-layers{
+    display:none;position:absolute;left:8px;right:8px;top:48px;z-index:8;
+    background:rgba(12,16,24,.96);border:1px solid var(--border);border-radius:10px;
+    padding:10px;flex-wrap:wrap;gap:8px;max-height:42vh;overflow:auto;
+  }
+  .toolbar-layers.open{display:flex}
+  .toolbar-layers .tog{min-height:36px;padding:4px 6px;background:var(--surface2);border-radius:6px}
+  .toolbar-core{display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%}
+  .well-search{margin-left:auto}
+  .legend{
+    font-size:.6rem;max-width:min(260px,78vw);max-height:none;overflow:hidden;
+    padding:0;left:6px;top:6px;
+  }
+  .legend.collapsed .legend-body{display:none}
+  .legend-toggle{
+    display:block;width:100%;border:none;background:transparent;color:var(--text);
+    font:inherit;font-size:.68rem;font-weight:600;text-align:left;padding:8px 10px;cursor:pointer;
+  }
+  .legend:not(.collapsed) .legend-body{display:block;padding:0 10px 8px;max-height:34vh;overflow:auto}
+  .p-legend{width:110px;right:6px;top:6px}
+  .gesture-hint.on{display:block}
   .stats{grid-template-columns:repeat(2,1fr)}
   .data-grid{grid-template-columns:1fr}
   .diag-panel canvas,.diag-stack,#cvSection{min-height:180px}
@@ -182,13 +209,13 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
   .section-legend{grid-template-columns:1fr 1fr}
   .time-bar{padding:8px;gap:8px}
   .time-bar .time-lab{min-width:72px;font-size:.65rem}
+  #panelMap .toolbar{position:relative}
 }
 @media(max-width:430px){
   .hdr-links a{font-size:.68rem}
   .tab{font-size:.68rem;padding:9px 4px}
-  .well-search{margin-left:0;width:100%}
-  .well-search input{flex:1;width:auto}
-  .legend{left:6px;top:6px;padding:5px 7px}
+  .well-search{margin-left:0;flex:1}
+  .well-search input{flex:1;width:auto;min-width:0}
   .diag-title{font-size:.9rem}
 }
 </style>
@@ -243,33 +270,41 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
     <main class="main">
       <div id="panelMap" style="display:flex;flex-direction:column;flex:1;min-height:0">
         <div class="toolbar">
-          <label class="tog"><input type="checkbox" id="vP" checked/> Давление</label>
-          <label class="tog"><input type="checkbox" id="vB" checked/> Контуры</label>
-          <label class="tog"><input type="checkbox" id="vBP" checked/> P контура</label>
-          <label class="tog"><input type="checkbox" id="vW" checked/> Скважины</label>
-          <label class="tog"><input type="checkbox" id="vGrp" checked/> Порты ГРП</label>
-          <label class="tog"><input type="checkbox" id="vF" checked/> Трещины</label>
-          <label class="tog"><input type="checkbox" id="vRd" checked/> Дренир.</label>
-          <label class="tog"><input type="checkbox" id="vFn" checked/> Воронка</label>
-          <label class="tog"><input type="checkbox" id="vPot" checked/> Потенц.</label>
-          <label class="tog"><input type="checkbox" id="vBrk" checked/> Прорыв</label>
-          <div class="well-search">
-            <input type="text" id="wellSearch" placeholder="Скважина" list="wellDatalist" autocomplete="off" title="Номер скважины · Enter"/>
-            <datalist id="wellDatalist"></datalist>
-            <button type="button" class="zoom-btn well-search-btn" id="btnWellSearch" title="Найти и приблизить">⌕</button>
+          <div class="toolbar-core">
+            <button type="button" class="zoom-btn btn-layers" id="btnLayers" title="Слои">Слои</button>
+            <button type="button" class="zoom-btn" id="btnZoomIn" title="Увеличить">+</button>
+            <button type="button" class="zoom-btn" id="btnZoomOut" title="Уменьшить">−</button>
+            <button type="button" class="zoom-btn" id="btnZoomReset" title="Сбросить вид">⌂</button>
+            <button type="button" class="zoom-btn" id="btnRulerClear" title="Сбросить линейку" style="width:auto;padding:0 6px;font-size:.65rem">⌀</button>
+            <div class="well-search">
+              <input type="text" id="wellSearch" placeholder="Скважина" list="wellDatalist" autocomplete="off" title="Номер скважины · Enter"/>
+              <datalist id="wellDatalist"></datalist>
+              <button type="button" class="zoom-btn well-search-btn" id="btnWellSearch" title="Найти и приблизить">⌕</button>
+            </div>
+            <span class="toolbar-hint">палец — сдвиг · щипок — масштаб · Ctrl+drag линейка</span>
           </div>
-          <span class="toolbar-hint">пан · колесо · Ctrl+drag линейка</span>
-          <button type="button" class="zoom-btn" id="btnZoomIn" title="Увеличить">+</button>
-          <button type="button" class="zoom-btn" id="btnZoomOut" title="Уменьшить">−</button>
-          <button type="button" class="zoom-btn" id="btnZoomReset" title="Сбросить вид">⌂</button>
-          <button type="button" class="zoom-btn" id="btnRulerClear" title="Сбросить линейку" style="width:auto;padding:0 6px;font-size:.65rem">⌀</button>
+          <div class="toolbar-layers" id="toolbarLayers">
+            <label class="tog"><input type="checkbox" id="vP" checked/> Давление</label>
+            <label class="tog"><input type="checkbox" id="vB" checked/> Контуры</label>
+            <label class="tog"><input type="checkbox" id="vBP" checked/> P контура</label>
+            <label class="tog"><input type="checkbox" id="vW" checked/> Скважины</label>
+            <label class="tog"><input type="checkbox" id="vGrp" checked/> Порты ГРП</label>
+            <label class="tog"><input type="checkbox" id="vF" checked/> Трещины</label>
+            <label class="tog"><input type="checkbox" id="vRd" checked/> Дренир.</label>
+            <label class="tog"><input type="checkbox" id="vFn" checked/> Воронка</label>
+            <label class="tog"><input type="checkbox" id="vPot" checked/> Потенц.</label>
+            <label class="tog"><input type="checkbox" id="vBrk" checked/> Прорыв</label>
+          </div>
         </div>
         <div class="map-box">
           <canvas id="cv"></canvas>
-          <div class="legend" id="mapLegend">
-            <div class="legend-row" id="mapLegendMain"></div>
-            <div class="legend-factors" id="mapFactorLegend"></div>
-            <div class="legend-status" id="mapStatusLegend"></div>
+          <div class="legend collapsed" id="mapLegend">
+            <button type="button" class="legend-toggle" id="btnLegendToggle">Легенда ▸</button>
+            <div class="legend-body">
+              <div class="legend-row" id="mapLegendMain"></div>
+              <div class="legend-factors" id="mapFactorLegend"></div>
+              <div class="legend-status" id="mapStatusLegend"></div>
+            </div>
           </div>
           <div class="p-legend" id="pLegend">
             <div class="p-legend-title">Pпл, атм</div>
@@ -279,10 +314,11 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
               <span class="hi" id="pHi">—</span>
             </div>
           </div>
+          <div class="gesture-hint" id="gestureHint">Сдвиг одним пальцем · масштаб двумя</div>
           <div class="tip" id="tip"></div>
           <div class="welcome" id="welcome">
             <div style="font-size:2rem;opacity:.3">📊</div>
-            <div>Нажмите <b>Рассчитать</b></div>
+            <div>Нажмите <b>Рассчитать</b> (меню ☰)</div>
             <div style="font-size:.7rem;margin-top:4px">Или запустите <b>start.bat</b></div>
           </div>
         </div>
@@ -1343,8 +1379,8 @@ function fit() {
   var r=box.getBoundingClientRect();
   if (r.width < 80 || r.height < 80) return false;
   var legH=0;
-  c.width=Math.max(400,r.width|0);
-  c.height=Math.max(220,(r.height-legH)|0);
+  c.width=Math.max(200,r.width|0);
+  c.height=Math.max(160,(r.height-legH)|0);
   var b=bounds(), p=40, w=b.x2-b.x1||1, h=b.y2-b.y1||1;
   var sc=Math.min((c.width-2*p)/w,(c.height-2*p)/h);
   S.view.s=sc; S.view.s0=sc; S.view.ox=p-b.x1*sc+(c.width-2*p-w*sc)/2;
@@ -2182,13 +2218,71 @@ function exportCSV() {
   var drag = null;
   var rulerDrag = null;
   var moved = false;
+  var pinch = null;
+  var touchTap = null;
+  var suppressClick = false;
 
   function canvasXY(e) {
+    return canvasXYClient(e.clientX, e.clientY);
+  }
+  function canvasXYClient(clientX, clientY) {
     var r = cv.getBoundingClientRect();
     return {
-      x: (e.clientX - r.left) * (cv.width / r.width),
-      y: (e.clientY - r.top) * (cv.height / r.height)
+      x: (clientX - r.left) * (cv.width / Math.max(r.width, 1)),
+      y: (clientY - r.top) * (cv.height / Math.max(r.height, 1))
     };
+  }
+  function touchDist(a, b) {
+    var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+    return Math.sqrt(dx * dx + dy * dy) || 1;
+  }
+  function touchMid(a, b) {
+    return canvasXYClient((a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2);
+  }
+  function pickWellAt(p, pxRadius) {
+    var wpt = s2w(p.x, p.y);
+    var nearest = null, best = (pxRadius || 50) / Math.max(S.view.s, 0.01);
+    if (S.wells && S.wells.length) {
+      S.wells.forEach(function(well) {
+        var d = dist(wpt.x, wpt.y, well.cx, well.cy);
+        if (well.hz) {
+          var mid = producerCenter(well);
+          d = Math.min(d, dist(wpt.x, wpt.y, mid.cx, mid.cy));
+        }
+        if (d < best) { best = d; nearest = well; }
+      });
+    }
+    return nearest;
+  }
+  function showMapTip(p, clientX, clientY) {
+    if (!S.grd) { tip.style.display = 'none'; return; }
+    var wpt = s2w(p.x, p.y);
+    var html = wpt.x.toFixed(0) + ' · ' + wpt.y.toFixed(0);
+    var pr = sampleP(wpt.x, wpt.y);
+    if (!isNaN(pr)) html += '<br/>Pпл ' + pr.toFixed(0) + ' атм';
+    var nearest = pickWellAt(p, 56);
+    if (nearest) {
+      html += '<br/><b>' + nearest.w + '</b>';
+      var gp = S.grpPorts && S.grpPorts[nearest.w];
+      if (gp && gp.ports > 0) html += '<br/>ГРП портов: ' + gp.ports + ' · аз. ' + gp.az + '°';
+      if (S.prod[nearest.w] && !S.inj[nearest.w]) {
+        var bf = S.wellBestFactor && S.wellBestFactor[nearest.w];
+        if (bf) {
+          var ff = factorById(bf);
+          html += '<br/><span style="color:' + ff.color + '">прорыв: ' + ff.short + '</span>';
+        }
+        html += '<br/><span style="color:#93c5fd">тап → диагностика</span>';
+      }
+    }
+    var r = cv.getBoundingClientRect();
+    tip.style.display = 'block';
+    tip.style.left = Math.min(clientX - r.left + 12, r.width - 180) + 'px';
+    tip.style.top = Math.min(clientY - r.top + 12, r.height - 80) + 'px';
+    tip.innerHTML = html;
+  }
+  function hideGestureHint() {
+    var h = document.getElementById('gestureHint');
+    if (h) h.classList.remove('on');
   }
 
   cv.addEventListener('mousedown', function(e) {
@@ -2232,53 +2326,13 @@ function exportCSV() {
       draw();
       return;
     }
-    if (!S.grd) { tip.style.display = 'none'; return; }
-    var wpt = s2w(p.x, p.y);
-    var html = wpt.x.toFixed(0) + ' · ' + wpt.y.toFixed(0);
-    var pr = sampleP(wpt.x, wpt.y);
-    if (!isNaN(pr)) html += '<br/>Pпл ' + pr.toFixed(0) + ' атм';
-    var nearest = null, best = 40;
-    if (S.wells && S.wells.length) {
-      S.wells.forEach(function(well) {
-        var d = dist(wpt.x, wpt.y, well.cx, well.cy);
-        if (d < best) { best = d; nearest = well; }
-      });
-    }
-    if (nearest) {
-      html += '<br/><b>' + nearest.w + '</b>';
-      var gp = S.grpPorts && S.grpPorts[nearest.w];
-      if (gp && gp.ports > 0) html += '<br/>ГРП портов: ' + gp.ports + ' · аз. ' + gp.az + '°';
-      if (S.prod[nearest.w] && !S.inj[nearest.w]) {
-        var bf = S.wellBestFactor && S.wellBestFactor[nearest.w];
-        if (bf) {
-          var ff = factorById(bf);
-          html += '<br/><span style="color:' + ff.color + '">прорыв: ' + ff.short + '</span>';
-        }
-        html += '<br/><span style="color:#93c5fd">клик → диагностика</span>';
-      }
-    }
-    var r = cv.getBoundingClientRect();
-    tip.style.display = 'block';
-    tip.style.left = Math.min(e.clientX - r.left + 12, r.width - 180) + 'px';
-    tip.style.top = Math.min(e.clientY - r.top + 12, r.height - 80) + 'px';
-    tip.innerHTML = html;
+    showMapTip(p, e.clientX, e.clientY);
   });
 
   cv.addEventListener('click', function(e) {
+    if (suppressClick) { suppressClick = false; return; }
     if (e.ctrlKey || moved) return;
-    var p = canvasXY(e);
-    var wpt = s2w(p.x, p.y);
-    var nearest = null, best = 50 / Math.max(S.view.s, 0.01);
-    if (S.wells && S.wells.length) {
-      S.wells.forEach(function(well) {
-        var d = dist(wpt.x, wpt.y, well.cx, well.cy);
-        if (well.hz) {
-          var mid = producerCenter(well);
-          d = Math.min(d, dist(wpt.x, wpt.y, mid.cx, mid.cy));
-        }
-        if (d < best) { best = d; nearest = well; }
-      });
-    }
+    var nearest = pickWellAt(canvasXY(e), 56);
     if (nearest && S.prod[nearest.w] && !S.inj[nearest.w]) {
       openDiagnostics(nearest.w);
     }
@@ -2293,6 +2347,82 @@ function exportCSV() {
     zoomAt(p.x, p.y, factor);
   }, { passive: false });
 
+  cv.addEventListener('touchstart', function(e) {
+    if (!e.touches.length) return;
+    e.preventDefault();
+    tip.style.display = 'none';
+    hideGestureHint();
+    moved = false;
+    if (e.touches.length >= 2) {
+      drag = null;
+      touchTap = null;
+      pinch = {
+        dist: touchDist(e.touches[0], e.touches[1]),
+        mid: touchMid(e.touches[0], e.touches[1])
+      };
+      return;
+    }
+    pinch = null;
+    var t = e.touches[0];
+    var p = canvasXYClient(t.clientX, t.clientY);
+    drag = p;
+    touchTap = { x: t.clientX, y: t.clientY, p: p, t: Date.now() };
+  }, { passive: false });
+
+  cv.addEventListener('touchmove', function(e) {
+    if (!e.touches.length) return;
+    e.preventDefault();
+    if (e.touches.length >= 2) {
+      var d = touchDist(e.touches[0], e.touches[1]);
+      var mid = touchMid(e.touches[0], e.touches[1]);
+      if (!pinch) {
+        pinch = { dist: d, mid: mid };
+        drag = null;
+        return;
+      }
+      var factor = d / pinch.dist;
+      zoomAt(mid.x, mid.y, factor);
+      S.view.ox += mid.x - pinch.mid.x;
+      S.view.oy += mid.y - pinch.mid.y;
+      pinch = { dist: d, mid: mid };
+      moved = true;
+      draw();
+      return;
+    }
+    if (!drag) return;
+    var t = e.touches[0];
+    var p = canvasXYClient(t.clientX, t.clientY);
+    if (Math.abs(p.x - drag.x) > 2 || Math.abs(p.y - drag.y) > 2) moved = true;
+    S.view.ox += p.x - drag.x;
+    S.view.oy += p.y - drag.y;
+    drag = p;
+    draw();
+  }, { passive: false });
+
+  function endTouch(e) {
+    if (e.touches && e.touches.length >= 2) return;
+    if (e.touches && e.touches.length === 1) {
+      pinch = null;
+      drag = canvasXYClient(e.touches[0].clientX, e.touches[0].clientY);
+      return;
+    }
+    var wasTap = touchTap && !moved && (Date.now() - touchTap.t < 450);
+    var tap = touchTap;
+    drag = null;
+    pinch = null;
+    touchTap = null;
+    if (wasTap && tap) {
+      suppressClick = true;
+      showMapTip(tap.p, tap.x, tap.y);
+      var nearest = pickWellAt(tap.p, 72);
+      if (nearest && S.prod[nearest.w] && !S.inj[nearest.w]) {
+        openDiagnostics(nearest.w);
+      }
+    }
+  }
+  cv.addEventListener('touchend', endTouch);
+  cv.addEventListener('touchcancel', endTouch);
+
   document.getElementById('btnZoomIn').addEventListener('click', function() {
     zoomAt(cv.width / 2, cv.height / 2, 1.3);
   });
@@ -2304,6 +2434,32 @@ function exportCSV() {
     S.ruler = null;
     draw();
   });
+
+  var btnLayers = document.getElementById('btnLayers');
+  var layersBox = document.getElementById('toolbarLayers');
+  if (btnLayers && layersBox) {
+    btnLayers.addEventListener('click', function() {
+      layersBox.classList.toggle('open');
+    });
+    layersBox.addEventListener('change', function() {
+      if (window.matchMedia('(max-width:900px)').matches) layersBox.classList.remove('open');
+    });
+  }
+  var leg = document.getElementById('mapLegend');
+  var btnLeg = document.getElementById('btnLegendToggle');
+  if (leg && btnLeg) {
+    if (!window.matchMedia('(max-width:900px)').matches) leg.classList.remove('collapsed');
+    btnLeg.addEventListener('click', function() {
+      leg.classList.toggle('collapsed');
+      btnLeg.textContent = leg.classList.contains('collapsed') ? 'Легенда ▸' : 'Легенда ▾';
+    });
+  }
+  var gh = document.getElementById('gestureHint');
+  if (gh && window.matchMedia('(max-width:900px)').matches) {
+    gh.classList.add('on');
+    setTimeout(hideGestureHint, 4500);
+  }
+
   window.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { S.ruler = null; draw(); }
   });
@@ -4898,6 +5054,8 @@ renderMapStatusLegend();
 S.dataParams = defaultDataParams();
 document.getElementById('btnDataApply').addEventListener('click', function() { applyDataParams(true); });
 document.getElementById('btnDataReset').addEventListener('click', function() { resetDataParams(); });
+// автозапуск: на телефоне не нужно искать «Рассчитать» в меню
+setTimeout(function() { mainCalc(); }, 80);
 </script>
 </body>
 </html>
