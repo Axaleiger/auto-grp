@@ -8,10 +8,12 @@
 
 `https://axaleiger.github.io/auto-grp/`
 
-Локально: откройте `auto_grp_analyzer.html` или запустите `start.bat`.
+Локально: `start.bat` или откройте `index.html` через локальный сервер.
 
 ## Состав
 
-- `auto_grp_analyzer.html` — интерфейс и расчёты
-- `auto_grp_data.js` — данные карт / МЭР
+- `index.html` — выбор сервиса
+- `auto_grp_analyzer.html` — авто-ГРП, прорывы, диагностика %В
+- `compensation_dashboard.html` — компенсация закачки (коридор 90–120%, светофор, карта блоков)
+- `auto_grp_data.js` — данные карт / МЭР / блоки
 - `roma_grp_ports.js` — порты МГРП

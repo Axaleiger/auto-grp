@@ -156,10 +156,14 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
       <div class="logo">Г</div>
       <div><h1>Авто-ГРП</h1><p>Данные · карта · диагностика %В</p></div>
     </div>
-    <div class="tabs">
-      <button class="tab" data-t="data">Данные</button>
-      <button class="tab on" data-t="map">Карта</button>
-      <button class="tab" data-t="diag">Диагностика %В</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="index.html" style="color:var(--muted);font-size:.75rem;text-decoration:none">← Сервисы</a>
+      <a href="compensation_dashboard.html" style="color:var(--accent);font-size:.75rem;text-decoration:none">Закачка</a>
+      <div class="tabs">
+        <button class="tab" data-t="data">Данные</button>
+        <button class="tab on" data-t="map">Карта</button>
+        <button class="tab" data-t="diag">Диагностика %В</button>
+      </div>
     </div>
   </header>
 

@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Компенсация закачки — Романовское</title>
+<style>
+:root {
+  --bg: #080b10;
+  --surface: #121824;
+  --surface2: #1c2638;
+  --border: #2a3548;
+  --text: #f0f4fa;
+  --muted: #8b9cb3;
+  --accent: #5b8def;
+  --red: #f87171;
+  --orange: #fb923c;
+  --green: #34d399;
+  --inj: #38bdf8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+}
+.app { display: flex; flex-direction: column; height: 100vh; }
+.hdr {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; border-bottom: 1px solid var(--border); background: #0c1018; flex-shrink: 0;
+}
+.hdr-left { display: flex; align-items: center; gap: 10px; }
+.logo {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, #0ea5e9, #34d399);
+  display: grid; place-items: center; font-weight: 700; font-size: .85rem;
+}
+.hdr h1 { font-size: .95rem; font-weight: 600; }
+.hdr p { font-size: .7rem; color: var(--muted); }
+.hdr a { color: var(--accent); text-decoration: none; font-size: .75rem; }
+.hdr a:hover { text-decoration: underline; }
+.body { display: grid; grid-template-columns: 300px 1fr; flex: 1; min-height: 0; }
+.side {
+  padding: 12px; border-right: 1px solid var(--border);
+  overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+}
+.main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.map-box { flex: 1 1 auto; position: relative; min-height: 120px; background: #06080c; }
+.table-panel {
+  flex: 0 0 auto;
+  height: 280px;
+  min-height: 80px;
+  max-height: none;
+  display: flex; flex-direction: column;
+  border-top: none; background: var(--surface);
+}
+.split-v {
+  flex: 0 0 8px;
+  cursor: ns-resize;
+  background: #0c1018;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  user-select: none;
+  touch-action: none;
+}
+.split-v::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 36px; height: 3px;
+  margin: -1.5px 0 0 -18px;
+  border-radius: 2px;
+  background: #4b5568;
+}
+.split-v:hover, .split-v.drag {
+  background: #152033;
+}
+.split-v:hover::before, .split-v.drag::before {
+  background: var(--accent);
+}
+.table-toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 7px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.table-toolbar h3 {
+  font-size: .62rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin: 0;
+}
+.table-toolbar select {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 6px; padding: 4px 8px; font: inherit; font-size: .72rem;
+}
+.table-wrap { flex: 1; overflow: auto; min-height: 0; }
+table.wells {
+  width: 100%; border-collapse: collapse; font-size: .72rem;
+}
+table.wells th {
+  position: sticky; top: 0; background: #0c1018; color: var(--muted);
+  text-align: left; padding: 6px 8px; font-weight: 600; border-bottom: 1px solid var(--border);
+  white-space: nowrap; z-index: 1;
+}
+table.wells td {
+  padding: 5px 8px; border-bottom: 1px solid rgba(42,53,72,.7); white-space: nowrap;
+}
+table.wells tr { cursor: pointer; }
+table.wells tr:hover { background: rgba(91,141,239,.1); }
+table.wells tr.on { background: rgba(91,141,239,.16); }
+table.wells tr.row-red td:first-child { box-shadow: inset 3px 0 0 var(--red); }
+table.wells tr.row-orange td:first-child { box-shadow: inset 3px 0 0 var(--orange); }
+table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green); }
+.cell-red { color: var(--red); font-weight: 700; }
+.cell-orange { color: var(--orange); font-weight: 700; }
+.cell-green { color: var(--green); font-weight: 700; }
+.reco {
+  font-size: .72rem; line-height: 1.45; color: var(--muted);
+  list-style: none; max-height: 180px; overflow: auto;
+}
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px;
+}
+.card h3 {
+  font-size: .62rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin-bottom: 8px;
+}
+.field { margin-bottom: 7px; }
+.field label { display: block; font-size: .7rem; color: var(--muted); margin-bottom: 3px; }
+.field input, .field select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 7px; padding: 7px 9px; font: inherit;
+}
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.btn {
+  width: 100%; border: none; border-radius: 9px; padding: 10px;
+  font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+}
+.btn-main { background: var(--accent); color: #fff; }
+.btn-main:disabled { opacity: .5; cursor: wait; }
+.btn-sec {
+  background: var(--surface2); color: var(--muted);
+  border: 1px solid var(--border); padding: 7px; font-size: .74rem; margin-top: 5px;
+}
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.stat {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 7px; text-align: center;
+}
+.stat b { display: block; font-size: 1rem; }
+.stat span { font-size: .55rem; color: var(--muted); text-transform: uppercase; }
+.stat.red b { color: var(--red); }
+.stat.orange b { color: var(--orange); }
+.stat.green b { color: var(--green); }
+.hint { font-size: .68rem; color: var(--muted); line-height: 1.4; }
+.hint b { color: var(--text); }
+.toolbar {
+  display: flex; gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--border);
+  font-size: .72rem; color: var(--muted); flex-wrap: wrap; align-items: center; flex-shrink: 0;
+}
+.zoom-btn {
+  border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+  border-radius: 6px; width: 28px; height: 26px; cursor: pointer;
+}
+.map-box { flex: 1 1 auto; position: relative; min-height: 120px; background: #06080c; }
+#cv { width: 100%; height: 100%; display: block; cursor: grab; }
+.legend {
+  position: absolute; left: 10px; top: 10px; z-index: 3;
+  background: rgba(10,14,20,.92); border: 1px solid var(--border);
+  border-radius: 7px; padding: 7px 10px; font-size: .68rem; line-height: 1.5;
+}
+.legend i {
+  display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  margin-right: 4px; vertical-align: middle;
+}
+.tip {
+  position: absolute; display: none; z-index: 5;
+  background: #0a0e14; border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 9px; font-size: .68rem; pointer-events: none; max-width: 260px;
+}
+.welcome {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; color: var(--muted); gap: 8px; text-align: center;
+}
+.bi {
+  padding: 7px 8px; border-radius: 7px; border: 1px solid transparent;
+  margin-bottom: 4px; cursor: pointer; font-size: .74rem;
+}
+.bi:hover { background: rgba(91,141,239,.1); }
+.bi.on { outline: 1px solid var(--accent); background: rgba(91,141,239,.12); }
+.bi .meta { font-size: .65rem; color: var(--muted); margin-top: 2px; }
+.badge {
+  display: inline-block; font-size: .6rem; font-weight: 700; padding: 1px 6px;
+  border-radius: 999px; margin-left: 4px; vertical-align: middle;
+}
+.badge.red { background: rgba(248,113,113,.2); color: var(--red); }
+.badge.orange { background: rgba(251,146,60,.2); color: var(--orange); }
+.badge.green { background: rgba(52,211,153,.2); color: var(--green); }
+.badge.none, .badge.muted { background: rgba(140,160,180,.15); color: var(--muted); }
+.reco li {
+  margin: 0 0 6px; padding: 7px 8px; border-radius: 7px;
+  background: var(--surface2); border-left: 3px solid var(--border);
+}
+.reco li.red { border-left-color: var(--red); }
+.reco li.orange { border-left-color: var(--orange); }
+.reco li.green { border-left-color: var(--green); }
+.reco b { color: var(--text); }
+.time-bar {
+  display: flex; align-items: center; gap: 10px; padding: 7px 12px;
+  border-top: 1px solid var(--border); background: #0c1018; flex-shrink: 0;
+}
+.time-bar input[type=range] { flex: 1; accent-color: var(--accent); }
+.time-lab { font-size: .72rem; color: var(--muted); min-width: 88px; text-align: right; }
+.statusbar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px; border-top: 1px solid var(--border);
+  background: rgba(8,11,16,.92); font-size: .72rem; color: var(--muted);
+}
+.statusbar .ok { color: var(--green); }
+.statusbar .err { color: var(--red); }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr">
+    <div class="hdr-left">
+      <div class="logo">K</div>
+      <div>
+        <h1>Компенсация закачки</h1>
+        <p>Коридор компенсации · блоки · светофор скважин · Романовское</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <a href="index.html" style="color:var(--muted);font-size:.75rem;text-decoration:none">← Сервисы</a>
+      <a href="auto_grp_analyzer.html" style="color:var(--accent);font-size:.75rem;text-decoration:none">Авто-ГРП</a>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="side">
+      <div class="card">
+        <h3>Параметры</h3>
+        <div class="field">
+          <label>Пласт</label>
+          <select id="selLayer"></select>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Низ коридора, %</label>
+            <input type="number" id="lo" value="90" step="1" />
+          </div>
+          <div class="field">
+            <label>Верх коридора, %</label>
+            <input type="number" id="hi" value="120" step="1" />
+          </div>
+        </div>
+        <button class="btn btn-main" id="btnCalc" disabled>Рассчитать</button>
+        <button class="btn btn-sec" id="btnFit">Вписать карту</button>
+        <p class="hint" style="margin-top:8px">
+          Компенсация блока = <b>Σ закачка / Σ добыча жидкости</b> × 100% за месяц.
+          &gt; верх → снижать закачку; &lt; низ → поднимать.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Сводка месяца</h3>
+        <div class="stats">
+          <div class="stat red"><b id="nRed">—</b><span>красные</span></div>
+          <div class="stat orange"><b id="nOrange">—</b><span>оранж.</span></div>
+          <div class="stat green"><b id="nGreen">—</b><span>зелёные</span></div>
+        </div>
+        <p class="hint" style="margin-top:8px" id="fieldComp">Поле: —</p>
+      </div>
+
+      <div class="card">
+        <h3>Блоки</h3>
+        <div id="blockList"><p class="hint">Нажмите «Рассчитать»</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Рекомендации</h3>
+        <ul class="reco" id="recoList">
+          <li>После расчёта появятся действия по блокам и скважинам.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="toolbar">
+        <button class="zoom-btn" id="zIn" title="Приблизить">+</button>
+        <button class="zoom-btn" id="zOut" title="Отдалить">−</button>
+        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" id="vLabels" checked /> подписи блоков
+        </label>
+        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" id="vWellLabels" /> имена скважин
+        </label>
+        <label class="hint" style="display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" id="vOnlyInj" /> только нагнетательные
+        </label>
+        <span style="margin-left:auto" id="mapHint">колёсико — масштаб · drag — сдвиг</span>
+      </div>
+      <div class="map-box">
+        <canvas id="cv"></canvas>
+        <div class="legend">
+          <div><i style="background:rgba(248,113,113,.45)"></i>блок &gt; верх — снизить закачку</div>
+          <div><i style="background:rgba(251,146,60,.45)"></i>блок &lt; низ — поднять закачку</div>
+          <div><i style="background:rgba(52,211,153,.35)"></i>блок в коридоре</div>
+          <div style="margin-top:4px;color:var(--muted)">
+            <span style="color:#38bdf8">●</span> нагнетательная ·
+            <span style="color:#ccc">○</span> добывающая
+          </div>
+        </div>
+        <div class="tip" id="tip"></div>
+        <div class="welcome" id="welcome">
+          <div style="font-size:1.1rem;color:var(--text)">Компенсация по блокам</div>
+          <div>Загрузка данных…</div>
+        </div>
+      </div>
+      <div class="time-bar">
+        <span class="hint">Месяц МЭР</span>
+        <input type="range" id="monthRange" min="0" max="0" value="0" disabled />
+        <span class="time-lab" id="monthLab">—</span>
+      </div>
+      <div class="split-v" id="splitTable" title="Тяните вверх/вниз — размер таблицы"></div>
+      <div class="table-panel" id="tablePanel">
+        <div class="table-toolbar">
+          <h3>Таблица скважин (светофор)</h3>
+          <select id="tblFilter">
+            <option value="all">все</option>
+            <option value="inj">только нагнетательные</option>
+            <option value="red">красные</option>
+            <option value="orange">оранжевые</option>
+            <option value="green">зелёные</option>
+          </select>
+          <span class="hint" style="margin-left:auto">↕ тяните полоску выше</span>
+        </div>
+        <div class="table-wrap">
+          <table class="wells" id="wellTable">
+            <thead>
+              <tr>
+                <th>Скв.</th>
+                <th>Роль</th>
+                <th>Блок</th>
+                <th>Статус</th>
+                <th>K блока %</th>
+                <th>Закачка</th>
+                <th>Добыча</th>
+                <th>Δ закачки</th>
+                <th>Рекомендация</th>
+              </tr>
+            </thead>
+            <tbody id="wellTableBody">
+              <tr><td colspan="9" class="hint">Нажмите «Рассчитать»</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="statusbar"><span class="msg" id="status">Старт…</span></div>
+</div>
+
+<script>
+var S = {
+  data: null, layer: null, trunks: [], blocks: {}, mor: [], months: [],
+  month: null, wells: [], blocksOut: [], wellRows: [],
+  highlightBlock: null, highlightWell: null,
+  view: { s: 1, ox: 0, oy: 0, s0: 1 },
+  drag: null
+};
+
+function setStatus(msg, kind) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'msg' + (kind ? ' ' + kind : '');
+}
+
+function loadScript(url) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = url;
+    s.onload = resolve;
+    s.onerror = function() { reject(new Error('Не загружен ' + url)); };
+    document.head.appendChild(s);
+  });
+}
+
+function dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
+
+function pointInPoly(x, y, pts) {
+  var inside = false, i, j, xi, yi, xj, yj;
+  for (i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    xi = pts[i][0]; yi = pts[i][1];
+    xj = pts[j][0]; yj = pts[j][1];
+    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-12) + xi)) inside = !inside;
+  }
+  return inside;
+}
+
+function polyCentroid(pts) {
+  var a = 0, cx = 0, cy = 0, i, j, f;
+  for (i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    f = pts[j][0] * pts[i][1] - pts[i][0] * pts[j][1];
+    a += f; cx += (pts[j][0] + pts[i][0]) * f; cy += (pts[j][1] + pts[i][1]) * f;
+  }
+  a *= 0.5;
+  if (Math.abs(a) < 1e-9) {
+    var sx = 0, sy = 0;
+    pts.forEach(function(p) { sx += p[0]; sy += p[1]; });
+    return { x: sx / pts.length, y: sy / pts.length, area: 0 };
+  }
+  return { x: cx / (6 * a), y: cy / (6 * a), area: Math.abs(a) };
+}
+
+/** Точка подписи СТРОГО внутри полигона (среднее скважин/центроид часто вне контура). */
+function distToEdges(x, y, pts) {
+  var minD = Infinity, i, j, ax, ay, bx, by, dx, dy, t, px, py, d;
+  for (i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    ax = pts[j][0]; ay = pts[j][1]; bx = pts[i][0]; by = pts[i][1];
+    dx = bx - ax; dy = by - ay;
+    var L2 = dx * dx + dy * dy;
+    t = L2 < 1e-12 ? 0 : Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L2));
+    px = ax + t * dx; py = ay + t * dy;
+    d = Math.hypot(x - px, y - py);
+    if (d < minD) minD = d;
+  }
+  return minD;
+}
+
+function labelPointInPoly(pts) {
+  if (!pts || pts.length < 3) return { x: 0, y: 0 };
+  var x1 = Infinity, x2 = -Infinity, y1 = Infinity, y2 = -Infinity, i;
+  for (i = 0; i < pts.length; i++) {
+    if (pts[i][0] < x1) x1 = pts[i][0]; if (pts[i][0] > x2) x2 = pts[i][0];
+    if (pts[i][1] < y1) y1 = pts[i][1]; if (pts[i][1] > y2) y2 = pts[i][1];
+  }
+  var best = null, bestD = -1, gx, gy, x, y, d, nx = 28, ny = 28;
+  for (gy = 1; gy < ny; gy++) {
+    for (gx = 1; gx < nx; gx++) {
+      x = x1 + (x2 - x1) * gx / nx;
+      y = y1 + (y2 - y1) * gy / ny;
+      if (!pointInPoly(x, y, pts)) continue;
+      d = distToEdges(x, y, pts);
+      if (d > bestD) { bestD = d; best = { x: x, y: y }; }
+    }
+  }
+  if (best) return best;
+  // fallback: любая вершина / середина первого ребра, если внутри
+  for (i = 0; i < pts.length; i++) {
+    x = (pts[i][0] + pts[(i + 1) % pts.length][0]) / 2;
+    y = (pts[i][1] + pts[(i + 1) % pts.length][1]) / 2;
+    if (pointInPoly(x, y, pts)) return { x: x, y: y };
+  }
+  return { x: pts[0][0], y: pts[0][1] };
+}
+
+function uniqWells() {
+  var m = {};
+  S.trunks.forEach(function(t) {
+    if (!m[t.w]) m[t.w] = { w: t.w, x: t.x, y: t.y, hz: !!t.hz, x3: t.x3, y3: t.y3 };
+    else if (t.hz) {
+      var o = m[t.w], l = dist(t.x, t.y, t.x3, t.y3), c = o.hz ? dist(o.x, o.y, o.x3, o.y3) : 0;
+      if (l >= c) Object.assign(o, { x: t.x, y: t.y, x3: t.x3, y3: t.y3, hz: true });
+    }
+  });
+  return Object.values(m).map(function(w) {
+    w.cx = w.hz ? (w.x + w.x3) / 2 : w.x;
+    w.cy = w.hz ? (w.y + w.y3) / 2 : w.y;
+    return w;
+  });
+}
+
+function monthKey(d) {
+  var p = String(d).split('.');
+  if (p.length === 3) return p[2] + '-' + p[1] + '-' + p[0];
+  return d;
+}
+
+function collectMonths() {
+  var set = {};
+  S.mor.forEach(function(r) { set[r[1]] = 1; });
+  return Object.keys(set).sort(function(a, b) { return monthKey(a).localeCompare(monthKey(b)); });
+}
+
+function corridor() {
+  var lo = +document.getElementById('lo').value;
+  var hi = +document.getElementById('hi').value;
+  if (!isFinite(lo)) lo = 90;
+  if (!isFinite(hi)) hi = 120;
+  if (hi < lo) { var t = lo; lo = hi; hi = t; }
+  return { lo: lo, hi: hi, mid: (lo + hi) / 2 };
+}
+
+function statusOf(comp, cor) {
+  if (!isFinite(comp)) return 'none';
+  if (comp > cor.hi) return 'red';
+  if (comp < cor.lo) return 'orange';
+  return 'green';
+}
+
+function statusLabel(st) {
+  return st === 'red' ? 'выше коридора' : st === 'orange' ? 'ниже коридора' : st === 'green' ? 'в коридоре' : 'нет данных';
+}
+
+function onLayer() {
+  S.layer = document.getElementById('selLayer').value;
+  var L = S.data.layers[S.layer];
+  S.trunks = L.trunks || [];
+  S.blocks = L.blocks || {};
+  S.mor = L.mor || [];
+  S.months = collectMonths();
+  S.wells = uniqWells();
+  var rng = document.getElementById('monthRange');
+  rng.disabled = !S.months.length;
+  rng.min = 0;
+  rng.max = Math.max(0, S.months.length - 1);
+  rng.value = S.months.length ? S.months.length - 1 : 0;
+  S.month = S.months[rng.value] || null;
+  document.getElementById('monthLab').textContent = S.month || '—';
+  document.getElementById('btnCalc').disabled = false;
+  document.getElementById('welcome').style.display = 'none';
+  requestAnimationFrame(function() {
+    fit();
+    draw();
+  });
+  setStatus('Пласт ' + S.layer + ' · месяцев МЭР: ' + S.months.length, 'ok');
+}
+
+function morForMonth(month) {
+  var inj = {}, liq = {}, oil = {};
+  S.mor.forEach(function(r) {
+    if (r[1] !== month) return;
+    var w = r[0];
+    inj[w] = (inj[w] || 0) + (+r[2] || 0);
+    liq[w] = (liq[w] || 0) + (+r[3] || 0);
+    oil[w] = (oil[w] || 0) + (+r[4] || 0);
+  });
+  return { inj: inj, liq: liq, oil: oil };
+}
+
+function doCalc() {
+  if (!S.month) { setStatus('Нет месяца МЭР', 'err'); return; }
+  var cor = corridor();
+  var m = morForMonth(S.month);
+  var fieldInj = 0, fieldLiq = 0;
+  Object.keys(m.inj).forEach(function(w) { fieldInj += m.inj[w]; });
+  Object.keys(m.liq).forEach(function(w) { fieldLiq += m.liq[w]; });
+  var fieldComp = fieldLiq > 0 ? 100 * fieldInj / fieldLiq : NaN;
+
+  var ids = Object.keys(S.blocks).sort(function(a, b) {
+    return String(a).localeCompare(String(b), undefined, { numeric: true });
+  });
+
+  S.blocksOut = [];
+  S.wellRows = [];
+
+  ids.forEach(function(bid) {
+    var pts = S.blocks[bid];
+    if (!pts || pts.length < 3) return;
+    var cen = polyCentroid(pts);
+    var wellsIn = [];
+    S.wells.forEach(function(w) {
+      if (pointInPoly(w.cx, w.cy, pts)) wellsIn.push(w);
+    });
+    var lab = labelPointInPoly(pts);
+
+    var injSum = 0, liqSum = 0, oilSum = 0;
+    var injectors = [], producers = [];
+    wellsIn.forEach(function(w) {
+      var iw = m.inj[w.w] || 0;
+      var lw = m.liq[w.w] || 0;
+      var ow = m.oil[w.w] || 0;
+      injSum += iw; liqSum += lw; oilSum += ow;
+      if (iw > 0) injectors.push({ w: w.w, inj: iw, liq: lw, oil: ow, well: w });
+      else if (lw > 0) producers.push({ w: w.w, inj: iw, liq: lw, oil: ow, well: w });
+    });
+
+    var comp = liqSum > 0 ? 100 * injSum / liqSum : (injSum > 0 ? Infinity : NaN);
+    var st = statusOf(comp, cor);
+    var targetInj = isFinite(comp) && liqSum > 0 ? (cor.mid / 100) * liqSum : injSum;
+    // к ближайшей границе коридора, если вне
+    if (isFinite(comp) && liqSum > 0) {
+      if (comp > cor.hi) targetInj = (cor.hi / 100) * liqSum;
+      else if (comp < cor.lo) targetInj = (cor.lo / 100) * liqSum;
+      else targetInj = injSum;
+    }
+    var dInj = targetInj - injSum;
+
+    var block = {
+      id: bid, pts: pts, cx: cen.x, cy: cen.y, lx: lab.x, ly: lab.y, areaKm2: cen.area / 1e6,
+      injSum: injSum, liqSum: liqSum, oilSum: oilSum, comp: comp, status: st,
+      targetInj: targetInj, dInj: dInj,
+      injectors: injectors, producers: producers,
+      wells: wellsIn.map(function(w) { return w.w; })
+    };
+    S.blocksOut.push(block);
+
+    // разнести Δ закачки пропорционально текущей закачке
+    var injTotal = injectors.reduce(function(s, x) { return s + x.inj; }, 0) || 1;
+    injectors.forEach(function(x) {
+      var share = x.inj / injTotal;
+      var d = dInj * share;
+      var reco = '';
+      if (st === 'red') reco = 'Снизить закачку на ~' + Math.abs(d).toFixed(0) + ' м³/мес (доля блока)';
+      else if (st === 'orange') reco = 'Поднять закачку на ~' + Math.abs(d).toFixed(0) + ' м³/мес (доля блока)';
+      else reco = 'Оставить в текущем режиме · блок в коридоре';
+      S.wellRows.push({
+        w: x.w, role: 'inj', block: bid, status: st,
+        inj: x.inj, liq: x.liq, oil: x.oil,
+        dInj: d, reco: reco, well: x.well, compBlock: comp
+      });
+    });
+    producers.forEach(function(x) {
+      var reco = st === 'green'
+        ? 'Добывающая · блок в коридоре'
+        : (st === 'red'
+          ? 'Добывающая в перекомпенсированном блоке — контролировать обводнённость'
+          : 'Добывающая в недокомпенсированном блоке — ожидать рост поддержки');
+      S.wellRows.push({
+        w: x.w, role: 'prod', block: bid, status: st === 'green' ? 'green' : st,
+        inj: 0, liq: x.liq, oil: x.oil,
+        dInj: 0, reco: reco, well: x.well, compBlock: comp
+      });
+    });
+  });
+
+  // скважины вне блоков с активностью в месяце
+  var inBlock = {};
+  S.wellRows.forEach(function(r) { inBlock[r.w] = 1; });
+  S.wells.forEach(function(w) {
+    if (inBlock[w.w]) return;
+    var iw = m.inj[w.w] || 0, lw = m.liq[w.w] || 0;
+    if (iw <= 0 && lw <= 0) return;
+    S.wellRows.push({
+      w: w.w, role: iw > 0 ? 'inj' : 'prod', block: '—', status: 'none',
+      inj: iw, liq: lw, oil: m.oil[w.w] || 0, dInj: 0,
+      reco: 'Вне контура блоков', well: w, compBlock: NaN
+    });
+  });
+
+  document.getElementById('fieldComp').innerHTML =
+    'Поле <b>' + S.month + '</b>: закачка ' + fieldInj.toFixed(0) + ' м³ · добыча ' + fieldLiq.toFixed(0) +
+    ' т · компенсация <b>' + (isFinite(fieldComp) ? fieldComp.toFixed(1) + '%' : '—') + '</b>' +
+    ' · коридор ' + cor.lo + '–' + cor.hi + '%';
+
+  renderBlocks();
+  renderWells();
+  renderReco();
+  draw();
+  setStatus('Готово · ' + S.blocksOut.length + ' блоков · ' + S.wellRows.length + ' скважин · ' + S.month, 'ok');
+}
+
+function renderBlocks() {
+  var box = document.getElementById('blockList');
+  if (!S.blocksOut.length) {
+    box.innerHTML = '<p class="hint">Нет блоков</p>';
+    return;
+  }
+  box.innerHTML = S.blocksOut.map(function(b) {
+    var compTxt = isFinite(b.comp) ? b.comp.toFixed(1) + '%' : '—';
+    var dTxt = Math.abs(b.dInj) < 1 ? 'без изменений'
+      : ((b.dInj > 0 ? '+' : '') + b.dInj.toFixed(0) + ' м³ закачки');
+    var on = S.highlightBlock === b.id ? ' on' : '';
+    return '<div class="bi' + on + '" data-bid="' + b.id + '">' +
+      '<div style="display:flex;justify-content:space-between;gap:6px">' +
+      '<span><b>Блок ' + b.id + '</b><span class="badge ' + b.status + '">' + statusLabel(b.status) + '</span></span>' +
+      '<span style="font-weight:700;color:var(--' + (b.status === 'none' ? 'muted' : b.status) + ')">' + compTxt + '</span></div>' +
+      '<div class="meta">зак. ' + b.injSum.toFixed(0) + ' · доб. ' + b.liqSum.toFixed(0) +
+      ' · скв ' + b.wells.length + ' (нагн. ' + b.injectors.length + ' / доб. ' + b.producers.length + ')</div>' +
+      '<div class="meta">цель: ' + dTxt + '</div></div>';
+  }).join('');
+  box.querySelectorAll('.bi').forEach(function(el) {
+    el.onclick = function() {
+      S.highlightBlock = el.dataset.bid;
+      S.highlightWell = null;
+      renderBlocks();
+      renderWells();
+      fitToBlock(el.dataset.bid);
+      draw();
+    };
+  });
+}
+
+function renderWells() {
+  var filter = (document.getElementById('tblFilter') || {}).value || 'all';
+  var rows = S.wellRows.slice().sort(function(a, b) {
+    var order = { red: 0, orange: 1, green: 2, none: 3 };
+    var oa = order[a.status] != null ? order[a.status] : 9;
+    var ob = order[b.status] != null ? order[b.status] : 9;
+    if (oa !== ob) return oa - ob;
+    if (a.role !== b.role) return a.role === 'inj' ? -1 : 1;
+    return Math.abs(b.dInj) - Math.abs(a.dInj) || a.w.localeCompare(b.w, undefined, { numeric: true });
+  });
+
+  var nRed = 0, nOrange = 0, nGreen = 0;
+  S.wellRows.forEach(function(r) {
+    if (r.role !== 'inj') return;
+    if (r.status === 'red') nRed++;
+    else if (r.status === 'orange') nOrange++;
+    else if (r.status === 'green') nGreen++;
+  });
+  document.getElementById('nRed').textContent = nRed;
+  document.getElementById('nOrange').textContent = nOrange;
+  document.getElementById('nGreen').textContent = nGreen;
+
+  var filtered = rows.filter(function(r) {
+    if (filter === 'inj') return r.role === 'inj';
+    if (filter === 'red' || filter === 'orange' || filter === 'green') return r.status === filter;
+    return true;
+  });
+
+  var tb = document.getElementById('wellTableBody');
+  if (!filtered.length) {
+    tb.innerHTML = '<tr><td colspan="9" style="color:var(--muted);padding:10px">Нет скважин по фильтру</td></tr>';
+    return;
+  }
+  tb.innerHTML = filtered.map(function(r) {
+    var st = r.status === 'none' ? 'none' : r.status;
+    var stCls = st === 'red' || st === 'orange' || st === 'green' ? 'cell-' + st : '';
+    var delta = r.role === 'inj' && Math.abs(r.dInj) >= 1
+      ? ((r.dInj > 0 ? '+' : '') + r.dInj.toFixed(0))
+      : '—';
+    var on = S.highlightWell === r.w ? ' on' : '';
+    return '<tr class="row-' + st + on + '" data-w="' + r.w + '">' +
+      '<td><b>' + r.w + '</b></td>' +
+      '<td>' + (r.role === 'inj' ? 'нагнетательная' : 'добывающая') + '</td>' +
+      '<td>' + r.block + '</td>' +
+      '<td class="' + stCls + '">' + statusLabel(st) + '</td>' +
+      '<td class="' + stCls + '">' + (isFinite(r.compBlock) ? r.compBlock.toFixed(1) : '—') + '</td>' +
+      '<td>' + r.inj.toFixed(0) + '</td>' +
+      '<td>' + r.liq.toFixed(0) + '</td>' +
+      '<td class="' + stCls + '">' + delta + '</td>' +
+      '<td style="white-space:normal;max-width:320px">' + r.reco + '</td>' +
+      '</tr>';
+  }).join('');
+
+  tb.querySelectorAll('tr[data-w]').forEach(function(el) {
+    el.onclick = function() {
+      S.highlightWell = el.dataset.w;
+      var row = S.wellRows.filter(function(r) { return r.w === el.dataset.w; })[0];
+      if (row && row.block !== '—') S.highlightBlock = row.block;
+      renderBlocks();
+      renderWells();
+      if (row && row.well) centerOn(row.well.cx, row.well.cy);
+      draw();
+    };
+  });
+}
+
+function renderReco() {
+  var ul = document.getElementById('recoList');
+  var items = [];
+  var cor = corridor();
+  S.blocksOut.forEach(function(b) {
+    if (b.status === 'red') {
+      items.push({
+        cls: 'red',
+        html: '<b>Блок ' + b.id + '</b> — компенсация ' + b.comp.toFixed(1) +
+          '% (&gt; ' + cor.hi + '%). Снизить суммарную закачку на <b>' +
+          Math.abs(b.dInj).toFixed(0) + ' м³/мес</b> до границы ' + cor.hi +
+          '%. Нагнетательные скважины: ' + b.injectors.map(function(x) { return x.w; }).join(', ') + '.'
+      });
+    } else if (b.status === 'orange') {
+      items.push({
+        cls: 'orange',
+        html: '<b>Блок ' + b.id + '</b> — компенсация ' + (isFinite(b.comp) ? b.comp.toFixed(1) : '∞') +
+          '% (&lt; ' + cor.lo + '%). Поднять суммарную закачку на <b>' +
+          Math.abs(b.dInj).toFixed(0) + ' м³/мес</b> до границы ' + cor.lo +
+          '%. Нагнетательные скважины: ' + (b.injectors.map(function(x) { return x.w; }).join(', ') || 'нет') + '.'
+      });
+    } else if (b.status === 'green') {
+      items.push({
+        cls: 'green',
+        html: '<b>Блок ' + b.id + '</b> — компенсация ' + b.comp.toFixed(1) +
+          '% в коридоре ' + cor.lo + '–' + cor.hi + '%. Режим сохранять.'
+      });
+    }
+  });
+  if (!items.length) {
+    ul.innerHTML = '<li>Нет данных для рекомендаций.</li>';
+    return;
+  }
+  ul.innerHTML = items.map(function(it) {
+    return '<li class="' + it.cls + '">' + it.html + '</li>';
+  }).join('');
+}
+
+/* —— map —— */
+function bounds() {
+  var x1 = Infinity, x2 = -Infinity, y1 = Infinity, y2 = -Infinity;
+  function ex(x, y) {
+    if (!isFinite(x) || !isFinite(y)) return;
+    if (x < x1) x1 = x; if (x > x2) x2 = x;
+    if (y < y1) y1 = y; if (y > y2) y2 = y;
+  }
+  S.wells.forEach(function(w) {
+    ex(w.x, w.y); if (w.hz) ex(w.x3, w.y3);
+  });
+  Object.keys(S.blocks).forEach(function(bid) {
+    (S.blocks[bid] || []).forEach(function(p) { ex(p[0], p[1]); });
+  });
+  if (!isFinite(x1)) { x1 = 0; x2 = 1; y1 = 0; y2 = 1; }
+  return { x1: x1, x2: x2, y1: y1, y2: y2 };
+}
+
+/** Как в auto_grp_analyzer: ox/oy — сдвиг экрана в пикселях */
+function w2s(x, y) {
+  return { x: x * S.view.s + S.view.ox, y: -y * S.view.s + S.view.oy };
+}
+function s2w(sx, sy) {
+  return { x: (sx - S.view.ox) / S.view.s, y: -(sy - S.view.oy) / S.view.s };
+}
+
+function fit() {
+  var box = document.querySelector('.map-box');
+  var c = document.getElementById('cv');
+  var r = box.getBoundingClientRect();
+  if (r.width < 80 || r.height < 80) return false;
+  c.width = Math.max(200, r.width | 0);
+  c.height = Math.max(160, r.height | 0);
+  var b = bounds(), p = 36, w = b.x2 - b.x1 || 1, h = b.y2 - b.y1 || 1;
+  var sc = Math.min((c.width - 2 * p) / w, (c.height - 2 * p) / h);
+  S.view.s = sc;
+  S.view.s0 = sc;
+  S.view.ox = p - b.x1 * sc + (c.width - 2 * p - w * sc) / 2;
+  S.view.oy = p + b.y2 * sc - (c.height - 2 * p - h * sc) / 2;
+  return true;
+}
+
+function fitToBlock(bid) {
+  var pts = S.blocks[bid];
+  if (!pts || pts.length < 2) return;
+  var box = document.querySelector('.map-box');
+  var c = document.getElementById('cv');
+  var r = box.getBoundingClientRect();
+  if (r.width < 80 || r.height < 80) return;
+  c.width = Math.max(200, r.width | 0);
+  c.height = Math.max(160, r.height | 0);
+  var x1 = Infinity, x2 = -Infinity, y1 = Infinity, y2 = -Infinity;
+  pts.forEach(function(p) {
+    if (p[0] < x1) x1 = p[0]; if (p[0] > x2) x2 = p[0];
+    if (p[1] < y1) y1 = p[1]; if (p[1] > y2) y2 = p[1];
+  });
+  var pad = 28, w = Math.max(1, x2 - x1), h = Math.max(1, y2 - y1);
+  var sc = Math.min((c.width - 2 * pad) / w, (c.height - 2 * pad) / h);
+  S.view.s = sc;
+  S.view.ox = pad - x1 * sc + (c.width - 2 * pad - w * sc) / 2;
+  S.view.oy = pad + y2 * sc - (c.height - 2 * pad - h * sc) / 2;
+}
+
+function centerOn(x, y) {
+  var c = document.getElementById('cv');
+  var scr = w2s(x, y);
+  S.view.ox += c.width / 2 - scr.x;
+  S.view.oy += c.height / 2 - scr.y;
+}
+
+function zoomAt(sx, sy, factor) {
+  var before = s2w(sx, sy);
+  S.view.s *= factor;
+  var after = w2s(before.x, before.y);
+  S.view.ox += sx - after.x;
+  S.view.oy += sy - after.y;
+}
+
+function fillForStatus(st, hi) {
+  if (st === 'red') return hi ? 'rgba(248,113,113,0.55)' : 'rgba(248,113,113,0.38)';
+  if (st === 'orange') return hi ? 'rgba(251,146,60,0.55)' : 'rgba(251,146,60,0.38)';
+  if (st === 'green') return hi ? 'rgba(52,211,153,0.45)' : 'rgba(52,211,153,0.32)';
+  return 'rgba(140,160,180,0.18)';
+}
+
+function strokeForStatus(st) {
+  if (st === 'red') return '#f87171';
+  if (st === 'orange') return '#fb923c';
+  if (st === 'green') return '#34d399';
+  return 'rgba(200,220,255,0.55)';
+}
+
+/** Подпись строго по нарисованному path (та же заливка, что и ячейка). */
+function labelPosOnPath(ctx, screenPts) {
+  var minx = Infinity, maxx = -Infinity, miny = Infinity, maxy = -Infinity, i, s;
+  for (i = 0; i < screenPts.length; i++) {
+    s = screenPts[i];
+    if (s.x < minx) minx = s.x; if (s.x > maxx) maxx = s.x;
+    if (s.y < miny) miny = s.y; if (s.y > maxy) maxy = s.y;
+  }
+  var bw = Math.max(1, maxx - minx), bh = Math.max(1, maxy - miny);
+  var cx = (minx + maxx) / 2, cy = (miny + maxy) / 2;
+  if (ctx.isPointInPath(cx, cy)) return { x: cx, y: cy, bw: bw, bh: bh };
+  var best = null, bestScore = -1, gx, gy, x, y, nx = 20, ny = 20, score;
+  for (gy = 1; gy < ny; gy++) {
+    for (gx = 1; gx < nx; gx++) {
+      x = minx + bw * gx / nx;
+      y = miny + bh * gy / ny;
+      if (!ctx.isPointInPath(x, y)) continue;
+      score = Math.min(gx, nx - gx, gy, ny - gy);
+      if (score > bestScore) { bestScore = score; best = { x: x, y: y }; }
+    }
+  }
+  return { x: best ? best.x : cx, y: best ? best.y : cy, bw: bw, bh: bh };
+}
+
+function wellStatusMap() {
+  var m = {};
+  S.wellRows.forEach(function(r) { m[r.w] = r; });
+  return m;
+}
+
+function draw() {
+  var c = document.getElementById('cv');
+  if (!c.width) fit();
+  var ctx = c.getContext('2d');
+  ctx.fillStyle = '#06080c';
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  var byId = {};
+  S.blocksOut.forEach(function(b) { byId[b.id] = b; });
+  var showBlockLab = document.getElementById('vLabels').checked;
+  var showWellLab = document.getElementById('vWellLabels') && document.getElementById('vWellLabels').checked;
+
+  Object.keys(S.blocks).forEach(function(bid) {
+    var pts = S.blocks[bid];
+    if (!pts || pts.length < 2) return;
+    var b = byId[bid];
+    var st = b ? b.status : 'none';
+    var hi = S.highlightBlock === bid;
+    var screenPts = [];
+    ctx.beginPath();
+    pts.forEach(function(p, i) {
+      var s = w2s(p[0], p[1]);
+      screenPts.push(s);
+      if (i) ctx.lineTo(s.x, s.y); else ctx.moveTo(s.x, s.y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fillForStatus(st, hi);
+    ctx.fill('nonzero');
+    ctx.strokeStyle = strokeForStatus(st);
+    ctx.lineWidth = hi ? 3.2 : 2.2;
+    ctx.stroke();
+
+    if (b && showBlockLab) {
+      var lp = labelPosOnPath(ctx, screenPts);
+      // не рисуем огромный бейдж, если ячейка на экране крошечная — уменьшаем шрифт
+      var scale = Math.max(0.55, Math.min(1.15, Math.min(lp.bw, lp.bh) / 90));
+      var tw = 72 * scale, th = 32 * scale;
+      var fs1 = Math.max(8, 11 * scale), fs2 = Math.max(9, 13 * scale);
+      ctx.fillStyle = 'rgba(8,11,16,0.82)';
+      ctx.fillRect(lp.x - tw / 2, lp.y - th / 2, tw, th);
+      ctx.strokeStyle = strokeForStatus(st);
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(lp.x - tw / 2, lp.y - th / 2, tw, th);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#e8eef8';
+      ctx.font = '600 ' + fs1 + 'px Segoe UI,sans-serif';
+      ctx.fillText('Блок ' + bid, lp.x, lp.y - 6 * scale);
+      ctx.fillStyle = strokeForStatus(st);
+      ctx.font = '700 ' + fs2 + 'px Segoe UI,sans-serif';
+      ctx.fillText(isFinite(b.comp) ? b.comp.toFixed(0) + '%' : '—', lp.x, lp.y + 7 * scale);
+    }
+  });
+
+  var wmap = wellStatusMap();
+  var onlyInj = document.getElementById('vOnlyInj').checked;
+
+  S.wells.forEach(function(w) {
+    var row = wmap[w.w];
+    var isInj = row ? row.role === 'inj' : false;
+    var isProd = row ? row.role === 'prod' : false;
+    if (onlyInj && !isInj) return;
+    if (!row && onlyInj) return;
+
+    var hi = S.highlightWell === w.w || (S.highlightBlock && row && row.block === S.highlightBlock);
+    var injCol = '#38bdf8';
+    var prodCol = '#111111';
+    var lblCol = isInj ? '#7dd3fc' : (isProd ? '#f3f4f6' : '#9ca3af');
+    var a, b;
+
+    ctx.globalAlpha = hi || !S.highlightBlock ? 1 : (row && row.block === S.highlightBlock ? 1 : 0.28);
+
+    if (w.hz) {
+      a = w2s(w.x, w.y); b = w2s(w.x3, w.y3);
+      if (isInj) {
+        ctx.strokeStyle = injCol; ctx.lineWidth = hi ? 3 : 2.5;
+      } else if (isProd) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        ctx.strokeStyle = prodCol; ctx.lineWidth = hi ? 3 : 2.5;
+      } else {
+        ctx.strokeStyle = '#555'; ctx.lineWidth = 1.5;
+      }
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+
+    var p = w2s(w.x, w.y);
+    var lblX = p.x, lblY = p.y;
+    if (w.hz && a && b) {
+      lblX = (a.x + b.x) / 2;
+      lblY = (a.y + b.y) / 2;
+    }
+    ctx.beginPath();
+    if (isInj) {
+      ctx.fillStyle = injCol;
+      ctx.arc(p.x, p.y, hi ? 6 : 5, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (isProd) {
+      ctx.fillStyle = prodCol;
+      ctx.strokeStyle = '#cccccc';
+      ctx.lineWidth = 1;
+      ctx.arc(p.x, p.y, hi ? 5 : 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = '#6b7280';
+      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (showWellLab) {
+      ctx.fillStyle = lblCol;
+      ctx.font = (hi ? '700 ' : '500 ') + '10px Segoe UI,sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(w.w, lblX + 6, lblY - 4);
+    }
+    ctx.globalAlpha = 1;
+  });
+}
+
+function nearestWell(sx, sy) {
+  var best = null, bestD = 14;
+  S.wells.forEach(function(w) {
+    var p = w2s(w.cx, w.cy);
+    var d = Math.hypot(p.x - sx, p.y - sy);
+    if (d < bestD) { bestD = d; best = w; }
+  });
+  return best;
+}
+
+function showTip(html, x, y) {
+  var tip = document.getElementById('tip');
+  if (!html) { tip.style.display = 'none'; return; }
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(x + 12, document.getElementById('cv').width - 200) + 'px';
+  tip.style.top = Math.min(y + 12, document.getElementById('cv').height - 80) + 'px';
+}
+
+function initUI() {
+  document.getElementById('btnCalc').onclick = doCalc;
+  document.getElementById('btnFit').onclick = function() { fit(); draw(); };
+  document.getElementById('selLayer').onchange = onLayer;
+  document.getElementById('lo').onchange = function() { if (S.blocksOut.length) doCalc(); };
+  document.getElementById('hi').onchange = function() { if (S.blocksOut.length) doCalc(); };
+  document.getElementById('vLabels').onchange = draw;
+  document.getElementById('vWellLabels').onchange = draw;
+  document.getElementById('vOnlyInj').onchange = draw;
+  document.getElementById('tblFilter').onchange = renderWells;
+
+  (function initTableSplit() {
+    var handle = document.getElementById('splitTable');
+    var panel = document.getElementById('tablePanel');
+    var main = document.querySelector('.main');
+    if (!handle || !panel || !main) return;
+    var saved = parseInt(localStorage.getItem('compTableH') || '', 10);
+    if (isFinite(saved) && saved >= 80) panel.style.height = saved + 'px';
+
+    var drag = null;
+    function clampH(h) {
+      var mainH = main.getBoundingClientRect().height;
+      var maxH = Math.max(120, mainH - 180);
+      return Math.max(80, Math.min(maxH, h));
+    }
+    function apply(h) {
+      panel.style.height = clampH(h) + 'px';
+      fit();
+      draw();
+    }
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      drag = { y: e.clientY, h: panel.getBoundingClientRect().height };
+      handle.classList.add('drag');
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+    });
+    window.addEventListener('mousemove', function(e) {
+      if (!drag) return;
+      // тянем ручку вверх → таблица выше
+      apply(drag.h + (drag.y - e.clientY));
+    });
+    window.addEventListener('mouseup', function() {
+      if (!drag) return;
+      drag = null;
+      handle.classList.remove('drag');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem('compTableH', String(Math.round(panel.getBoundingClientRect().height)));
+    });
+  })();
+
+  document.getElementById('zIn').onclick = function() {
+    var c = document.getElementById('cv');
+    zoomAt(c.width / 2, c.height / 2, 1.25);
+    draw();
+  };
+  document.getElementById('zOut').onclick = function() {
+    var c = document.getElementById('cv');
+    zoomAt(c.width / 2, c.height / 2, 1 / 1.25);
+    draw();
+  };
+  document.getElementById('monthRange').oninput = function() {
+    var i = +this.value;
+    S.month = S.months[i];
+    document.getElementById('monthLab').textContent = S.month || '—';
+    if (S.blocksOut.length) doCalc();
+  };
+
+  var cv = document.getElementById('cv');
+  cv.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    var rect = cv.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    zoomAt(mx, my, e.deltaY < 0 ? 1.12 : 1 / 1.12);
+    draw();
+  }, { passive: false });
+
+  cv.addEventListener('mousedown', function(e) {
+    S.drag = { x: e.clientX, y: e.clientY, ox: S.view.ox, oy: S.view.oy };
+    cv.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (S.drag) {
+      var dx = e.clientX - S.drag.x, dy = e.clientY - S.drag.y;
+      S.view.ox = S.drag.ox + dx;
+      S.view.oy = S.drag.oy + dy;
+      draw();
+      return;
+    }
+    var rect = cv.getBoundingClientRect();
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    var w = nearestWell(sx, sy);
+    if (!w) { showTip(null); return; }
+    var row = S.wellRows.filter(function(r) { return r.w === w.w; })[0];
+    var html = '<b>' + w.w + '</b>';
+    if (row) {
+      html += '<br/>' + (row.role === 'inj' ? 'нагнетательная скважина' : 'добывающая скважина') +
+        ' · блок ' + row.block +
+        '<br/>зак. ' + row.inj.toFixed(0) + ' · доб. ' + row.liq.toFixed(0) +
+        (isFinite(row.compBlock) ? '<br/>K блока ' + row.compBlock.toFixed(1) + '%' : '') +
+        '<br/>' + row.reco;
+    }
+    showTip(html, sx, sy);
+  });
+  window.addEventListener('mouseup', function() {
+    S.drag = null;
+    cv.style.cursor = 'grab';
+  });
+  cv.addEventListener('click', function(e) {
+    if (Math.abs(e.movementX) + Math.abs(e.movementY) > 4) return;
+    var rect = cv.getBoundingClientRect();
+    var w = nearestWell(e.clientX - rect.left, e.clientY - rect.top);
+    if (!w) return;
+    S.highlightWell = w.w;
+    var row = S.wellRows.filter(function(r) { return r.w === w.w; })[0];
+    if (row && row.block !== '—') S.highlightBlock = row.block;
+    renderBlocks();
+    renderWells();
+    draw();
+  });
+
+  window.addEventListener('resize', function() { fit(); draw(); });
+}
+
+function boot() {
+  setStatus('Загрузка auto_grp_data.js…', 'busy');
+  loadScript('auto_grp_data.js').then(function() {
+    if (!window.AUTO_GRP_DATA) throw new Error('AUTO_GRP_DATA пуст');
+    S.data = window.AUTO_GRP_DATA;
+    var layers = Object.keys(S.data.layers || {});
+    if (!layers.length) throw new Error('Нет пластов');
+    var sel = document.getElementById('selLayer');
+    sel.innerHTML = layers.map(function(l) { return '<option value="' + l + '">' + l + '</option>'; }).join('');
+    initUI();
+    onLayer();
+    doCalc();
+    setStatus('Данные загружены', 'ok');
+  }).catch(function(e) {
+    document.getElementById('welcome').innerHTML =
+      '<div style="color:var(--red)">Ошибка загрузки</div><div>' + e.message + '</div>' +
+      '<div style="margin-top:8px">Откройте через локальный сервер рядом с auto_grp_data.js</div>';
+    setStatus(e.message, 'err');
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
