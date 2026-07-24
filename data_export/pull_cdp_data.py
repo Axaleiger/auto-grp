@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Скрипт для IDE / Jupyter: собрать JSON-пакет данных ЦДП.
+Скрипт для IDE / Jupyter: вытянуть данные из КЛАДа и собрать JSON для платформы ЦДП.
 
 Как пользоваться:
-  1. Вставьте этот файл в IDE (или откройте целиком в Jupyter)
-  2. Заполните блок CONFIG ниже (URL, токен, layer_id, период)
-  3. Запустите файл / ячейку
-  4. Рядом появится cdp_export.json — подключите его в платформе → «Данные»
+  1. Откройте этот файл в IDE или Jupyter
+  2. Заполните блок «НАИМЕНОВАНИЯ ИЗ КЛАДА» — спец запросит реальные имена
+     сущностей/таблиц/датасетов в КЛАДе и впишет их вместо пустых строк
+  3. Заполните подключение (URL, токен), пласты (layer_id) и период
+  4. Запустите → рядом появится cdp_export.json
+  5. В платформе: каталог → «Данные» → подключить этот JSON
 
-Нужен только стандартный Python 3 (+ urllib). Внешние пакеты не обязательны.
+Нужен только стандартный Python 3. Внешние пакеты не обязательны.
 """
 from __future__ import annotations
 
@@ -24,66 +26,212 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 # =============================================================================
-# CONFIG — заполните и запустите
+# НАИМЕНОВАНИЯ ИЗ КЛАДА
+# Спец запрашивает точные имена в КЛАДе и вставляет их сюда (строки в кавычках).
+# Пока имя пустое ("") — этот блок данных НЕ запрашивается.
+# =============================================================================
+
+# --- Стволы / координаты скважин ---
+# Что внутри: номер скважины, координаты устья/Т1 (X,Y), для ГС — Т3 (X3,Y3).
+# Нужно сервисам: Закачка, Факторы обводнённости.
+NAME_TRUNKS = ""  # ← сюда вставьте название из КЛАДа (стволы / координаты)
+
+# --- Контуры блоков разработки ---
+# Что внутри: имя блока + полигон контура (список точек X,Y).
+# Нужно сервисам: Закачка, Факторы обводнённости.
+NAME_BLOCKS = ""  # ← сюда вставьте название из КЛАДа (блоки / контуры)
+
+# --- МЭР (месячный эксплуатационный рапорт) ---
+# Что внутри: по скважине и дате — закачка м³/мес, жидкость т/мес, нефть т/мес.
+# Даты обычно помесячные (например 01.01.2024, 01.02.2024 …).
+# Нужно сервисам: Закачка, Факторы обводнённости.
+NAME_MER = ""  # ← сюда вставьте название из КЛАДа (МЭР / месячные показатели)
+
+# --- Техрежим / забойное давление ---
+# Что внутри: скважина, дата, Pзаб (атм), опционально дебит жидкости.
+# Нужно сервису: Факторы обводнённости.
+NAME_TR = ""  # ← сюда вставьте название из КЛАДа (техрежим / Pзаб)
+
+# --- Карты пластового давления ---
+# Что внутри: по датам — сетки/значения Pпл по пласту (для карт на дашборде).
+# Нужно сервису: Факторы обводнённости (карты давления).
+NAME_MAPS_PPL = ""  # ← сюда вставьте название из КЛАДа (карты Pпл)
+
+# --- Порты МГРП / автоГРП ---
+# Что внутри: по скважине — число портов, азимут ГС, длина ГС.
+# Нужно сервису: Факторы обводнённости.
+NAME_GRP_PORTS = ""  # ← сюда вставьте название из КЛАДа (порты ГРП / МГРП)
+
+# --- История добычи по месторождению ---
+# Что внутри: ряд дат + по скважинам ряды Qo, Qж, обводнённость (для графиков).
+# Нужно сервису: Факторы обводнённости (история).
+NAME_HISTORY = ""  # ← сюда вставьте название из КЛАДа (история добычи)
+
+# --- Запускные параметры скважин ---
+# Что внутри: дефолты для калькулятора запускных (пластовые/скважинные параметры).
+# Нужно сервису: Запускные параметры.
+NAME_STARTUP = ""  # ← сюда вставьте название из КЛАДа (запускные параметры)
+
+# --- Имена полей (колонок) внутри ответов КЛАДа ---
+# Если в КЛАДе колонки называются иначе — впишите сюда реальные имена.
+# Пустая строка = пробовать стандартные варианты в коде нормализации.
+FIELD_WELL = ""       # ← имя колонки «скважина» из КЛАДа
+FIELD_DATE = ""       # ← имя колонки «дата» из КЛАДа
+FIELD_INJ = ""        # ← имя колонки «закачка» (МЭР) из КЛАДа
+FIELD_LIQ = ""        # ← имя колонки «жидкость» (МЭР) из КЛАДа
+FIELD_OIL = ""        # ← имя колонки «нефть» (МЭР) из КЛАДа
+FIELD_PZAB = ""       # ← имя колонки «Pзаб» из КЛАДа
+FIELD_X = ""          # ← имя колонки координаты X из КЛАДа
+FIELD_Y = ""          # ← имя колонки координаты Y из КЛАДа
+FIELD_PORTS = ""      # ← имя колонки «число портов» из КЛАДа
+FIELD_AZIMUTH = ""    # ← имя колонки «азимут» из КЛАДа
+FIELD_GS_LEN = ""     # ← имя колонки «длина ГС» из КЛАДа
+
+# =============================================================================
+# ПОДКЛЮЧЕНИЕ И ЗАПРОС
 # =============================================================================
 
 CONFIG = {
-    # Базовый URL API (без слэша в конце)
+    # Базовый URL API КЛАДа (без слэша в конце)
     "base_url": "https://data.example.corp/api",
 
-    # Токен: либо строка здесь, либо имя переменной окружения
+    # Токен: либо строка здесь, либо из переменной окружения
     "token": "",                      # например "eyJ..."
-    "token_env": "CDP_DATA_TOKEN",    # если token пустой — берётся из env
+    "token_env": "CDP_DATA_TOKEN",
 
     "timeout_sec": 120,
 
-    # Метаданные пакета
+    # Метаданные пакета (для человека, не обязательно из КЛАДа)
     "do": "Хантос",
     "field": "Романовское",
-    "field_id": "REPLACE_FIELD_ID",
+    "field_id": "",                   # ← id месторождения в КЛАДе, если есть
     "exported_by": "",
 
-    # Период
+    # Период выгрузки (для МЭР, техрежима, карт, истории)
     "date_from": "2024-01-01",
     "date_to": "2026-06-01",
 
-    # Какие блоки данных тянуть
-    "datasets": [
-        "trunks",      # стволы / координаты
-        "blocks",      # контуры блоков
-        "mor",         # МЭР
-        "tr",          # техрежим Pзаб
-        "maps",        # карты Pпл
-        "grp_ports",   # порты МГРП
-        "history",     # история добычи (по field_id)
-        "startup",     # дефолты запускных
-    ],
-
-    # Пласты: label в пакете + layer_id в API
+    # Пласты: label — как будет в платформе; layer_id — id пласта в КЛАДе
     "layers": [
-        {"label": "2БС10", "layer_id": "REPLACE_LAYER_ID_2BS10"},
-        {"label": "БС9/1", "layer_id": "REPLACE_LAYER_ID_BS9_1"},
+        {"label": "2БС10", "layer_id": ""},   # ← сюда layer_id пласта 2БС10 из КЛАДа
+        {"label": "БС9/1", "layer_id": ""},   # ← сюда layer_id пласта БС9/1 из КЛАДа
     ],
 
-    # Куда сохранить результат (относительно текущей папки или абсолютный путь)
     "output_json": "cdp_export.json",
 }
 
-# Эндпоинты относительно base_url. Подставьте реальные пути вашей системы.
+# Шаблон URL. {name} подставится из NAME_* выше, {layer_id}/{field_id} — из CONFIG.
+# Если у вас другой путь API — поправьте строки. Спец спросит формат у владельцев API.
 ENDPOINTS = {
-    "trunks":    "/layers/{layer_id}/wells",
-    "blocks":    "/layers/{layer_id}/blocks",
-    "mor":       "/layers/{layer_id}/mer",
-    "tr":        "/layers/{layer_id}/tr",
-    "maps":      "/layers/{layer_id}/pressure-maps",
-    "grp_ports": "/layers/{layer_id}/frac-ports",
-    "history":   "/fields/{field_id}/production-history",
-    "startup":   "/layers/{layer_id}/startup-params",
+    "by_name_layer": "/datasets/{name}?layer_id={layer_id}",
+    "by_name_field": "/datasets/{name}?field_id={field_id}",
 }
 
+# Справочник блоков данных (для печати и сборки). Не трогать без нужды.
+DATASETS_INFO = [
+    {
+        "key": "trunks",
+        "name_var": "NAME_TRUNKS",
+        "title_ru": "Стволы / координаты",
+        "desc_ru": "Скважина, X/Y устья (Т1), для ГС — X3/Y3 (Т3).",
+        "has_dates": False,
+        "scope": "layer",
+    },
+    {
+        "key": "blocks",
+        "name_var": "NAME_BLOCKS",
+        "title_ru": "Контуры блоков",
+        "desc_ru": "Имя блока и полигон контура (точки X, Y).",
+        "has_dates": False,
+        "scope": "layer",
+    },
+    {
+        "key": "mor",
+        "name_var": "NAME_MER",
+        "title_ru": "МЭР (месячные показатели)",
+        "desc_ru": "Скважина + дата + закачка + жидкость + нефть (помесячно).",
+        "has_dates": True,
+        "scope": "layer",
+    },
+    {
+        "key": "tr",
+        "name_var": "NAME_TR",
+        "title_ru": "Техрежим / Pзаб",
+        "desc_ru": "Скважина + дата + забойное давление (+ опц. дебит жидкости).",
+        "has_dates": True,
+        "scope": "layer",
+    },
+    {
+        "key": "maps",
+        "name_var": "NAME_MAPS_PPL",
+        "title_ru": "Карты пластового давления",
+        "desc_ru": "По датам — значения / сетки Pпл по пласту.",
+        "has_dates": True,
+        "scope": "layer",
+    },
+    {
+        "key": "grp_ports",
+        "name_var": "NAME_GRP_PORTS",
+        "title_ru": "Порты МГРП",
+        "desc_ru": "По скважине: число портов, азимут, длина ГС.",
+        "has_dates": False,
+        "scope": "layer",
+    },
+    {
+        "key": "startup",
+        "name_var": "NAME_STARTUP",
+        "title_ru": "Запускные параметры",
+        "desc_ru": "Дефолтные параметры для калькулятора запускных скважин.",
+        "has_dates": False,
+        "scope": "layer",
+    },
+    {
+        "key": "history",
+        "name_var": "NAME_HISTORY",
+        "title_ru": "История добычи",
+        "desc_ru": "Ряд дат и по скважинам Qo / Qж / обводнённость.",
+        "has_dates": True,
+        "scope": "field",
+    },
+]
+
 # =============================================================================
-# HTTP
+# Внутренняя логика (ниже обычно не правят)
 # =============================================================================
+
+_NAME_BY_KEY = {
+    "trunks": lambda: NAME_TRUNKS,
+    "blocks": lambda: NAME_BLOCKS,
+    "mor": lambda: NAME_MER,
+    "tr": lambda: NAME_TR,
+    "maps": lambda: NAME_MAPS_PPL,
+    "grp_ports": lambda: NAME_GRP_PORTS,
+    "startup": lambda: NAME_STARTUP,
+    "history": lambda: NAME_HISTORY,
+}
+
+
+def _klad_name(key: str) -> str:
+    fn = _NAME_BY_KEY.get(key)
+    return (fn() if fn else "").strip()
+
+
+def _col(*candidates: str) -> List[str]:
+    """Приоритет: явное имя из FIELD_* , затем запасные варианты."""
+    out: List[str] = []
+    for c in candidates:
+        c = (c or "").strip()
+        if c and c not in out:
+            out.append(c)
+    return out
+
+
+def _pick(row: dict, names: List[str], default: Any = None) -> Any:
+    for n in names:
+        if n in row and row[n] not in (None, ""):
+            return row[n]
+    return default
+
 
 def _token() -> str:
     t = (CONFIG.get("token") or "").strip()
@@ -108,7 +256,7 @@ def api_get(path: str, params: Optional[dict] = None) -> Any:
         headers={
             "Authorization": f"Bearer {_token()}",
             "Accept": "application/json",
-            "User-Agent": "cdp-pull-data/1.0",
+            "User-Agent": "cdp-pull-data/1.1",
         },
         method="GET",
     )
@@ -136,36 +284,28 @@ def _as_list(data: Any) -> list:
     return []
 
 
-def _as_dict(data: Any, *keys: str) -> dict:
-    if data is None:
-        return {}
-    if isinstance(data, dict):
-        for key in keys:
-            if isinstance(data.get(key), dict):
-                return data[key]
-        # уже словарь сущностей
-        if not any(k in data for k in ("items", "rows", "data")):
-            return data
-    return {}
+def path_for(klad_name: str, scope: str, layer_id: str = "", field_id: str = "") -> str:
+    tpl = ENDPOINTS["by_name_field" if scope == "field" else "by_name_layer"]
+    return tpl.format(name=klad_name, layer_id=layer_id, field_id=field_id)
 
 
-# =============================================================================
-# Нормализация ответов API → формат пакета платформы
-# При необходимости поправьте маппинг полей под ваш API.
-# =============================================================================
+# --- Нормализация ответов → формат пакета платформы ---
 
 def norm_trunks(rows: list) -> list:
+    well_keys = _col(FIELD_WELL, "w", "well", "well_name", "name")
+    x_keys = _col(FIELD_X, "x", "x1", "t1_x")
+    y_keys = _col(FIELD_Y, "y", "y1", "t1_y")
     out = []
     for r in rows:
         if not isinstance(r, dict):
             continue
-        w = str(r.get("w") or r.get("well") or r.get("well_name") or r.get("name") or "").strip()
+        w = str(_pick(r, well_keys) or "").strip()
         if not w:
             continue
         item = {
             "w": w,
-            "x": float(r.get("x") or r.get("x1") or r.get("t1_x") or 0),
-            "y": float(r.get("y") or r.get("y1") or r.get("t1_y") or 0),
+            "x": float(_pick(r, x_keys, 0) or 0),
+            "y": float(_pick(r, y_keys, 0) or 0),
         }
         x3 = r.get("x3") or r.get("t3_x")
         y3 = r.get("y3") or r.get("t3_y")
@@ -196,12 +336,21 @@ def norm_blocks(data: Any) -> dict:
         out = {}
         for bid, pts in data.items():
             if isinstance(pts, list):
-                out[str(bid)] = [[float(p[0]), float(p[1])] for p in pts if isinstance(p, (list, tuple)) and len(p) >= 2]
+                out[str(bid)] = [
+                    [float(p[0]), float(p[1])]
+                    for p in pts
+                    if isinstance(p, (list, tuple)) and len(p) >= 2
+                ]
         return out
     return {}
 
 
 def norm_mor(rows: list) -> list:
+    well_keys = _col(FIELD_WELL, "well", "w", "well_name")
+    date_keys = _col(FIELD_DATE, "date", "dt")
+    inj_keys = _col(FIELD_INJ, "inj", "injection", "zakachka")
+    liq_keys = _col(FIELD_LIQ, "liq", "liquid", "fluid")
+    oil_keys = _col(FIELD_OIL, "oil", "oil_prod")
     out = []
     for r in rows:
         if isinstance(r, (list, tuple)) and len(r) >= 5:
@@ -209,17 +358,20 @@ def norm_mor(rows: list) -> list:
             continue
         if not isinstance(r, dict):
             continue
-        well = str(r.get("well") or r.get("w") or r.get("well_name") or "").strip()
-        date = str(r.get("date") or r.get("dt") or "").strip()
-        inj = float(r.get("inj") or r.get("injection") or r.get("zakachka") or 0)
-        liq = float(r.get("liq") or r.get("liquid") or r.get("fluid") or 0)
-        oil = float(r.get("oil") or r.get("oil_prod") or 0)
+        well = str(_pick(r, well_keys) or "").strip()
+        date = str(_pick(r, date_keys) or "").strip()
+        inj = float(_pick(r, inj_keys, 0) or 0)
+        liq = float(_pick(r, liq_keys, 0) or 0)
+        oil = float(_pick(r, oil_keys, 0) or 0)
         if well and date:
             out.append([well, date, round(inj, 1), round(liq, 1), round(oil, 1)])
     return out
 
 
 def norm_tr(rows: list) -> list:
+    well_keys = _col(FIELD_WELL, "well", "w")
+    date_keys = _col(FIELD_DATE, "date", "dt")
+    pzab_keys = _col(FIELD_PZAB, "pzab", "p_wf", "bottomhole_pressure")
     out = []
     for r in rows:
         if isinstance(r, (list, tuple)) and len(r) >= 3:
@@ -228,9 +380,9 @@ def norm_tr(rows: list) -> list:
             continue
         if not isinstance(r, dict):
             continue
-        well = str(r.get("well") or r.get("w") or "").strip()
-        date = str(r.get("date") or r.get("dt") or "").strip()
-        pzab = r.get("pzab") or r.get("p_wf") or r.get("bottomhole_pressure")
+        well = str(_pick(r, well_keys) or "").strip()
+        date = str(_pick(r, date_keys) or "").strip()
+        pzab = _pick(r, pzab_keys)
         if not well or not date or pzab in (None, ""):
             continue
         qliq = float(r.get("qliq") or r.get("q_liq") or r.get("liquid_rate") or 0)
@@ -245,6 +397,10 @@ def norm_maps(data: Any) -> dict:
 
 
 def norm_ports(data: Any) -> dict:
+    well_keys = _col(FIELD_WELL, "w", "well")
+    ports_keys = _col(FIELD_PORTS, "ports", "n_ports")
+    az_keys = _col(FIELD_AZIMUTH, "az", "azimuth")
+    len_keys = _col(FIELD_GS_LEN, "L", "length", "gs_length")
     if isinstance(data, dict) and "ports" in data:
         data = data["ports"]
     if isinstance(data, list):
@@ -252,14 +408,14 @@ def norm_ports(data: Any) -> dict:
         for r in data:
             if not isinstance(r, dict):
                 continue
-            w = str(r.get("w") or r.get("well") or "").strip()
+            w = str(_pick(r, well_keys) or "").strip()
             if not w:
                 continue
             out[w] = {
                 "w": w,
-                "ports": int(r.get("ports") or r.get("n_ports") or 0),
-                "az": float(r.get("az") or r.get("azimuth") or 0),
-                "L": float(r.get("L") or r.get("length") or r.get("gs_length") or 0),
+                "ports": int(_pick(r, ports_keys, 0) or 0),
+                "az": float(_pick(r, az_keys, 0) or 0),
+                "L": float(_pick(r, len_keys, 0) or 0),
             }
         return out
     if isinstance(data, dict):
@@ -267,28 +423,54 @@ def norm_ports(data: Any) -> dict:
         for w, r in data.items():
             if isinstance(r, dict):
                 out[str(w)] = {
-                    "w": str(r.get("w") or w),
-                    "ports": int(r.get("ports") or 0),
-                    "az": float(r.get("az") or 0),
-                    "L": float(r.get("L") or 0),
+                    "w": str(_pick(r, well_keys, w) or w),
+                    "ports": int(_pick(r, ports_keys, 0) or 0),
+                    "az": float(_pick(r, az_keys, 0) or 0),
+                    "L": float(_pick(r, len_keys, 0) or 0),
                 }
         return out
     return {}
 
 
-def path_for(kind: str, layer_id: str = "", field_id: str = "") -> str:
-    tpl = ENDPOINTS[kind]
-    return tpl.format(layer_id=layer_id, field_id=field_id)
+_NORM = {
+    "trunks": lambda raw: norm_trunks(_as_list(raw)),
+    "blocks": norm_blocks,
+    "mor": lambda raw: norm_mor(_as_list(raw)),
+    "tr": lambda raw: norm_tr(_as_list(raw)),
+    "maps": norm_maps,
+    "grp_ports": norm_ports,
+    "startup": lambda raw: raw if isinstance(raw, dict) else {},
+}
 
 
-# =============================================================================
-# Сборка пакета
-# =============================================================================
+def print_plan() -> None:
+    print("План выгрузки (что заполнено из КЛАДа):\n")
+    any_filled = False
+    for ds in DATASETS_INFO:
+        name = _klad_name(ds["key"])
+        mark = "✓" if name else "·"
+        dates = " [есть даты / период]" if ds["has_dates"] else ""
+        print(f"  {mark} {ds['title_ru']}")
+        print(f"      {ds['desc_ru']}{dates}")
+        if name:
+            any_filled = True
+            print(f"      имя в КЛАДе: «{name}»")
+        else:
+            print(f"      имя в КЛАДе: (пусто — блок пропущен)  ← {ds['name_var']}")
+        print()
+    if not any_filled:
+        raise SystemExit(
+            "Ни одно NAME_* не заполнено.\n"
+            "Спец должен вписать названия сущностей из КЛАДа вверху файла."
+        )
 
-def pull_layer(layer: dict, datasets: set, date_from: str, date_to: str) -> dict:
+
+def pull_layer(layer: dict, date_from: str, date_to: str) -> dict:
     label = layer["label"]
-    layer_id = layer["layer_id"]
-    print(f"• {label}  layer_id={layer_id}")
+    layer_id = (layer.get("layer_id") or "").strip()
+    if not layer_id:
+        raise SystemExit(f"У пласта «{label}» пустой layer_id — впишите id из КЛАДа")
+    print(f"• Пласт {label}  (layer_id={layer_id})")
     obj: Dict[str, Any] = {
         "layer_id": layer_id,
         "label": label,
@@ -297,57 +479,38 @@ def pull_layer(layer: dict, datasets: set, date_from: str, date_to: str) -> dict
     }
     period = {"from": date_from, "to": date_to}
 
-    if "trunks" in datasets:
-        raw = api_get(path_for("trunks", layer_id=layer_id))
-        obj["trunks"] = norm_trunks(_as_list(raw))
-        print(f"  trunks: {len(obj['trunks'])}")
-
-    if "blocks" in datasets:
-        raw = api_get(path_for("blocks", layer_id=layer_id))
-        obj["blocks"] = norm_blocks(raw)
-        print(f"  blocks: {len(obj['blocks'])}")
-
-    if "mor" in datasets:
-        raw = api_get(path_for("mor", layer_id=layer_id), period)
-        obj["mor"] = norm_mor(_as_list(raw))
-        print(f"  mor: {len(obj['mor'])}")
-
-    if "tr" in datasets:
-        raw = api_get(path_for("tr", layer_id=layer_id), period)
-        obj["tr"] = norm_tr(_as_list(raw))
-        print(f"  tr: {len(obj['tr'])}")
-
-    if "maps" in datasets:
-        raw = api_get(path_for("maps", layer_id=layer_id), period)
-        obj["maps"] = norm_maps(raw)
-        print(f"  maps: {len(obj['maps'])}")
-
-    if "grp_ports" in datasets:
-        raw = api_get(path_for("grp_ports", layer_id=layer_id))
-        obj["grp_ports"] = norm_ports(raw)
-        print(f"  grp_ports: {len(obj['grp_ports'])}")
-
-    if "startup" in datasets:
-        raw = api_get(path_for("startup", layer_id=layer_id))
-        obj["startup"] = raw if isinstance(raw, dict) else {}
-        print(f"  startup: {len(obj['startup'])} ключей")
+    for ds in DATASETS_INFO:
+        if ds["scope"] != "layer":
+            continue
+        key = ds["key"]
+        name = _klad_name(key)
+        if not name:
+            continue
+        params = period if ds["has_dates"] else None
+        print(f"  → {ds['title_ru']}  «{name}»")
+        raw = api_get(path_for(name, "layer", layer_id=layer_id), params)
+        obj[key] = _NORM[key](raw)
+        n = len(obj[key]) if hasattr(obj[key], "__len__") else "?"
+        print(f"     получено: {n}")
 
     return obj
 
 
 def build_package() -> dict:
-    datasets = set(CONFIG.get("datasets") or [])
+    print_plan()
     date_from = CONFIG["date_from"]
     date_to = CONFIG["date_to"]
     layers_cfg = CONFIG.get("layers") or []
     if not layers_cfg:
-        raise SystemExit("CONFIG['layers'] пуст — укажите хотя бы один layer_id")
+        raise SystemExit("CONFIG['layers'] пуст — укажите хотя бы один пласт")
+
+    filled_keys = [ds["key"] for ds in DATASETS_INFO if _klad_name(ds["key"])]
 
     export: Dict[str, Any] = {
         "schema": "cdp-platform-export",
-        "version": "1.0",
+        "version": "1.1",
         "exported_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": {"system": "corp_api", "base_url": CONFIG["base_url"]},
+        "source": {"system": "klad", "base_url": CONFIG["base_url"]},
         "meta": {
             "do": CONFIG.get("do"),
             "field": CONFIG.get("field"),
@@ -356,24 +519,31 @@ def build_package() -> dict:
         },
         "request": {
             "period": {"date_from": date_from, "date_to": date_to},
-            "datasets": sorted(datasets),
-            "layers": [{"label": L["label"], "layer_id": L["layer_id"]} for L in layers_cfg],
+            "datasets": filled_keys,
+            "klad_names": {k: _klad_name(k) for k in filled_keys},
+            "layers": [
+                {"label": L["label"], "layer_id": L.get("layer_id")} for L in layers_cfg
+            ],
         },
         "layers": {},
     }
 
     for layer in layers_cfg:
-        export["layers"][layer["label"]] = pull_layer(layer, datasets, date_from, date_to)
+        export["layers"][layer["label"]] = pull_layer(layer, date_from, date_to)
 
-    if "history" in datasets:
-        field_id = CONFIG.get("field_id") or ""
-        print(f"• history  field_id={field_id}")
-        raw = api_get(path_for("history", field_id=field_id), {"from": date_from, "to": date_to})
+    hist_name = _klad_name("history")
+    if hist_name:
+        field_id = (CONFIG.get("field_id") or "").strip()
+        print(f"• История добычи  «{hist_name}»  (field_id={field_id or '—'})")
+        raw = api_get(
+            path_for(hist_name, "field", field_id=field_id),
+            {"from": date_from, "to": date_to},
+        )
         if isinstance(raw, dict):
             export["history"] = raw
             print(f"  dates: {len(raw.get('dates') or [])}, wells: {len(raw.get('wells') or {})}")
         else:
-            print("  history: пусто")
+            print("  history: пусто / неожиданный формат")
 
     return export
 
@@ -381,7 +551,9 @@ def build_package() -> dict:
 def save_package(export: dict) -> str:
     out = CONFIG.get("output_json") or "cdp_export.json"
     out = os.path.abspath(out)
-    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
+    parent = os.path.dirname(out)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(export, f, ensure_ascii=False, indent=2)
     size_kb = os.path.getsize(out) // 1024
@@ -390,14 +562,15 @@ def save_package(export: dict) -> str:
 
 
 def main() -> int:
-    print("Сборка пакета ЦДП…")
+    print("Сборка пакета ЦДП из КЛАДа…")
     print(f"API: {CONFIG['base_url']}")
+    print(f"Период: {CONFIG['date_from']} … {CONFIG['date_to']}\n")
     export = build_package()
     save_package(export)
     return 0
 
 
-# Для Jupyter: просто выполните ячейку с CONFIG и затем:
+# Для Jupyter: выполните ячейки с NAME_* / CONFIG, затем:
 #   export = build_package(); save_package(export)
 if __name__ == "__main__":
     sys.exit(main())
