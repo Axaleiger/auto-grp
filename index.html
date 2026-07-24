@@ -293,7 +293,7 @@ body {
 
     <section class="data-panel" id="dataPanel" aria-label="Пакет данных">
       <h2>Данные для сервисов</h2>
-      <p>Подключите JSON-пакет (<code>cdp-platform-export</code>). Он сохранится локально в браузере и будет использован сервисами «Закачка» и «Факторы обводнённости». Ниже — шаблон структуры и манифест полей.</p>
+      <p>Подключите JSON-пакет (<code>cdp-platform-export</code>). Он сохранится локально в браузере и будет использован сервисами «Закачка» и «Факторы обводнённости».</p>
       <div class="data-grid">
         <div class="data-box">
           <h3>Текущий пакет</h3>
@@ -306,17 +306,17 @@ body {
           <div id="dataMsg" style="margin-top:10px;min-height:1.2em"></div>
         </div>
         <div class="data-box">
-          <h3>Формат JSON</h3>
+          <h3>Скрипт для IDE</h3>
           <ul class="data-list">
-            <li>Откройте <strong>шаблон</strong> — пример структуры пакета</li>
-            <li>Откройте <strong>манифест полей</strong> — список датасетов для трёх сервисов</li>
-            <li>Соберите пакет скриптом <code>data_export/export_data.py</code></li>
-            <li>Подключите готовый файл в этом разделе</li>
+            <li>Откройте <strong>pull_cdp_data.py</strong> — один файл для Jupyter / IDE</li>
+            <li>Вверху заполните URL, токен, <code>layer_id</code>, период</li>
+            <li>Запустите — получите <code>cdp_export.json</code></li>
+            <li>Подключите JSON в этом разделе</li>
           </ul>
           <div class="data-actions" style="margin-top:12px">
-            <a class="btn-apply" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/sample_export.min.json" download="cdp_export_template.json">Шаблон JSON</a>
+            <a class="btn-apply" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/pull_cdp_data.py" download="pull_cdp_data.py">Скрипт Python (IDE)</a>
+            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/sample_export.min.json" download="cdp_export_template.json">Шаблон JSON</a>
             <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/manifest_datasets.json" download="manifest_datasets.json">Манифест полей</a>
-            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/config.example.json" download="export_config.example.json">Config скрипта</a>
           </div>
           <p style="margin:12px 0 0;font-size:.78rem">Документация: <a href="data_export/README.md">data_export/README.md</a></p>
         </div>

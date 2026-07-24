@@ -32,6 +32,20 @@
 
 ✓ обязательно · ○ желательно
 
+## Скрипт для IDE (основной)
+
+Файл **`pull_cdp_data.py`** — один готовый скрипт:
+
+1. Открыть / вставить в Jupyter или IDE  
+2. Заполнить блок `CONFIG` (URL, токен, `layer_id`, период)  
+3. При необходимости поправить `ENDPOINTS` под ваши пути API  
+4. Запустить → рядом появится `cdp_export.json`  
+5. Подключить файл в каталоге платформы → **Данные**
+
+Также доступен из UI: каталог → **Данные** → «Скрипт Python (IDE)».
+
+Дополнительно: `export_data.py` + `config.example.json` — расширенный вариант (в т.ч. local_csv).
+
 ## Структура JSON
 
 См. `sample_export.min.json`. Корневые поля:
@@ -41,17 +55,16 @@
 - `history` (опционально)
 - `meta` / `request`: месторождение, период, `layer_id`
 
-## Сборка пакета
+## Расширенный запуск через config
 
 ```bash
 cd data_export
 copy config.example.json config.json
-# заполните layer_id, field_id, period
 python export_data.py --config config.json
 ```
 
 - `connection.mode: "local_csv"` — из папок пластов репозитория  
-- `connection.mode: "corp_api"` — корпоративный API (токен `CDP_DATA_TOKEN`, URL в `CorpApiClient`)
+- `connection.mode: "corp_api"` — корпоративный API
 
 ## Подключение в платформе
 
