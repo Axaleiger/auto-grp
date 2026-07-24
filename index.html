@@ -222,8 +222,8 @@ body {
     <header class="topbar">
       <h1>Каталог ПО ЦДП — Портфель решений цифрового двойника промысла</h1>
       <div class="user">
-        <span>Смирнова ВН</span>
-        <div class="avatar" aria-hidden="true">СВ</div>
+        <span>Сюндюков АВ</span>
+        <div class="avatar" aria-hidden="true">СА</div>
       </div>
     </header>
 
@@ -252,10 +252,6 @@ body {
       <section class="section">
         <h2>Основные</h2>
         <div class="grid" id="gridMain"></div>
-      </section>
-      <section class="section">
-        <h2>Дополнительные</h2>
-        <div class="grid" id="gridExtra"></div>
       </section>
     </div>
   </div>
@@ -305,20 +301,6 @@ var TOOLS = [
     tip: 'Оценка дебита жидкости и нефти для ННС/ГС с учётом ГРП, режимов и факторного анализа план/факт.',
     owners: ['b', 'a']
   },
-  {
-    id: 'ppd',
-    group: 'extra',
-    title: 'Оптимизация системы ППД',
-    href: 'compensation_dashboard.html',
-    changed: '23.07.2026',
-    badges: [
-      { t: 'данные', c: 'result' },
-      { t: 'расчёт', c: 'calc' },
-      { t: 'результат', c: 'result' }
-    ],
-    tip: 'Связанный сценарий регулирования закачки — открывает дашборд компенсации по блокам.',
-    owners: ['a', 'b']
-  }
 ];
 
 function esc(s) {
@@ -354,9 +336,7 @@ function renderCard(t) {
 
 function paint() {
   var main = TOOLS.filter(function(t) { return t.group === 'main'; });
-  var extra = TOOLS.filter(function(t) { return t.group === 'extra'; });
   document.getElementById('gridMain').innerHTML = main.map(renderCard).join('');
-  document.getElementById('gridExtra').innerHTML = extra.map(renderCard).join('');
   bindInfo();
 }
 
