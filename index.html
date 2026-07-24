@@ -177,6 +177,40 @@ body {
 .info:hover .tip, .info:focus .tip, .info.open .tip { display: block; }
 .info .tip { right: 0; top: calc(100% + 8px); }
 
+.data-panel {
+  display: none; margin: 14px 16px 28px; padding: 18px 20px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+}
+.data-panel.on { display: block; }
+.data-panel h2 { font-size: 1.05rem; color: var(--title); margin: 0 0 8px; }
+.data-panel p { color: var(--muted); font-size: .88rem; line-height: 1.5; margin: 0 0 14px; max-width: 720px; }
+.data-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+.data-box {
+  border: 1px dashed #b8c4d0; border-radius: 10px; padding: 16px;
+  background: #f8fafc;
+}
+.data-box h3 { font-size: .82rem; margin: 0 0 10px; color: var(--title); }
+.data-status {
+  font-size: .82rem; line-height: 1.45; color: var(--ink);
+  background: #eef9ff; border: 1px solid #cfe8f8; border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.data-status.empty { background: #fff8f0; border-color: #f5d4b0; }
+.data-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.data-actions input[type=file] { font-size: .8rem; max-width: 100%; }
+.btn-ghost {
+  height: 36px; border: 1px solid #d1d5db; border-radius: 8px; padding: 0 14px;
+  background: #fff; color: var(--ink); font: inherit; font-size: .82rem; font-weight: 650; cursor: pointer;
+}
+.btn-danger { border-color: #f5c2c0; color: #b42318; background: #fff5f5; }
+.data-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: .8rem; line-height: 1.55; }
+.data-list code { font-size: .76rem; background: #eef2f6; padding: 1px 5px; border-radius: 4px; }
+.view-catalog .data-panel { display: none; }
+.view-data .filters, .view-data .content { display: none; }
+.view-data .data-panel { display: block; }
+.msg-ok { color: var(--ok); font-size: .8rem; font-weight: 650; }
+.msg-err { color: #b42318; font-size: .8rem; font-weight: 650; }
+
 @media (max-width: 900px) {
   .app { grid-template-columns: 1fr; }
   .sidebar {
@@ -198,29 +232,31 @@ body {
   .grid { grid-template-columns: 1fr; }
   .card { min-height: 156px; }
   .go { min-height: 40px; display: inline-flex; align-items: center; }
+  .data-panel { margin: 10px; }
+  .data-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
-<body>
+<body class="view-catalog">
 <div class="app">
   <aside class="sidebar" aria-label="Навигация">
-    <button class="side-btn on" title="Каталог" aria-current="page" type="button">
+    <button class="side-btn on" id="navCatalog" title="Каталог" type="button" aria-current="page">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     </button>
-    <button class="side-btn" title="Аналитика" type="button">
+    <button class="side-btn" id="navAnalytics" title="Аналитика" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/></svg>
     </button>
-    <button class="side-btn" title="Скважины" type="button">
+    <button class="side-btn" id="navWells" title="Скважины" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M8 7h8M9 11h6M10 15h4"/><circle cx="12" cy="20" r="1.5"/></svg>
     </button>
-    <button class="side-btn" title="Данные" type="button">
+    <button class="side-btn" id="navData" title="Данные" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>
     </button>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <h1>Каталог ПО ЦДП — Портфель решений цифрового двойника промысла</h1>
+      <h1 id="pageTitle">Каталог ПО ЦДП — Портфель решений цифрового двойника промысла</h1>
       <div class="user">
         <span>Сюндюков АВ</span>
         <div class="avatar" aria-hidden="true">СА</div>
@@ -254,9 +290,38 @@ body {
         <div class="grid" id="gridMain"></div>
       </section>
     </div>
+
+    <section class="data-panel" id="dataPanel" aria-label="Загрузка данных КЛАД">
+      <h2>Данные из КЛАД</h2>
+      <p>Загрузите JSON-выгрузку (<code>cdp-platform-export</code>), подготовленную скриптом <code>klad/export_from_klad.py</code>. Пакет сохранится в браузере и подхватится сервисами «Закачка» и «Факторы обводнённости».</p>
+      <div class="data-grid">
+        <div class="data-box">
+          <h3>Текущий пакет</h3>
+          <div id="dataStatus" class="data-status empty">Пакет не загружен — сервисы используют встроенный auto_grp_data.js</div>
+          <div class="data-actions">
+            <input id="dataFile" type="file" accept=".json,.js,application/json" />
+            <button type="button" class="btn-apply" id="btnLoadData">Загрузить</button>
+            <button type="button" class="btn-ghost btn-danger" id="btnClearData">Очистить</button>
+          </div>
+          <div id="dataMsg" style="margin-top:10px;min-height:1.2em"></div>
+        </div>
+        <div class="data-box">
+          <h3>Что должно быть в JSON</h3>
+          <ul class="data-list">
+            <li><code>trunks</code>, <code>blocks</code>, <code>mor</code> — закачка + факторы</li>
+            <li><code>maps</code>, <code>tr</code> — карта Pпл и автоГРП</li>
+            <li><code>grp_ports</code>, <code>history</code> — опционально</li>
+            <li><code>startup</code> — дефолты запускных параметров</li>
+            <li>Идентификаторы: <code>layer_id</code>, <code>field_id</code> в meta/layers</li>
+          </ul>
+          <p style="margin:12px 0 0;font-size:.78rem">Документация: <code>klad/README.md</code>, каталог полей: <code>klad/manifest_datasets.json</code></p>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
+<script src="platform_data.js"></script>
 <script>
 var TOOLS = [
   {
@@ -363,7 +428,83 @@ document.getElementById('filtersToggle').addEventListener('click', function() {
 if (!window.matchMedia('(max-width:900px)').matches) {
   document.getElementById('filters').classList.remove('collapsed');
 }
+
+function setNav(view) {
+  document.body.classList.toggle('view-catalog', view === 'catalog');
+  document.body.classList.toggle('view-data', view === 'data');
+  document.getElementById('navCatalog').classList.toggle('on', view === 'catalog');
+  document.getElementById('navData').classList.toggle('on', view === 'data');
+  document.getElementById('navCatalog').setAttribute('aria-current', view === 'catalog' ? 'page' : 'false');
+  document.getElementById('navData').setAttribute('aria-current', view === 'data' ? 'page' : 'false');
+  document.getElementById('pageTitle').textContent = view === 'data'
+    ? 'Данные КЛАД — загрузка пакета для сервисов ЦДП'
+    : 'Каталог ПО ЦДП — Портфель решений цифрового двойника промысла';
+  if (view === 'data') refreshDataStatus();
+}
+
+function refreshDataStatus() {
+  var el = document.getElementById('dataStatus');
+  if (!window.CdpPlatformData) {
+    el.className = 'data-status empty';
+    el.textContent = 'Модуль platform_data.js не загружен';
+    return;
+  }
+  CdpPlatformData.statusSummary().then(function(s) {
+    if (s.source === 'klad-json' && s.layers.length) {
+      el.className = 'data-status';
+      el.innerHTML = '<strong>Загружен JSON КЛАД</strong><br>' +
+        'Пласты: ' + esc(s.layers.join(', ')) +
+        (s.field ? '<br>Месторождение: ' + esc(s.field) : '') +
+        (s.exported_at ? '<br>Выгружен: ' + esc(s.exported_at) : '') +
+        (s.uploaded_at ? '<br>Загружен в браузер: ' + esc(s.uploaded_at) : '');
+    } else {
+      el.className = 'data-status empty';
+      el.textContent = 'Пакет не загружен — сервисы используют встроенный auto_grp_data.js';
+    }
+  });
+}
+
+document.getElementById('navCatalog').addEventListener('click', function() { setNav('catalog'); });
+document.getElementById('navData').addEventListener('click', function() { setNav('data'); });
+document.getElementById('navAnalytics').addEventListener('click', function() {
+  window.location.href = 'auto_grp_analyzer.html';
+});
+document.getElementById('navWells').addEventListener('click', function() {
+  window.location.href = 'startup_wells.html';
+});
+
+document.getElementById('btnLoadData').addEventListener('click', function() {
+  var input = document.getElementById('dataFile');
+  var msg = document.getElementById('dataMsg');
+  msg.textContent = '';
+  if (!input.files || !input.files[0]) {
+    msg.className = 'msg-err';
+    msg.textContent = 'Выберите файл JSON';
+    return;
+  }
+  msg.className = '';
+  msg.textContent = 'Загрузка…';
+  CdpPlatformData.loadFromUploadFile(input.files[0]).then(function(bundle) {
+    msg.className = 'msg-ok';
+    msg.textContent = 'Готово: ' + Object.keys(bundle.layers || {}).length + ' пласт(ов)';
+    refreshDataStatus();
+  }).catch(function(err) {
+    msg.className = 'msg-err';
+    msg.textContent = err.message || String(err);
+  });
+});
+
+document.getElementById('btnClearData').addEventListener('click', function() {
+  var msg = document.getElementById('dataMsg');
+  CdpPlatformData.clearExport().then(function() {
+    msg.className = 'msg-ok';
+    msg.textContent = 'Пакет очищен';
+    refreshDataStatus();
+  });
+});
+
 paint();
+refreshDataStatus();
 </script>
 </body>
 </html>

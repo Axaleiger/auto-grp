@@ -440,6 +440,7 @@ table.wells tr.row-green td:first-child { box-shadow: inset 3px 0 0 var(--green)
   <div class="statusbar"><span class="msg" id="status">Старт…</span></div>
 </div>
 
+<script src="platform_data.js"></script>
 <script>
 var S = {
   data: null, layer: null, trunks: [], blocks: {}, mor: [], months: [],
@@ -1426,10 +1427,17 @@ function initUI() {
 })();
 
 function boot() {
-  setStatus('Загрузка auto_grp_data.js…', 'busy');
-  loadScript('auto_grp_data.js').then(function() {
-    if (!window.AUTO_GRP_DATA) throw new Error('AUTO_GRP_DATA пуст');
-    S.data = window.AUTO_GRP_DATA;
+  setStatus('Загрузка данных…', 'busy');
+  var load = (window.CdpPlatformData && CdpPlatformData.loadPlatformData)
+    ? CdpPlatformData.loadPlatformData({ fallbackScript: 'auto_grp_data.js' })
+    : loadScript('auto_grp_data.js').then(function() {
+        if (!window.AUTO_GRP_DATA) throw new Error('AUTO_GRP_DATA пуст');
+        return window.AUTO_GRP_DATA;
+      });
+  load.then(function(data) {
+    if (!data || !data.layers) throw new Error('AUTO_GRP_DATA пуст');
+    window.AUTO_GRP_DATA = data;
+    S.data = data;
     var layers = Object.keys(S.data.layers || {});
     if (!layers.length) throw new Error('Нет пластов');
     var sel = document.getElementById('selLayer');
@@ -1437,11 +1445,12 @@ function boot() {
     initUI();
     onLayer();
     doCalc();
-    setStatus('Данные загружены', 'ok');
+    var src = (data._meta && data._meta.schema) ? ' (КЛАД JSON)' : '';
+    setStatus('Данные загружены' + src, 'ok');
   }).catch(function(e) {
     document.getElementById('welcome').innerHTML =
       '<div style="color:var(--red)">Ошибка загрузки</div><div>' + e.message + '</div>' +
-      '<div style="margin-top:8px">Откройте через локальный сервер рядом с auto_grp_data.js</div>';
+      '<div style="margin-top:8px">Загрузите JSON в каталоге → Данные или откройте рядом с auto_grp_data.js</div>';
     setStatus(e.message, 'err');
   });
 }

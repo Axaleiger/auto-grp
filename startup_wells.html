@@ -146,6 +146,7 @@
     </div>
   </main>
 
+  <script src="platform_data.js"></script>
   <script>
   (() => {
     "use strict";
@@ -594,6 +595,16 @@
     for(let i=0;i<4;i++)addMeasureRow();
     document.getElementById("reset").addEventListener("click",()=>{form.reset();form.classList.remove("fa-on");document.getElementById("results").classList.remove("has-data");document.getElementById("measureRows").innerHTML="";for(let i=0;i<4;i++)addMeasureRow();chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};lastView=null;cachedCharts=null});
     document.querySelectorAll("details").forEach(d=>d.addEventListener("toggle",()=>{if(d.open)document.querySelectorAll("details[open]").forEach(x=>{if(x!==d)x.open=false})}));
+    // Подстановка startup-дефолтов из загруженного JSON КЛАД (?layer=2БС10)
+    if(window.CdpPlatformData){
+      CdpPlatformData.loadPlatformData({fallbackScript:false}).then(data=>{
+        const want=new URLSearchParams(location.search).get("layer");
+        const startup=data&&data.startup;if(!startup)return;
+        const label=want&&startup[want]?want:Object.keys(startup)[0];
+        const defs=startup[label];if(!defs)return;
+        Object.keys(defs).forEach(k=>{const el=form.elements[k];if(el&&defs[k]!=null&&el.type!=="hidden")el.value=defs[k]});
+      }).catch(()=>{/* нет загруженного JSON — оставляем дефолты формы */});
+    }
     window.StartupCalc={calculate,calculatePump,CASES,waterfallChart,runFactorAnalysis,ESP_CATALOG,getRegimeTimeline};
   })();
   </script>

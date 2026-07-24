@@ -411,6 +411,7 @@ body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--
   </div>
 </div>
 
+<script src="platform_data.js"></script>
 <script>
 /* ═══ Статус — работает сразу, без зависимостей ═══ */
 function log(msg) {}
@@ -451,6 +452,29 @@ function loadScriptFile(url) {
 }
 
 function loadDataFile() {
+  if (window.CdpPlatformData && CdpPlatformData.loadPlatformData) {
+    setStatus('Загрузка данных…', 'busy', 10);
+    return CdpPlatformData.loadPlatformData({ fallbackScript: 'auto_grp_data.js' }).then(function(data) {
+      window.AUTO_GRP_DATA = data;
+      if (data.grp_ports) {
+        window.ROMA_GRP_PORTS = data.grp_ports;
+        S.grpPorts = data.grp_ports;
+      } else if (window.ROMA_GRP_PORTS) {
+        S.grpPorts = window.ROMA_GRP_PORTS;
+      } else {
+        return loadScriptFile('roma_grp_ports.js').then(function() {
+          if (window.ROMA_GRP_PORTS) S.grpPorts = window.ROMA_GRP_PORTS;
+          setStatus('Данные готовы', 'ok', 100);
+          return data;
+        }).catch(function() {
+          setStatus('Данные готовы', 'ok', 100);
+          return data;
+        });
+      }
+      setStatus('Данные готовы', 'ok', 100);
+      return data;
+    });
+  }
   return new Promise(function(resolve, reject) {
     var ready = function() {
       if (!window.AUTO_GRP_DATA) { reject(new Error('AUTO_GRP_DATA не найден')); return; }
