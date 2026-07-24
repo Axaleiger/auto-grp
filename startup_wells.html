@@ -595,7 +595,7 @@
     for(let i=0;i<4;i++)addMeasureRow();
     document.getElementById("reset").addEventListener("click",()=>{form.reset();form.classList.remove("fa-on");document.getElementById("results").classList.remove("has-data");document.getElementById("measureRows").innerHTML="";for(let i=0;i<4;i++)addMeasureRow();chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};lastView=null;cachedCharts=null});
     document.querySelectorAll("details").forEach(d=>d.addEventListener("toggle",()=>{if(d.open)document.querySelectorAll("details[open]").forEach(x=>{if(x!==d)x.open=false})}));
-    // Подстановка startup-дефолтов из загруженного JSON КЛАД (?layer=2БС10)
+    // Подстановка startup-дефолтов из загруженного JSON (?layer=2БС10)
     if(window.CdpPlatformData){
       CdpPlatformData.loadPlatformData({fallbackScript:false}).then(data=>{
         const want=new URLSearchParams(location.search).get("layer");

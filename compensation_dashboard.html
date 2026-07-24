@@ -1445,7 +1445,7 @@ function boot() {
     initUI();
     onLayer();
     doCalc();
-    var src = (data._meta && data._meta.schema) ? ' (КЛАД JSON)' : '';
+    var src = (data._meta && data._meta.uploaded_at) ? ' (JSON)' : '';
     setStatus('Данные загружены' + src, 'ok');
   }).catch(function(e) {
     document.getElementById('welcome').innerHTML =

@@ -16,9 +16,9 @@ ROLLBACK_water_diag.md
 2БС10 [is development object]/
 БС9_1 [is development object]/
 
-# KLAD export secrets / outputs
-klad/config.json
-klad/out/
+# Data export secrets / outputs
+data_export/config.json
+data_export/out/
 
 # Editor / OS
 .DS_Store

@@ -1,5 +1,5 @@
 /**
- * Загрузка и хранение JSON-экспорта КЛАД для сервисов ЦДП.
+ * Загрузка и хранение JSON-пакета данных для сервисов ЦДП.
  * Приоритет: IndexedDB (загруженный JSON) → window.AUTO_GRP_DATA (auto_grp_data.js).
  */
 (function (global) {
@@ -59,14 +59,14 @@
     });
   }
 
-  /** Экспорт КЛАД → формат AUTO_GRP_DATA (+ grp_ports, startup) */
+  /** Экспорт JSON → формат AUTO_GRP_DATA (+ grp_ports, startup) */
   function toAutoGrpData(exportObj) {
     if (!exportObj || typeof exportObj !== "object") throw new Error("Пустой JSON");
     // Уже в формате bundle?
     if (exportObj.layers && !exportObj.schema) {
       return normalizeBundle(exportObj);
     }
-    if (exportObj.schema !== "cdp-platform-export" && exportObj.schema !== "cdp-klad-export") {
+    if (exportObj.schema !== "cdp-platform-export" && exportObj.schema !== "cdp-data-export") {
       // допускаем оба имени + сырой bundle
       if (!exportObj.layers) throw new Error("Неизвестный формат: нет schema/layers");
     }
@@ -205,7 +205,7 @@
       if (stored && stored.layers) {
         var labels = Object.keys(stored.layers);
         return {
-          source: "klad-json",
+          source: "upload-json",
           layers: labels,
           exported_at: (stored._meta && stored._meta.exported_at) || (meta && meta.exported_at) || "",
           uploaded_at: (stored._meta && stored._meta.uploaded_at) || (meta && meta.uploaded_at) || "",

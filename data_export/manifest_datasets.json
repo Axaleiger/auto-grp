@@ -1,0 +1,386 @@
+{
+  "schema": "cdp-dataset-catalog",
+  "version": "1.0",
+  "description": "Каталог всех данных, необходимых трём сервисам ЦДП. Чек-лист для выгрузки по layer_id / field_id.",
+  "consumers": {
+    "compensation_dashboard": "Закачка / компенсация",
+    "auto_grp_analyzer": "Факторы обводнённости / автоГРП",
+    "startup_wells": "Запускные параметры скважин"
+  },
+  "datasets": [
+    {
+      "id": "trunks",
+      "title": "Стволы / координаты скважин",
+      "required_by": [
+        "compensation_dashboard",
+        "auto_grp_analyzer"
+      ],
+      "optional_by": [],
+      "fields": [
+        {
+          "name": "w",
+          "type": "string",
+          "desc": "Номер скважины"
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "unit": "м",
+          "desc": "Координата Т1 X"
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "unit": "м",
+          "desc": "Координата Т1 Y"
+        },
+        {
+          "name": "x3",
+          "type": "number",
+          "unit": "м",
+          "desc": "Координата Т3 X (ГС)",
+          "optional": true
+        },
+        {
+          "name": "y3",
+          "type": "number",
+          "unit": "м",
+          "desc": "Координата Т3 Y (ГС)",
+          "optional": true
+        },
+        {
+          "name": "hz",
+          "type": "boolean",
+          "desc": "Признак горизонтального ствола",
+          "optional": true
+        }
+      ],
+      "source_hint": "layer_id → скважины пласта + координаты Т1/Т3"
+    },
+    {
+      "id": "blocks",
+      "title": "Контуры блоков разработки",
+      "required_by": [
+        "compensation_dashboard",
+        "auto_grp_analyzer"
+      ],
+      "optional_by": [],
+      "fields": [
+        {
+          "name": "block_id",
+          "type": "string",
+          "desc": "Идентификатор / имя блока"
+        },
+        {
+          "name": "points",
+          "type": "array<[number,number]>",
+          "unit": "м",
+          "desc": "Вершины контура [X, Y]"
+        }
+      ],
+      "source_hint": "layer_id → полигоны блоков (имя блока, X, Y)"
+    },
+    {
+      "id": "mor",
+      "title": "МЭР — месячные показатели",
+      "required_by": [
+        "compensation_dashboard",
+        "auto_grp_analyzer"
+      ],
+      "optional_by": [],
+      "fields": [
+        {
+          "name": "well",
+          "type": "string",
+          "desc": "Скважина"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "format": "DD.MM.YYYY",
+          "desc": "Дата отчёта"
+        },
+        {
+          "name": "inj",
+          "type": "number",
+          "unit": "м³/мес",
+          "desc": "Закачка за месяц"
+        },
+        {
+          "name": "liq",
+          "type": "number",
+          "unit": "т/мес",
+          "desc": "Добыча жидкости"
+        },
+        {
+          "name": "oil",
+          "type": "number",
+          "unit": "т/мес",
+          "desc": "Добыча нефти"
+        }
+      ],
+      "source_hint": "layer_id + период → закачка/жидкость/нефть по скважинам"
+    },
+    {
+      "id": "tr",
+      "title": "Техрежим — забойное давление",
+      "required_by": [],
+      "optional_by": [
+        "auto_grp_analyzer"
+      ],
+      "note": "Практически обязателен для автоГРП (длина трещины от Pпл−Pзаб)",
+      "fields": [
+        {
+          "name": "well",
+          "type": "string"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "format": "01.MM.YYYY"
+        },
+        {
+          "name": "pzab",
+          "type": "number",
+          "unit": "атм",
+          "desc": "Забойное давление"
+        },
+        {
+          "name": "qliq",
+          "type": "number",
+          "unit": "т/сут",
+          "desc": "Дебит жидкости",
+          "optional": true
+        }
+      ],
+      "source_hint": "layer_id + период → Pзаб, опционально дебит жидкости"
+    },
+    {
+      "id": "maps",
+      "title": "Карты пластового давления (GRD / растр)",
+      "required_by": [
+        "auto_grp_analyzer"
+      ],
+      "optional_by": [],
+      "fields": [
+        {
+          "name": "key",
+          "type": "string",
+          "desc": "Имя файла/ключа, желательно с YYYY_MM"
+        },
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "nx",
+          "type": "integer"
+        },
+        {
+          "name": "ny",
+          "type": "integer"
+        },
+        {
+          "name": "xmin",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "xmax",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "ymin",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "ymax",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "step",
+          "type": "integer",
+          "desc": "Шаг даунсэмпла (обычно 3)"
+        },
+        {
+          "name": "data",
+          "type": "array<number|null>",
+          "desc": "Значения по строкам grid, null = пусто"
+        }
+      ],
+      "source_hint": "layer_id + месяц → сетка Pпл (Surfer DSAA или эквивалент)"
+    },
+    {
+      "id": "grp_ports",
+      "title": "Порты МГРП",
+      "required_by": [],
+      "optional_by": [
+        "auto_grp_analyzer",
+        "startup_wells"
+      ],
+      "fields": [
+        {
+          "name": "w",
+          "type": "string"
+        },
+        {
+          "name": "ports",
+          "type": "integer"
+        },
+        {
+          "name": "az",
+          "type": "number",
+          "unit": "град"
+        },
+        {
+          "name": "L",
+          "type": "number",
+          "unit": "м",
+          "desc": "Длина ГС"
+        }
+      ],
+      "source_hint": "layer_id / well_id → число портов, азимут, длина ГС"
+    },
+    {
+      "id": "history",
+      "title": "История добычи (помесячно)",
+      "required_by": [],
+      "optional_by": [
+        "auto_grp_analyzer"
+      ],
+      "scope": "field",
+      "fields": [
+        {
+          "name": "dates",
+          "type": "array<string>",
+          "format": "DD.MM.YYYY"
+        },
+        {
+          "name": "wells.<id>.liq",
+          "type": "array<number>",
+          "unit": "т"
+        },
+        {
+          "name": "wells.<id>.oil",
+          "type": "array<number>",
+          "unit": "т"
+        }
+      ],
+      "source_hint": "field_id → ряды liq/oil по скважинам"
+    },
+    {
+      "id": "startup",
+      "title": "Параметры запуска скважины (ПВТ / пласт / УЭЦН)",
+      "required_by": [],
+      "optional_by": [
+        "startup_wells"
+      ],
+      "fields": [
+        {
+          "name": "kh",
+          "type": "number",
+          "unit": "мД"
+        },
+        {
+          "name": "h",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "phi",
+          "type": "number"
+        },
+        {
+          "name": "ik2",
+          "type": "number"
+        },
+        {
+          "name": "mu_o",
+          "type": "number",
+          "unit": "сПз"
+        },
+        {
+          "name": "mu_w",
+          "type": "number",
+          "unit": "сПз"
+        },
+        {
+          "name": "Bo",
+          "type": "number"
+        },
+        {
+          "name": "Bw",
+          "type": "number"
+        },
+        {
+          "name": "ro_o",
+          "type": "number",
+          "unit": "г/см³"
+        },
+        {
+          "name": "Pb",
+          "type": "number",
+          "unit": "атм"
+        },
+        {
+          "name": "L",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "re",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "rw",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "Pi",
+          "type": "number",
+          "unit": "атм"
+        },
+        {
+          "name": "Pwf",
+          "type": "number",
+          "unit": "атм"
+        },
+        {
+          "name": "fw",
+          "type": "number",
+          "unit": "%"
+        },
+        {
+          "name": "Gf",
+          "type": "number",
+          "unit": "м³/м³"
+        },
+        {
+          "name": "Hform",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "Hpump",
+          "type": "number",
+          "unit": "м"
+        },
+        {
+          "name": "FracCount",
+          "type": "integer"
+        },
+        {
+          "name": "xf",
+          "type": "number",
+          "unit": "м"
+        }
+      ],
+      "source_hint": "layer_id или well_id → дефолты для калькулятора запускных"
+    }
+  ]
+}

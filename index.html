@@ -291,9 +291,9 @@ body {
       </section>
     </div>
 
-    <section class="data-panel" id="dataPanel" aria-label="Загрузка данных КЛАД">
-      <h2>Данные из КЛАД</h2>
-      <p>Загрузите JSON-выгрузку (<code>cdp-platform-export</code>), подготовленную скриптом <code>klad/export_from_klad.py</code>. Пакет сохранится в браузере и подхватится сервисами «Закачка» и «Факторы обводнённости».</p>
+    <section class="data-panel" id="dataPanel" aria-label="Загрузка данных">
+      <h2>Данные для сервисов</h2>
+      <p>Загрузите JSON-пакет (<code>cdp-platform-export</code>). Он сохранится в браузере и подхватится сервисами «Закачка» и «Факторы обводнённости». Ниже — шаблон JSON и манифест полей для формирования выгрузки.</p>
       <div class="data-grid">
         <div class="data-box">
           <h3>Текущий пакет</h3>
@@ -306,15 +306,19 @@ body {
           <div id="dataMsg" style="margin-top:10px;min-height:1.2em"></div>
         </div>
         <div class="data-box">
-          <h3>Что должно быть в JSON</h3>
+          <h3>Как сформировать JSON</h3>
           <ul class="data-list">
-            <li><code>trunks</code>, <code>blocks</code>, <code>mor</code> — закачка + факторы</li>
-            <li><code>maps</code>, <code>tr</code> — карта Pпл и автоГРП</li>
-            <li><code>grp_ports</code>, <code>history</code> — опционально</li>
-            <li><code>startup</code> — дефолты запускных параметров</li>
-            <li>Идентификаторы: <code>layer_id</code>, <code>field_id</code> в meta/layers</li>
+            <li>Скачайте <strong>шаблон</strong> — пример структуры пакета</li>
+            <li>Скачайте <strong>манифест полей</strong> — полный список датасетов для трёх сервисов</li>
+            <li>Соберите данные скриптом <code>data_export/export_data.py</code> (см. README в папке)</li>
+            <li>Загрузите готовый файл сюда</li>
           </ul>
-          <p style="margin:12px 0 0;font-size:.78rem">Документация: <code>klad/README.md</code>, каталог полей: <code>klad/manifest_datasets.json</code></p>
+          <div class="data-actions" style="margin-top:12px">
+            <a class="btn-apply" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/sample_export.min.json" download="cdp_export_template.json">Скачать шаблон JSON</a>
+            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/manifest_datasets.json" download="manifest_datasets.json">Скачать манифест полей</a>
+            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/config.example.json" download="export_config.example.json">Скачать config для скрипта</a>
+          </div>
+          <p style="margin:12px 0 0;font-size:.78rem">Документация: <a href="data_export/README.md">data_export/README.md</a></p>
         </div>
       </div>
     </section>
@@ -437,7 +441,7 @@ function setNav(view) {
   document.getElementById('navCatalog').setAttribute('aria-current', view === 'catalog' ? 'page' : 'false');
   document.getElementById('navData').setAttribute('aria-current', view === 'data' ? 'page' : 'false');
   document.getElementById('pageTitle').textContent = view === 'data'
-    ? 'Данные КЛАД — загрузка пакета для сервисов ЦДП'
+    ? 'Данные — загрузка пакета для сервисов ЦДП'
     : 'Каталог ПО ЦДП — Портфель решений цифрового двойника промысла';
   if (view === 'data') refreshDataStatus();
 }
@@ -450,9 +454,9 @@ function refreshDataStatus() {
     return;
   }
   CdpPlatformData.statusSummary().then(function(s) {
-    if (s.source === 'klad-json' && s.layers.length) {
+    if (s.source === 'upload-json' && s.layers.length) {
       el.className = 'data-status';
-      el.innerHTML = '<strong>Загружен JSON КЛАД</strong><br>' +
+      el.innerHTML = '<strong>Загружен JSON-пакет</strong><br>' +
         'Пласты: ' + esc(s.layers.join(', ')) +
         (s.field ? '<br>Месторождение: ' + esc(s.field) : '') +
         (s.exported_at ? '<br>Выгружен: ' + esc(s.exported_at) : '') +

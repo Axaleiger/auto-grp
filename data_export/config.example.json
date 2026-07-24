@@ -1,0 +1,51 @@
+{
+  "schema": "cdp-export-request",
+  "version": "1.0",
+  "comment": "Заполните layer_id / field_id и период. Скрипт export_data.py читает этот файл и пишет готовый JSON для платформы.",
+  "connection": {
+    "mode": "local_csv",
+    "comment": "local_csv — из папок проекта; corp_api — корпоративный API (реализуйте в CorpApiClient)",
+    "api": {
+      "base_url": "https://data.example.corp/api",
+      "token_env": "CDP_DATA_TOKEN",
+      "timeout_sec": 120
+    }
+  },
+  "meta": {
+    "do": "Хантос",
+    "field": "Романовское",
+    "field_id": "REPLACE_FIELD_ID",
+    "exported_by": ""
+  },
+  "period": {
+    "date_from": "2024-01-01",
+    "date_to": "2026-06-01"
+  },
+  "datasets": [
+    "trunks",
+    "blocks",
+    "mor",
+    "tr",
+    "maps",
+    "grp_ports",
+    "history",
+    "startup"
+  ],
+  "layers": [
+    {
+      "label": "2БС10",
+      "layer_id": "REPLACE_LAYER_ID_2BS10",
+      "local_folder": "2БС10 [is development object]"
+    },
+    {
+      "label": "БС9/1",
+      "layer_id": "REPLACE_LAYER_ID_BS9_1",
+      "local_folder": "БС9_1 [is development object]"
+    }
+  ],
+  "output": {
+    "json_path": "data_export/out/cdp_export.json",
+    "also_write_js": false,
+    "js_path": "auto_grp_data.js"
+  }
+}
