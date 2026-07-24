@@ -14,6 +14,7 @@
   --muted: #8b9cb3;
   --accent: #5b8def;
   --teal: #2dd4bf;
+  --orange: #fb923c;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
@@ -28,22 +29,23 @@ body {
   background:
     radial-gradient(900px 500px at 15% -10%, rgba(45,212,191,.16), transparent 55%),
     radial-gradient(700px 420px at 95% 10%, rgba(91,141,239,.12), transparent 50%),
+    radial-gradient(600px 380px at 50% 110%, rgba(251,146,60,.1), transparent 55%),
     var(--bg);
   display: grid;
   place-items: center;
   padding: max(20px, var(--safe-t)) max(16px, var(--safe-r)) max(20px, var(--safe-b)) max(16px, var(--safe-l));
   -webkit-tap-highlight-color: transparent;
 }
-.wrap { width: min(720px, 100%); }
+.wrap { width: min(980px, 100%); }
 .hdr { text-align: center; margin-bottom: 22px; }
 h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
 .sub { margin-top: 6px; color: var(--muted); font-size: .85rem; line-height: 1.45; }
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-@media (max-width: 640px) {
+@media (max-width: 860px) {
   .grid { grid-template-columns: 1fr; }
   h1 { font-size: 1.1rem; }
   .card { min-height: 140px; padding: 18px 16px; }
@@ -63,6 +65,7 @@ h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
   background: #162033;
 }
 .card.second:hover, .card.second:active { border-color: var(--accent); }
+.card.third:hover, .card.third:active { border-color: var(--orange); }
 .badge {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: .68rem; font-weight: 700; letter-spacing: .04em;
@@ -73,19 +76,21 @@ h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
   background: var(--teal);
 }
 .card.second .dot { background: var(--accent); }
-.card h2 { font-size: 1.15rem; font-weight: 650; }
+.card.third .dot { background: var(--orange); }
+.card h2 { font-size: 1.1rem; font-weight: 650; }
 .card p { color: var(--muted); font-size: .8rem; line-height: 1.45; flex: 1; }
 .card .go {
   font-size: .78rem; font-weight: 600; color: var(--teal);
 }
 .card.second .go { color: var(--accent); }
+.card.third .go { color: var(--orange); }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hdr">
       <h1>Выберите сервис</h1>
-      <p class="sub">Данные месторождения общие</p>
+      <p class="sub">Общий набор инструментов</p>
     </div>
     <div class="grid">
       <a class="card" href="compensation_dashboard.html">
@@ -98,6 +103,12 @@ h1 { font-size: 1.25rem; font-weight: 650; letter-spacing: -.02em; }
         <div class="badge"><span class="dot"></span>Этап 2</div>
         <h2>Факторы обводнённости</h2>
         <p>Трещины, прорывы, карта давлений, диагностика факторов обводнения.</p>
+        <span class="go">Открыть →</span>
+      </a>
+      <a class="card third" href="startup_wells.html">
+        <div class="badge"><span class="dot"></span>Этап 3</div>
+        <h2>Запускные параметры</h2>
+        <p>Расчёт дебита жидкости и нефти для ННС/ГС, ГРП, план/факт и факторный анализ.</p>
         <span class="go">Открыть →</span>
       </a>
     </div>
