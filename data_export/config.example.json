@@ -1,7 +1,7 @@
 {
   "schema": "cdp-export-request",
   "version": "1.0",
-  "comment": "Заполните layer_id / field_id и период. Скрипт export_data.py читает этот файл и пишет готовый JSON для платформы.",
+  "comment": "Заполните layer_id / field_id и период. Скрипт export_data.py собирает JSON-пакет для платформы.",
   "connection": {
     "mode": "local_csv",
     "comment": "local_csv — из папок проекта; corp_api — корпоративный API (реализуйте в CorpApiClient)",

@@ -291,32 +291,32 @@ body {
       </section>
     </div>
 
-    <section class="data-panel" id="dataPanel" aria-label="Загрузка данных">
+    <section class="data-panel" id="dataPanel" aria-label="Пакет данных">
       <h2>Данные для сервисов</h2>
-      <p>Загрузите JSON-пакет (<code>cdp-platform-export</code>). Он сохранится в браузере и подхватится сервисами «Закачка» и «Факторы обводнённости». Ниже — шаблон JSON и манифест полей для формирования выгрузки.</p>
+      <p>Подключите JSON-пакет (<code>cdp-platform-export</code>). Он сохранится локально в браузере и будет использован сервисами «Закачка» и «Факторы обводнённости». Ниже — шаблон структуры и манифест полей.</p>
       <div class="data-grid">
         <div class="data-box">
           <h3>Текущий пакет</h3>
-          <div id="dataStatus" class="data-status empty">Пакет не загружен — сервисы используют встроенный auto_grp_data.js</div>
+          <div id="dataStatus" class="data-status empty">Пакет не подключён — сервисы используют встроенный auto_grp_data.js</div>
           <div class="data-actions">
             <input id="dataFile" type="file" accept=".json,.js,application/json" />
-            <button type="button" class="btn-apply" id="btnLoadData">Загрузить</button>
-            <button type="button" class="btn-ghost btn-danger" id="btnClearData">Очистить</button>
+            <button type="button" class="btn-apply" id="btnLoadData">Подключить</button>
+            <button type="button" class="btn-ghost btn-danger" id="btnClearData">Сбросить</button>
           </div>
           <div id="dataMsg" style="margin-top:10px;min-height:1.2em"></div>
         </div>
         <div class="data-box">
-          <h3>Как сформировать JSON</h3>
+          <h3>Формат JSON</h3>
           <ul class="data-list">
-            <li>Скачайте <strong>шаблон</strong> — пример структуры пакета</li>
-            <li>Скачайте <strong>манифест полей</strong> — полный список датасетов для трёх сервисов</li>
-            <li>Соберите данные скриптом <code>data_export/export_data.py</code> (см. README в папке)</li>
-            <li>Загрузите готовый файл сюда</li>
+            <li>Откройте <strong>шаблон</strong> — пример структуры пакета</li>
+            <li>Откройте <strong>манифест полей</strong> — список датасетов для трёх сервисов</li>
+            <li>Соберите пакет скриптом <code>data_export/export_data.py</code></li>
+            <li>Подключите готовый файл в этом разделе</li>
           </ul>
           <div class="data-actions" style="margin-top:12px">
-            <a class="btn-apply" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/sample_export.min.json" download="cdp_export_template.json">Скачать шаблон JSON</a>
-            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/manifest_datasets.json" download="manifest_datasets.json">Скачать манифест полей</a>
-            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/config.example.json" download="export_config.example.json">Скачать config для скрипта</a>
+            <a class="btn-apply" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/sample_export.min.json" download="cdp_export_template.json">Шаблон JSON</a>
+            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/manifest_datasets.json" download="manifest_datasets.json">Манифест полей</a>
+            <a class="btn-ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="data_export/config.example.json" download="export_config.example.json">Config скрипта</a>
           </div>
           <p style="margin:12px 0 0;font-size:.78rem">Документация: <a href="data_export/README.md">data_export/README.md</a></p>
         </div>
@@ -441,7 +441,7 @@ function setNav(view) {
   document.getElementById('navCatalog').setAttribute('aria-current', view === 'catalog' ? 'page' : 'false');
   document.getElementById('navData').setAttribute('aria-current', view === 'data' ? 'page' : 'false');
   document.getElementById('pageTitle').textContent = view === 'data'
-    ? 'Данные — загрузка пакета для сервисов ЦДП'
+    ? 'Данные — пакет для сервисов ЦДП'
     : 'Каталог ПО ЦДП — Портфель решений цифрового двойника промысла';
   if (view === 'data') refreshDataStatus();
 }
@@ -450,20 +450,20 @@ function refreshDataStatus() {
   var el = document.getElementById('dataStatus');
   if (!window.CdpPlatformData) {
     el.className = 'data-status empty';
-    el.textContent = 'Модуль platform_data.js не загружен';
+    el.textContent = 'Модуль platform_data.js не подключён';
     return;
   }
   CdpPlatformData.statusSummary().then(function(s) {
     if (s.source === 'upload-json' && s.layers.length) {
       el.className = 'data-status';
-      el.innerHTML = '<strong>Загружен JSON-пакет</strong><br>' +
+      el.innerHTML = '<strong>Пакет подключён</strong><br>' +
         'Пласты: ' + esc(s.layers.join(', ')) +
         (s.field ? '<br>Месторождение: ' + esc(s.field) : '') +
-        (s.exported_at ? '<br>Выгружен: ' + esc(s.exported_at) : '') +
-        (s.uploaded_at ? '<br>Загружен в браузер: ' + esc(s.uploaded_at) : '');
+        (s.exported_at ? '<br>Собран: ' + esc(s.exported_at) : '') +
+        (s.uploaded_at ? '<br>Подключён: ' + esc(s.uploaded_at) : '');
     } else {
       el.className = 'data-status empty';
-      el.textContent = 'Пакет не загружен — сервисы используют встроенный auto_grp_data.js';
+      el.textContent = 'Пакет не подключён — сервисы используют встроенный auto_grp_data.js';
     }
   });
 }
@@ -487,7 +487,7 @@ document.getElementById('btnLoadData').addEventListener('click', function() {
     return;
   }
   msg.className = '';
-  msg.textContent = 'Загрузка…';
+  msg.textContent = 'Подключение…';
   CdpPlatformData.loadFromUploadFile(input.files[0]).then(function(bundle) {
     msg.className = 'msg-ok';
     msg.textContent = 'Готово: ' + Object.keys(bundle.layers || {}).length + ' пласт(ов)';
@@ -502,7 +502,7 @@ document.getElementById('btnClearData').addEventListener('click', function() {
   var msg = document.getElementById('dataMsg');
   CdpPlatformData.clearExport().then(function() {
     msg.className = 'msg-ok';
-    msg.textContent = 'Пакет очищен';
+    msg.textContent = 'Пакет сброшен';
     refreshDataStatus();
   });
 });

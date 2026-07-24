@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Выгрузка данных ЦДП → JSON для платформы.
+Сборка JSON-пакета данных ЦДП для платформы.
 
-Запуск в корпоративной IDE / Jupyter:
+Запуск в IDE / Jupyter:
   1. Скопируйте config.example.json → config.json
   2. Пропишите layer_id / field_id и период
   3. python export_data.py --config config.json
-  4. Файл из output.json_path отправьте на почту / загрузите в каталог «Данные»
+  4. Подключите JSON в каталоге платформы → «Данные»
 
 Режимы:
   connection.mode = "local_csv"  — сбор из CSV/XLSX/GRD папок проекта (демо)

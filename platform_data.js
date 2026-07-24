@@ -189,7 +189,7 @@
         return normalizeBundle(global.AUTO_GRP_DATA);
       }
       if (opts.fallbackScript === false) {
-        throw new Error("Нет загруженного JSON. Откройте каталог → Данные.");
+        throw new Error("Нет подключённого JSON. Откройте каталог → Данные.");
       }
       var script = opts.fallbackScript || "auto_grp_data.js";
       return loadScript(script).then(function () {

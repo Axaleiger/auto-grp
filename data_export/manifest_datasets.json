@@ -1,7 +1,7 @@
 {
   "schema": "cdp-dataset-catalog",
   "version": "1.0",
-  "description": "Каталог всех данных, необходимых трём сервисам ЦДП. Чек-лист для выгрузки по layer_id / field_id.",
+  "description": "Каталог данных, необходимых трём сервисам ЦДП. Чек-лист полей по layer_id / field_id.",
   "consumers": {
     "compensation_dashboard": "Закачка / компенсация",
     "auto_grp_analyzer": "Факторы обводнённости / автоГРП",
