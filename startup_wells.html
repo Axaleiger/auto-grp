@@ -102,7 +102,7 @@
             <div class="field"><label>w<sub>f</sub>, мм</label><input name="wf" type="number" step="any" value="5"></div>
             <div class="field"><label>k<sub>f</sub>, Д</label><input name="kf" type="number" step="any" value="50"></div>
             <div class="field wide"><label>Направление трещин</label><select name="FracDir"><option>Поперек</option><option>Вдоль</option></select></div>
-            <p class="grp-note">Порты отображаются; влияние на дебит — через скин S или численный движок 4.1.</p>
+            <p class="grp-note">Порты на изометрии: значение из колонки «План». В режиме ФА, если задан «Факт» по FracCount/x<sub>f</sub>, на схеме показывается факт. Влияние на дебит — через скин S или численный движок 4.1.</p>
           </div>
         </details>
         <details>
@@ -320,8 +320,8 @@
         <label>Ось Y <input type="range" min="10" max="50" step="1" value="${Math.round(Math.max(10,zy*10))}" data-axis="y" aria-label="Масштаб Y"><span data-valy>${fmt(zy,1)}×</span></label>
       </div>`;
     }
-    function schematic(r){
-      const p=r.p,pump=r.pump,hv=Math.max(12,Math.min(31,p.h*2.4)),top=[iso(-115,-62,hv),iso(115,-62,hv),iso(115,62,hv),iso(-115,62,hv)],bot=[iso(-115,-62,0),iso(115,-62,0),iso(115,62,0),iso(-115,62,0)];
+    function schematic(r, vizP=null){
+      const p={...r.p,...(vizP||{})},pump=r.pump,hv=Math.max(12,Math.min(31,p.h*2.4)),top=[iso(-115,-62,hv),iso(115,-62,hv),iso(115,62,hv),iso(-115,62,hv)],bot=[iso(-115,-62,0),iso(115,-62,0),iso(115,62,0),iso(-115,62,0)];
       const horizontal=p.L>0,reg=r.regime,linear=reg.includes("лин"),late=reg==="п/уст."||reg==="уст."||reg==="2-рад."||reg.includes("п/уст"),rx=late?90:linear?102:53,ry=linear?24:late?50:35,c=iso(0,0,hv+.5);
       const formName=linear?"линейный фронт":(late?(horizontal?"эллипс дренирования":"радиальная зона"):(horizontal?"ранний радиальный":"сфероподобный / радиальный"));
       let drainage=`<ellipse cx="${c.x}" cy="${c.y}" rx="${rx}" ry="${ry}" fill="#0057a8" fill-opacity=".12" stroke="#0057a8" stroke-opacity=".4" stroke-dasharray="5 4"/>`;
@@ -358,22 +358,23 @@
       // толщина пласта h
       const hTop=iso(118,-20,hv),hBot=iso(118,-20,0);
       dims+=dimArrow(hBot,hTop,`h = ${fmt(p.h,1)} м`,{off:12,ty:-2,color:"#0057a8"});
-      let fracs="";const n=Math.max(0,Math.round(p.FracCount||0)),span=Math.max(18,Math.min(56,(p.xf||50)*.7));
+      let fracs="";const n=Math.max(0,Math.round(Number(p.FracCount)||0)),span=Math.max(18,Math.min(56,(p.xf||50)*.7));
+      const baseTag=p.L>0?"ГС":"ННС",compTag=baseTag+(n>0?"+ГРП":"");
       for(let i=0;i<n;i++){
         if(horizontal){
           const x=-68+(136*(i+.5))/n,q=iso(x,0,hv/2);
           if(p.FracDir==="Вдоль"){
             const fa=iso(x-span,-5,hv/2),fb=iso(x+span,-5,hv/2);
-            fracs+=`<polygon points="${points([iso(x-span,-5,2),iso(x+span,-5,2),iso(x+span,5,hv-2),iso(x-span,5,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".75"/>`;
+            fracs+=`<polygon points="${points([iso(x-span,-5,2),iso(x+span,-5,2),iso(x+span,5,hv-2),iso(x-span,5,hv-2)])}" fill="#f36c00" fill-opacity=".28" stroke="#f36c00" stroke-opacity=".9" stroke-width="1.4"/>`;
             if(i===0)dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:-16,ty:-4,color:"#cf5700"});
           }else{
             const fa=iso(x,-span,hv/2),fb=iso(x,span,hv/2);
-            fracs+=`<polygon points="${points([iso(x,-span,2),iso(x,span,2),iso(x,span,hv-2),iso(x,-span,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".8"/><circle cx="${q.x}" cy="${q.y}" r="3" fill="#f36c00"/>`;
+            fracs+=`<polygon points="${points([iso(x,-span,2),iso(x,span,2),iso(x,span,hv-2),iso(x,-span,hv-2)])}" fill="#f36c00" fill-opacity=".28" stroke="#f36c00" stroke-opacity=".95" stroke-width="1.4"/><circle cx="${q.x}" cy="${q.y}" r="3.5" fill="#f36c00" stroke="#fff" stroke-width="1"/>`;
             if(i===0)dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:14,ty:-2,color:"#cf5700"});
           }
         }else{
           const ang=(i/n)*PI*2,dx=Math.cos(ang)*span,dy=Math.sin(ang)*span;
-          fracs+=`<polygon points="${points([iso(-dx,-dy,2),iso(dx,dy,2),iso(dx,dy,hv-2),iso(-dx,-dy,hv-2)])}" fill="#f36c00" fill-opacity=".18" stroke="#f36c00" stroke-opacity=".72"/>`;
+          fracs+=`<polygon points="${points([iso(-dx,-dy,2),iso(dx,dy,2),iso(dx,dy,hv-2),iso(-dx,-dy,hv-2)])}" fill="#f36c00" fill-opacity=".25" stroke="#f36c00" stroke-opacity=".9" stroke-width="1.3"/>`;
           if(i===0){const fa=iso(-dx,-dy,hv/2),fb=iso(dx,dy,hv/2);dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:-12,ty:-3,color:"#cf5700"});}
         }
       }
@@ -382,8 +383,8 @@
         <polygon points="${points([top[3],top[2],bot[2],bot[3]])}" fill="#a9c9dd"/><polygon points="${points([top[1],top[2],bot[2],bot[1]])}" fill="#91b8d1"/>
         <polygon points="${points(top)}" fill="url(#slabTop)" stroke="#7ca8c5" filter="url(#sh)"/>${drainage}${fracs}${well}${pumpMark}${dims}
         <g font-family="${FONT}" font-size="9" fill="#5c6770"><rect x="8" y="204" width="324" height="44" rx="9" fill="#fff" fill-opacity=".9"/>
-        <text x="18" y="220"><tspan fill="#0057a8" font-weight="700">${r.completion}</tspan><tspan dx="10">h ${fmt(p.h,1)} м</tspan><tspan dx="10">L ${fmt(p.L,0)} м</tspan><tspan dx="10">rₑ ${fmt(r.re_used,0)} м</tspan></text>
-        <text x="18" y="236"><tspan fill="#f36c00" font-weight="700">${r.regime}</tspan><tspan dx="10">${n} порт.</tspan><tspan dx="10">${n?p.FracDir:"без ГРП"}</tspan><tspan dx="10">Hподв ${fmt(pump.Hpump,0)} м</tspan></text></g></svg>`;
+        <text x="18" y="220"><tspan fill="#0057a8" font-weight="700">${compTag}</tspan><tspan dx="10">h ${fmt(p.h,1)} м</tspan><tspan dx="10">L ${fmt(p.L,0)} м</tspan><tspan dx="10">rₑ ${fmt(r.re_used,0)} м</tspan></text>
+        <text x="18" y="236"><tspan fill="#f36c00" font-weight="700">${r.regime}</tspan><tspan dx="10">${n} порт.</tspan><tspan dx="10">${n?p.FracDir:"без ГРП"}</tspan><tspan dx="10">Hподв ${fmt(pump.Hpump,0)} м</tspan>${vizP&&Number(vizP.FracCount)>Number(r.p.FracCount)?`<tspan dx="10" fill="#cf5700">факт</tspan>`:""}</text></g></svg>`;
     }
     function buildIPR(p,J){const a=[];for(let i=0;i<=50;i++){const Pwf=p.Pi*i/50;a.push({Pwf,Ql:Math.max(0,J*get_dP(p.Pb,Pwf,p.fw,p.Pi))})}return a}
     /** Упрощённый прогноз обводнённости: рост от заданного fw к асимптоте. */
@@ -474,7 +475,7 @@
       document.getElementById("resultsBody").innerHTML=`<div class="result-top"><h2 class="result-title">Результат расчёта</h2><span class="completion">${r.completion}</span></div>
       <div class="kpis">${opts.fa?`<div class="kpi"><div class="kpi-name">Qₒ · план</div><div class="kpi-value">${fmt(opts.planQo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Qₒ · факт</div><div class="kpi-value">${fmt(opts.factQo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Σ факторов</div><div class="kpi-value">${fmt(opts.factors.reduce((s,f)=>s+f.delta,0),2)} <span class="unit">т/сут</span></div></div>`:`<div class="kpi"><div class="kpi-name">Qₒ · нефть</div><div class="kpi-value">${fmt(r.Qo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Qₗ · жидкость</div><div class="kpi-value">${fmt(r.Ql,2)} <span class="unit">м³/сут</span></div></div><div class="kpi"><div class="kpi-name">J</div><div class="kpi-value">${fmt(r.J,3)} <span class="unit">м³/сут/атм</span></div></div><div class="kpi"><div class="kpi-name">ΔP</div><div class="kpi-value">${fmt(r.dP,2)} <span class="unit">атм</span></div></div>`}</div>
       ${opts.fa?`<section class="block chart waterfall show"><div class="block-title"><span>ФА план/факт</span><span>План → Факт</span></div>${waterfallChart(opts.planQo,opts.factors,opts.factQo)}<div class="caption">Оранжевый — прирост, серый — снижение; «подбор» отмечает восстановленный параметр.</div></section>`:""}
-      <section class="block schematic"><div class="block-title"><span>Скважина и зона притока</span><span>ISO</span></div>${schematic(r)}</section>
+      <section class="block schematic"><div class="block-title"><span>Скважина и зона притока</span><span>ISO</span></div>${schematic(r,opts.vizP||null)}</section>
       <section class="block"><div class="block-title"><span>Спецификация насоса</span><span>УЭЦН</span></div>
         <div class="kpis" style="margin-bottom:10px"><div class="kpi" style="grid-column:1/-1;background:linear-gradient(145deg,#003d73,#0057a8);color:#fff"><div class="kpi-name">Наименование оборудования</div><div class="kpi-value" style="font-size:1.05rem;letter-spacing:-.01em">${pu.equip}</div></div></div>
         <table>
@@ -572,8 +573,16 @@
       const visible=[],tiny=factors.filter(f=>Math.abs(f.delta)<=.01).reduce((s,f)=>s+f.delta,0);visible.push(...factors.filter(f=>Math.abs(f.delta)>.01));if(Math.abs(tiny)>.001){const rest=visible.find(f=>f.label==="остаток");if(rest)rest.delta+=tiny;else visible.push({label:"остаток",delta:tiny})}
       return{planQo,factQo,factors:visible}
     }
-    form.addEventListener("submit",e=>{e.preventDefault();try{const p=params();validate(p);const rows=faToggle.checked?measurements():[],pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),pts);scrollResults()}catch(err){showError(err)}});
-    document.getElementById("runFA").addEventListener("click",()=>{try{const p=params();validate(p);const rows=measurements(),fa=runFactorAnalysis(p,factParams(),rows),pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),{...pts,...fa,fa:true});scrollResults()}catch(err){showError(err)}});
+    /** Параметры ГРП для изометрии: в режиме ФА берём факт, если задан */
+    function vizFracParams(plan){
+      if(!faToggle.checked)return null;
+      const f=factParams(),keys=["FracCount","xf","wf","kf","FracDir","L","h"];
+      const overlay={};let any=false;
+      for(const k of keys)if(f[k]!==undefined){overlay[k]=f[k];any=true}
+      return any?overlay:null;
+    }
+    form.addEventListener("submit",e=>{e.preventDefault();try{const p=params();validate(p);const rows=faToggle.checked?measurements():[],pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),{...pts,vizP:vizFracParams(p)});scrollResults()}catch(err){showError(err)}});
+    document.getElementById("runFA").addEventListener("click",()=>{try{const p=params();validate(p);const fact=factParams(),rows=measurements(),fa=runFactorAnalysis(p,fact,rows),pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),{...pts,...fa,fa:true,vizP:vizFracParams(p)||(Object.keys(fact).length?fact:null)});scrollResults()}catch(err){showError(err)}});
     document.getElementById("resultsBody").addEventListener("input",e=>{
       const inp=e.target;if(inp?.type!=="range")return;const bar=inp.closest(".zoom-bar");if(!bar)return;
       const id=bar.getAttribute("data-zoom"),axis=inp.getAttribute("data-axis");if(!chartZoom[id])return;
