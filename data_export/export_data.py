@@ -452,7 +452,7 @@ def to_auto_grp_bundle(export: dict) -> dict:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    ap = argparse.ArgumentParser(description="Выгрузка данных ЦДП → JSON")
+    ap = argparse.ArgumentParser(description="Сборка JSON-пакета данных ЦДП")
     ap.add_argument("--config", default=os.path.join(HERE, "config.json"),
                     help="Путь к config.json (по умолчанию data_export/config.json)")
     args = ap.parse_args(argv)
