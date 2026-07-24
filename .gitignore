@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 
 # Local scratch
+.cda-tmp/
 _peek_hist.py
 _test.js
 _geom_snip.js
