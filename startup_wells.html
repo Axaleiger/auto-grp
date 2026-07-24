@@ -7,25 +7,26 @@
   <title>Запускные параметры скважин</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{--blue:#0057a8;--deep:#003d73;--orange:#f36c00;--gray:#5c6770;--soft:#eef1f4;--ice:#e8f1f8;--ink:#172433;--white:#fff;--line:#d9e2e9;--shadow:0 18px 50px rgba(0,61,115,.1)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:Outfit,system-ui,sans-serif;color:var(--ink);background:linear-gradient(145deg,#f8fafc 0,#eef3f7 48%,#e5edf4 100%);padding-bottom:env(safe-area-inset-bottom)}
+    :root{--blue:#0057a8;--deep:#003d73;--orange:#f36c00;--gray:#5c6770;--soft:#eef1f4;--ice:#e8f1f8;--ink:#172433;--white:#fff;--line:#d9e2e9;--shadow:0 18px 50px rgba(0,61,115,.1);--font:"Source Sans 3","Segoe UI",system-ui,sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;font-family:var(--font);color:var(--ink);background:linear-gradient(145deg,#f8fafc 0,#eef3f7 48%,#e5edf4 100%);padding-bottom:env(safe-area-inset-bottom)}
     body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 90% 0,rgba(0,87,168,.13),transparent 32%),radial-gradient(circle at 0 18%,rgba(243,108,0,.09),transparent 25%)}
     button,input,select{font:inherit}.shell{position:relative;width:min(1220px,calc(100% - 32px));margin:auto;padding:28px 0 54px}
     .topnav{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 18px}.topnav a{color:var(--gray);text-decoration:none;font-size:.82rem;font-weight:600}.topnav a:hover{color:var(--blue)}.topnav a.accent{color:var(--blue)}
-    .masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;margin-bottom:22px}.eyebrow{display:flex;align-items:center;gap:9px;color:var(--blue);font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue) 0 58%,var(--orange) 58%);box-shadow:0 7px 16px rgba(0,87,168,.22)}
-    h1{font-family:Syne,sans-serif;font-size:clamp(2rem,4vw,3.7rem);line-height:.98;letter-spacing:-.055em;margin:14px 0 0;max-width:720px;color:var(--deep)}h1 span{color:var(--orange)}.intro{max-width:360px;margin:0;color:var(--gray);line-height:1.55}
+    .masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;margin-bottom:22px}.eyebrow{display:flex;align-items:center;gap:9px;color:var(--blue);font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue) 0 58%,var(--orange) 58%);box-shadow:0 7px 16px rgba(0,87,168,.22)}
+    h1{font-family:var(--font);font-size:clamp(1.85rem,3.6vw,2.75rem);line-height:1.12;letter-spacing:-.02em;margin:14px 0 0;max-width:720px;color:var(--deep);font-weight:700}h1 span{color:var(--orange)}.intro{max-width:360px;margin:0;color:var(--gray);line-height:1.55}
     .layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(390px,.95fr);gap:18px;align-items:start}.card{background:rgba(255,255,255,.96);border:1px solid rgba(0,87,168,.1);border-radius:24px;box-shadow:var(--shadow)}.form-card{padding:12px}.results{padding:20px;position:sticky;top:16px;min-height:570px}
-    .panel-head{padding:10px 10px 15px;display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h2,.result-title{font-family:Syne,sans-serif;font-size:1rem;margin:0;color:var(--deep)}.head-tools{display:flex;align-items:center;gap:12px}.panel-tag{font-size:.72rem;color:var(--gray);background:var(--soft);padding:6px 9px;border-radius:99px}.fa-toggle{display:flex;align-items:center;gap:7px;color:var(--deep);font-size:.75rem;font-weight:700;cursor:pointer}.fa-toggle input{position:absolute;opacity:0}.switch{width:38px;height:22px;border-radius:99px;background:#bac4cc;padding:3px;transition:.2s}.switch:after{content:"";display:block;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #53606a;transition:.2s}.fa-toggle input:checked+.switch{background:var(--blue)}.fa-toggle input:checked+.switch:after{transform:translateX(16px)}
+    .panel-head{padding:10px 10px 15px;display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h2,.result-title{font-family:var(--font);font-size:1rem;margin:0;color:var(--deep);font-weight:700}.head-tools{display:flex;align-items:center;gap:12px}.panel-tag{font-size:.72rem;color:var(--gray);background:var(--soft);padding:6px 9px;border-radius:99px}.fa-toggle{display:flex;align-items:center;gap:7px;color:var(--deep);font-size:.75rem;font-weight:700;cursor:pointer}.fa-toggle input{position:absolute;opacity:0}.switch{width:38px;height:22px;border-radius:99px;background:#bac4cc;padding:3px;transition:.2s}.switch:after{content:"";display:block;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #53606a;transition:.2s}.fa-toggle input:checked+.switch{background:var(--blue)}.fa-toggle input:checked+.switch:after{transform:translateX(16px)}
     details{border-top:1px solid var(--line)}details:first-of-type{border-top:0}summary{list-style:none;display:flex;align-items:center;gap:12px;padding:16px 10px;cursor:pointer;color:var(--deep);font-weight:700;user-select:none}summary::-webkit-details-marker{display:none}.section-num{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--ice);color:var(--blue);font-size:.75rem}.chev{margin-left:auto;width:9px;height:9px;border-right:2px solid var(--blue);border-bottom:2px solid var(--blue);transform:rotate(45deg);transition:.2s}details[open] .chev{transform:rotate(225deg)}
     .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0 10px 18px}.field{min-width:0}.field label{display:block;min-height:31px;margin:0 0 5px;color:var(--gray);font-size:.73rem;line-height:1.15}.dual{display:grid;grid-template-columns:1fr 1fr;gap:5px}.dual-head{display:none;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:4px;font-size:.62rem;font-weight:700}.fa-on .dual-head{display:grid}.dual-head span:first-child{color:var(--blue)}.dual-head span:last-child{color:var(--orange)}.field input,.field select{width:100%;height:44px;border:1px solid transparent;border-radius:11px;background:var(--soft);color:var(--ink);padding:0 11px;font-size:16px;font-weight:600;outline:0;transition:.18s}.field .plan{background:#e8f1f8;border-color:#b8d1e6}.field .fact{display:none;background:#fff4eb;border-color:#f5c9a7}.fa-on .field .fact{display:block}.field input:focus,.field select:focus{background:#fff;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,87,168,.12)}.field .fact:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(243,108,0,.12)}.wide{grid-column:span 2}.grp-note{grid-column:1/-1;margin:0;padding:10px 12px;border-left:3px solid var(--orange);border-radius:0 9px 9px 0;background:#fff6ef;color:var(--gray);font-size:.76rem;line-height:1.4}
     .actions{display:flex;gap:9px;padding:14px 10px 6px;border-top:1px solid var(--line)}button{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;transition:.18s}.primary{flex:1;color:#fff;background:linear-gradient(135deg,var(--blue),var(--deep));box-shadow:0 10px 22px rgba(0,87,168,.23)}.fa-button{display:none;flex:1;color:#fff;background:linear-gradient(135deg,var(--orange),#cf5700)}.fa-on .fa-button{display:block}.primary:hover{transform:translateY(-1px);box-shadow:0 13px 25px rgba(0,87,168,.3)}.ghost{background:var(--soft);color:var(--gray)}
-    .measure-section{display:none}.fa-on .measure-section{display:block}.measure-wrap{overflow-x:auto;padding:0 10px 16px}.measure-table{min-width:430px}.measure-table th{width:auto;padding:5px}.measure-table td{padding:4px}.measure-table input{width:100%;min-width:78px;height:36px;border:1px solid var(--line);border-radius:8px;background:#fff4eb;padding:0 8px}.measure-tools{display:flex;gap:7px;margin:9px 0}.measure-tools button{padding:8px 12px;font-size:.72rem}.measure-caption{margin:4px 0;color:var(--gray);font-size:.72rem}
-    .empty{min-height:520px;display:grid;place-items:center;text-align:center;color:var(--gray)}.empty-icon{width:80px;height:80px;margin:0 auto 17px;border-radius:24px;background:var(--ice);display:grid;place-items:center}.empty-icon svg{width:46px}.empty strong{display:block;font-family:Syne,sans-serif;color:var(--deep);margin-bottom:7px}.results-body{display:none}.results.has-data .empty{display:none}.results.has-data .results-body{display:block}
+    .measure-section{display:none}.fa-on .measure-section{display:block}.measure-wrap{overflow-x:auto;padding:0 10px 16px}.measure-table{min-width:720px}.measure-table th{width:auto;padding:5px;font-size:.68rem;white-space:nowrap}.measure-table td{padding:4px}.measure-table input{width:100%;min-width:64px;height:36px;border:1px solid var(--line);border-radius:8px;background:#fff4eb;padding:0 8px}.measure-table input:disabled{background:#e8ecf0;color:#8a949c;cursor:not-allowed}.measure-table input.calc-fill{background:#eef6fb;border-color:#b8d1e6;color:var(--deep)}.measure-tools{display:flex;gap:7px;margin:9px 0}.measure-tools button{padding:8px 12px;font-size:.72rem}.measure-caption{margin:4px 0;color:var(--gray);font-size:.72rem}
+    .empty{min-height:520px;display:grid;place-items:center;text-align:center;color:var(--gray)}.empty-icon{width:80px;height:80px;margin:0 auto 17px;border-radius:24px;background:var(--ice);display:grid;place-items:center}.empty-icon svg{width:46px}.empty strong{display:block;font-family:var(--font);color:var(--deep);margin-bottom:7px;font-weight:700}.results-body{display:none}.results.has-data .empty{display:none}.results.has-data .results-body{display:block}
     .result-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}.completion{font-size:.75rem;font-weight:700;color:var(--blue);padding:6px 10px;border-radius:99px;background:var(--ice)}
-    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}.kpi{padding:13px 14px;border-radius:15px;background:var(--soft)}.kpi:first-child{background:linear-gradient(145deg,var(--deep),var(--blue));color:#fff}.kpi:nth-child(2){background:linear-gradient(145deg,#d95e00,var(--orange));color:#fff}.kpi-name{font-size:.66rem;opacity:.72;text-transform:uppercase;letter-spacing:.08em}.kpi-value{font-family:Syne,sans-serif;font-size:1.35rem;font-weight:700;margin-top:4px;letter-spacing:-.03em}.unit{font-family:Outfit,sans-serif;font-size:.7rem;font-weight:500;opacity:.7}.waterfall{display:none}.waterfall.show{display:block}
-    .block{margin-top:11px;padding:12px;border:1px solid rgba(0,87,168,.1);border-radius:16px;background:#fbfdff}.block-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;color:var(--gray);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em}.schematic svg,.chart svg{width:100%;height:auto;display:block}.caption{color:var(--gray);font-size:.71rem;line-height:1.4;margin-top:5px}
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}.kpi{padding:13px 14px;border-radius:15px;background:var(--soft)}.kpi:first-child{background:linear-gradient(145deg,var(--deep),var(--blue));color:#fff}.kpi:nth-child(2){background:linear-gradient(145deg,#d95e00,var(--orange));color:#fff}.kpi-name{font-size:.66rem;opacity:.72;text-transform:uppercase;letter-spacing:.06em}.kpi-value{font-family:var(--font);font-size:1.3rem;font-weight:700;margin-top:4px;letter-spacing:-.01em}.unit{font-family:var(--font);font-size:.7rem;font-weight:500;opacity:.7}.waterfall{display:none}.waterfall.show{display:block}
+    .block{margin-top:11px;padding:12px;border:1px solid rgba(0,87,168,.1);border-radius:16px;background:#fbfdff}.block-title{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;color:var(--gray);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.schematic svg,.chart svg{width:100%;height:auto;display:block}.caption{color:var(--gray);font-size:.71rem;line-height:1.4;margin-top:5px}
+    .zoom-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.zoom-bar label{display:flex;align-items:center;gap:7px;font-size:.68rem;color:var(--gray);font-weight:600}.zoom-bar input[type=range]{flex:1;accent-color:var(--blue)}.regime-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px}.regime-legend span{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;color:var(--gray);font-weight:600}.regime-legend i{width:11px;height:11px;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,.08)}
     .regime-track{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.regime-track.short{grid-template-columns:1fr 1fr}.regime{padding:8px 3px;text-align:center;border-radius:8px;background:var(--soft);color:var(--gray);font-size:.65rem;font-weight:700}.regime.active{background:var(--orange);color:#fff;box-shadow:0 6px 14px rgba(243,108,0,.23)}
     table{width:100%;border-collapse:collapse;font-size:.76rem}th,td{padding:7px 2px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--gray);font-weight:500;width:58%}td{font-weight:700;font-variant-numeric:tabular-nums}.error{padding:14px;border-radius:12px;background:#fff0ed;color:#a83c2f;font-size:.86rem}
     .dual-head{grid-column:1/-1}.form-card:not(.fa-on) .dual{display:block}.form-card:not(.fa-on) .field .plan{background:var(--soft);border-color:transparent}
@@ -130,9 +131,9 @@
         <details class="measure-section">
           <summary><span class="section-num">07</span>Замеры факт<span class="chev"></span></summary>
           <div class="measure-wrap">
-            <table class="measure-table"><thead><tr><th>t, сут</th><th>Q<sub>l</sub>, м³/сут</th><th>Q<sub>o</sub>, т/сут</th><th>f<sub>w</sub>, %</th></tr></thead><tbody id="measureRows"></tbody></table>
+            <table class="measure-table"><thead><tr><th>t, сут</th><th>Q<sub>l</sub>, м³/сут</th><th>Q<sub>o</sub>, т/сут</th><th>f<sub>w</sub>, %</th><th>P<sub>ст</sub>, атм</th><th>P<sub>дин</sub>, атм</th><th>P<sub>затр</sub>, атм</th></tr></thead><tbody id="measureRows"></tbody></table>
             <div class="measure-tools"><button class="ghost" id="addMeasure" type="button">+ строка</button><button class="ghost" id="clearMeasures" type="button">Очистить</button></div>
-            <p class="measure-caption">Допускаются частичные фактические данные; тренды могут отличаться от модели.</p>
+            <p class="measure-caption">Ql+Qo → fw считается автоматически (и наоборот). P<sub>ст</sub>/P<sub>дин</sub> желательны, P<sub>затр</sub> — опционально.</p>
           </div>
         </details>
         <div class="actions"><button class="primary" type="submit">Рассчитать дебит</button><button class="fa-button" id="runFA" type="button">Расчёт ФА</button><button class="ghost" id="reset" type="button" aria-label="Сбросить">Сбросить</button></div>
@@ -258,29 +259,90 @@
       {...BASE,name:"ГС базовый"},{...BASE,name:"ННС L=0",L:0},{...BASE,name:"ГС низкая fw",fw:10},{...BASE,name:"ГС fw=100",fw:100},{...BASE,name:"ГС Pwf>Pb",Pwf:100},{...BASE,name:"ГС короткий tp",tp:1},{...BASE,name:"ГС длинный tp",tp:365},{...BASE,name:"ННС скин -2",L:0,S:-2},{...BASE,name:"ГС kh=50",kh:50},{...BASE,name:"ГС h=15",h:15}
     ];
 
-    const fmt=(v,d=3)=>!Number.isFinite(v)?"—":Math.abs(v)>=1000||(Math.abs(v)>0&&Math.abs(v)<.001)?v.toExponential(3):Number(v.toFixed(d)).toString();
+    const FONT='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+    const fmt=(v,d=3)=>{
+      if(!Number.isFinite(v))return"—";
+      const n=Number(v.toFixed(d));
+      if(Object.is(n,-0))return"0";
+      const s=Math.abs(n)>=1000?n.toLocaleString("ru-RU",{maximumFractionDigits:d,minimumFractionDigits:0}):String(n);
+      return s;
+    };
     const iso=(x,y,z)=>({x:160+(x-y)*.72,y:116+(x+y)*.36-z});
     const points=a=>a.map(q=>`${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(" ");
+    /** Размерная линия со стрелками и подписью */
+    function dimArrow(a,b,label,opts={}){
+      const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,px=-uy,py=ux,off=opts.off??10;
+      const a2={x:a.x+px*off,y:a.y+py*off},b2={x:b.x+px*off,y:b.y+py*off},mx=(a2.x+b2.x)/2,my=(a2.y+b2.y)/2;
+      const ah=5,col=opts.color||"#0057a8";
+      return `<g stroke="${col}" fill="${col}" stroke-width="1.1">
+        <line x1="${a.x}" y1="${a.y}" x2="${a2.x}" y2="${a2.y}" stroke-opacity=".45"/>
+        <line x1="${b.x}" y1="${b.y}" x2="${b2.x}" y2="${b2.y}" stroke-opacity=".45"/>
+        <line x1="${a2.x}" y1="${a2.y}" x2="${b2.x}" y2="${b2.y}"/>
+        <polygon points="${a2.x},${a2.y} ${a2.x+ux*ah-uy*3},${a2.y+uy*ah+ux*3} ${a2.x+ux*ah+uy*3},${a2.y+uy*ah-ux*3}"/>
+        <polygon points="${b2.x},${b2.y} ${b2.x-ux*ah-uy*3},${b2.y-uy*ah+ux*3} ${b2.x-ux*ah+uy*3},${b2.y-uy*ah-ux*3}"/>
+        <text x="${mx+(opts.tx||0)}" y="${my+(opts.ty||-3)}" text-anchor="middle" fill="${col}" stroke="none" font-family="${FONT}" font-size="9" font-weight="700">${label}</text>
+      </g>`;
+    }
+    const REGIME_COLORS={
+      "1-рад.":"#b7dff0","1-лин.":"#7eb8da","2-рад.":"#4f91c6","2-лин.":"#2f6ea8","п/уст.":"#1e4f7a",
+      "неуст.":"#f5c6a0","уст.":"#e08a45",
+      "трещ.лин.":"#c9b3e8","1-рад.+ГРП":"#9fd0c2","2-рад.+ГРП":"#6fafa0","п/уст.+ГРП":"#3d7d72"
+    };
+    /** Моменты смены режима притока → интервалы для окраски графика */
+    function getRegimeTimeline(p,tmax){
+      const Sw=get_Sw(p.mu_w,p.mu_o,p.Bo,p.Bw,p.fw,p.Fw,p.m1,p.Fo,p.m2,p.Swc,p.Sor),mu=get_mu(p.mu_w,p.mu_o,Sw,p.Fw,p.m1,p.Fo,p.m2,p.Swc,p.Sor),ct=get_c_t(p.cr,p.co,p.cw,Sw),hasFrac=Math.round(p.FracCount||0)>0;
+      const tFromTd=(tdim,x)=>tdim<=0?0:(tdim*115.75*p.phi*mu*ct*x*x)/Math.max(p.kh,1e-9);
+      const segs=[];
+      if(p.L>0){
+        const ik=Math.sqrt(Math.max(p.ik2,1e-9)),rem=(1.27*p.h/ik+.5*p.L)<p.L?p.L/Math.sqrt(PI):(1.27*p.h/ik+.5*p.L)/Math.sqrt(PI),re=Math.max(p.re,rem);
+        const a=xd(re*Math.sqrt(PI),p.L),b=a,hd=xd(p.h,p.L*ik);
+        const t1=tFromTd(tdEl(hd),p.L),t2=tFromTd(tdLpr(hd),p.L),t3=tFromTd(tdLl(b),p.L),t4=tFromTd(tdPss(a),p.L);
+        if(hasFrac){
+          const tf=Math.min(t1*.55,Math.max(.2,tFromTd(.012,Math.max(p.xf||50,10))));
+          segs.push({t0:0,t1:tf,label:"трещ.лин."},{t0:tf,t1:t1,label:"1-рад.+ГРП"},{t0:t1,t1:t2,label:"1-лин."},{t0:t2,t1:t3,label:"2-рад.+ГРП"},{t0:t3,t1:t4,label:"2-лин."},{t0:t4,t1:Infinity,label:"п/уст.+ГРП"});
+        }else segs.push({t0:0,t1:t1,label:"1-рад."},{t0:t1,t1:t2,label:"1-лин."},{t0:t2,t1:t3,label:"2-рад."},{t0:t3,t1:t4,label:"2-лин."},{t0:t4,t1:Infinity,label:"п/уст."});
+      }else{
+        const r=xd(p.re,p.rw),tss=tFromTd(get_t_d_ss_v(r,p.S),p.rw);
+        if(hasFrac){
+          const tf=Math.min(tss*.4,Math.max(.3,tFromTd(.02,Math.max(p.xf||50,10))));
+          segs.push({t0:0,t1:tf,label:"трещ.лин."},{t0:tf,t1:tss,label:"неуст."},{t0:tss,t1:Infinity,label:"уст."});
+        }else segs.push({t0:0,t1:tss,label:"неуст."},{t0:tss,t1:Infinity,label:"уст."});
+      }
+      return segs.map(s=>({...s,t1:Math.min(s.t1===Infinity?tmax:s.t1,tmax),color:REGIME_COLORS[s.label]||"#dde3e8"})).filter(s=>s.t1>s.t0+.01);
+    }
+    function regimeLegendHtml(bands){
+      const seen=[];bands.forEach(b=>{if(!seen.find(x=>x.label===b.label))seen.push(b)});
+      return`<div class="regime-legend">${seen.map(b=>`<span><i style="background:${b.color}"></i>${b.label}</span>`).join("")}</div>`;
+    }
+    function zoomBarHtml(id,zx,zy){
+      return`<div class="zoom-bar" data-zoom="${id}">
+        <label>Ось X <input type="range" min="10" max="50" step="1" value="${Math.round(Math.max(10,zx*10))}" data-axis="x" aria-label="Масштаб X"><span data-valx>${fmt(zx,1)}×</span></label>
+        <label>Ось Y <input type="range" min="10" max="50" step="1" value="${Math.round(Math.max(10,zy*10))}" data-axis="y" aria-label="Масштаб Y"><span data-valy>${fmt(zy,1)}×</span></label>
+      </div>`;
+    }
     function schematic(r){
       const p=r.p,pump=r.pump,hv=Math.max(12,Math.min(31,p.h*2.4)),top=[iso(-115,-62,hv),iso(115,-62,hv),iso(115,62,hv),iso(-115,62,hv)],bot=[iso(-115,-62,0),iso(115,-62,0),iso(115,62,0),iso(-115,62,0)];
-      const horizontal=p.L>0,reg=r.regime,linear=reg.includes("лин"),late=reg==="п/уст."||reg==="уст."||reg==="2-рад.",rx=late?90:linear?102:53,ry=linear?24:late?50:35,c=iso(0,0,hv+.5);
+      const horizontal=p.L>0,reg=r.regime,linear=reg.includes("лин"),late=reg==="п/уст."||reg==="уст."||reg==="2-рад."||reg.includes("п/уст"),rx=late?90:linear?102:53,ry=linear?24:late?50:35,c=iso(0,0,hv+.5);
       const formName=linear?"линейный фронт":(late?(horizontal?"эллипс дренирования":"радиальная зона"):(horizontal?"ранний радиальный":"сфероподобный / радиальный"));
       let drainage=`<ellipse cx="${c.x}" cy="${c.y}" rx="${rx}" ry="${ry}" fill="#0057a8" fill-opacity=".12" stroke="#0057a8" stroke-opacity=".4" stroke-dasharray="5 4"/>`;
       if(!horizontal) drainage+=`<ellipse cx="${c.x}" cy="${c.y}" rx="${late?62:40}" ry="${late?31:20}" fill="none" stroke="#f36c00" stroke-opacity=".55"/>`;
       if(linear) drainage+=`<path d="M55 ${c.y-22}L265 ${c.y-22}M55 ${c.y+22}L265 ${c.y+22}" stroke="#0057a8" stroke-opacity=".24" stroke-dasharray="4 4"/>`;
-      drainage+=`<text x="${c.x}" y="${c.y-ry-6}" text-anchor="middle" fill="#0057a8" font-size="8" font-family="Outfit,sans-serif" font-weight="600">${formName}</text>`;
+      drainage+=`<text x="${c.x}" y="${c.y-ry-6}" text-anchor="middle" fill="#0057a8" font-size="8" font-family="${FONT}" font-weight="600">${formName}</text>`;
       const zSurf=hv+72,zPay=hv/2,fracDepth=pump&&pump.Hform>0?Math.min(.98,Math.max(.05,pump.Hpump/pump.Hform)):.88,zPump=zSurf+fracDepth*(zPay-zSurf);
-      let well="",pumpMark="";
+      const Rbend=24;
+      let well="",pumpMark="",dims="";
       if(horizontal){
-        const a=iso(-78,0,hv/2),b=iso(78,0,hv/2),heel=iso(-78,0,hv+64),surf=iso(-78,0,zSurf),pm=iso(-78,0,zPump);
-        well=`<path d="M${surf.x} ${surf.y}L${heel.x} ${heel.y}L${a.x} ${a.y}L${b.x} ${b.y}" fill="none" stroke="#17344d" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${b.x}" cy="${b.y}" r="4" fill="#f36c00"/>`;
+        const toe=iso(78,0,hv/2),surf=iso(-78,0,zSurf),pm=iso(-78,0,zPump);
+        const bendTop=iso(-78,0,hv/2+Rbend),bendEnd=iso(-78+Rbend,0,hv/2),corner=iso(-78,0,hv/2);
+        well=`<path d="M${surf.x.toFixed(1)} ${surf.y.toFixed(1)} L${bendTop.x.toFixed(1)} ${bendTop.y.toFixed(1)} Q${corner.x.toFixed(1)} ${corner.y.toFixed(1)} ${bendEnd.x.toFixed(1)} ${bendEnd.y.toFixed(1)} L${toe.x.toFixed(1)} ${toe.y.toFixed(1)}" fill="none" stroke="#17344d" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${toe.x}" cy="${toe.y}" r="4" fill="#f36c00"/>`;
         pumpMark=`<g>
           <line x1="${pm.x-28}" y1="${pm.y}" x2="${pm.x+36}" y2="${pm.y}" stroke="#f36c00" stroke-width="1.4" stroke-dasharray="4 3"/>
           <rect x="${pm.x-7}" y="${pm.y-11}" width="14" height="22" rx="3" fill="#f36c00" stroke="#cf5700" stroke-width="1"/>
           <path d="M${pm.x-3} ${pm.y-5}h6M${pm.x-3} ${pm.y}h6M${pm.x-3} ${pm.y+5}h6" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-          <text x="${pm.x+40}" y="${pm.y-3}" fill="#cf5700" font-family="Outfit,sans-serif" font-size="9" font-weight="700">Hподв</text>
-          <text x="${pm.x+40}" y="${pm.y+10}" fill="#172433" font-family="Syne,sans-serif" font-size="12" font-weight="800">${fmt(pump.Hpump,0)} м</text>
+          <text x="${pm.x+40}" y="${pm.y-3}" fill="#cf5700" font-family="${FONT}" font-size="9" font-weight="700">Hподв</text>
+          <text x="${pm.x+40}" y="${pm.y+10}" fill="#172433" font-family="${FONT}" font-size="11" font-weight="700">${fmt(pump.Hpump,0)} м</text>
         </g>`;
+        dims+=dimArrow(bendEnd,toe,`L = ${fmt(p.L,0)} м`,{off:-14,ty:12,color:"#17344d"});
       }else{
         const a=iso(0,0,zSurf),b=iso(0,0,hv/2),pm=iso(0,0,zPump);
         well=`<path d="M${a.x} ${a.y}L${b.x} ${b.y}" stroke="#17344d" stroke-width="5" stroke-linecap="round"/><circle cx="${b.x}" cy="${b.y}" r="4" fill="#f36c00"/>`;
@@ -288,20 +350,40 @@
           <line x1="${pm.x-34}" y1="${pm.y}" x2="${pm.x+34}" y2="${pm.y}" stroke="#f36c00" stroke-width="1.4" stroke-dasharray="4 3"/>
           <rect x="${pm.x-7}" y="${pm.y-11}" width="14" height="22" rx="3" fill="#f36c00" stroke="#cf5700" stroke-width="1"/>
           <path d="M${pm.x-3} ${pm.y-5}h6M${pm.x-3} ${pm.y}h6M${pm.x-3} ${pm.y+5}h6" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/>
-          <text x="${pm.x+38}" y="${pm.y-3}" fill="#cf5700" font-family="Outfit,sans-serif" font-size="9" font-weight="700">Hподв</text>
-          <text x="${pm.x+38}" y="${pm.y+10}" fill="#172433" font-family="Syne,sans-serif" font-size="12" font-weight="800">${fmt(pump.Hpump,0)} м</text>
+          <text x="${pm.x+38}" y="${pm.y-3}" fill="#cf5700" font-family="${FONT}" font-size="9" font-weight="700">Hподв</text>
+          <text x="${pm.x+38}" y="${pm.y+10}" fill="#172433" font-family="${FONT}" font-size="11" font-weight="700">${fmt(pump.Hpump,0)} м</text>
         </g>`;
+        dims+=dimArrow(a,b,`ствол`,{off:18,ty:-2,color:"#17344d"});
       }
+      // толщина пласта h
+      const hTop=iso(118,-20,hv),hBot=iso(118,-20,0);
+      dims+=dimArrow(hBot,hTop,`h = ${fmt(p.h,1)} м`,{off:12,ty:-2,color:"#0057a8"});
       let fracs="";const n=Math.max(0,Math.round(p.FracCount||0)),span=Math.max(18,Math.min(56,(p.xf||50)*.7));
-      for(let i=0;i<n;i++){if(horizontal){const x=-68+(136*(i+.5))/n,q=iso(x,0,hv/2);if(p.FracDir==="Вдоль")fracs+=`<polygon points="${points([iso(x-span,-5,2),iso(x+span,-5,2),iso(x+span,5,hv-2),iso(x-span,5,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".75"/>`;else fracs+=`<polygon points="${points([iso(x,-span,2),iso(x,span,2),iso(x,span,hv-2),iso(x,-span,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".8"/><circle cx="${q.x}" cy="${q.y}" r="3" fill="#f36c00"/>`}
-        else{const ang=(i/n)*PI*2,dx=Math.cos(ang)*span,dy=Math.sin(ang)*span;fracs+=`<polygon points="${points([iso(-dx,-dy,2),iso(dx,dy,2),iso(dx,dy,hv-2),iso(-dx,-dy,hv-2)])}" fill="#f36c00" fill-opacity=".18" stroke="#f36c00" stroke-opacity=".72"/>`}}
-      return `<svg viewBox="0 0 320 248" role="img" aria-label="Изометрическая схема скважины с подвеской насоса">
+      for(let i=0;i<n;i++){
+        if(horizontal){
+          const x=-68+(136*(i+.5))/n,q=iso(x,0,hv/2);
+          if(p.FracDir==="Вдоль"){
+            const fa=iso(x-span,-5,hv/2),fb=iso(x+span,-5,hv/2);
+            fracs+=`<polygon points="${points([iso(x-span,-5,2),iso(x+span,-5,2),iso(x+span,5,hv-2),iso(x-span,5,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".75"/>`;
+            if(i===0)dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:-16,ty:-4,color:"#cf5700"});
+          }else{
+            const fa=iso(x,-span,hv/2),fb=iso(x,span,hv/2);
+            fracs+=`<polygon points="${points([iso(x,-span,2),iso(x,span,2),iso(x,span,hv-2),iso(x,-span,hv-2)])}" fill="#f36c00" fill-opacity=".2" stroke="#f36c00" stroke-opacity=".8"/><circle cx="${q.x}" cy="${q.y}" r="3" fill="#f36c00"/>`;
+            if(i===0)dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:14,ty:-2,color:"#cf5700"});
+          }
+        }else{
+          const ang=(i/n)*PI*2,dx=Math.cos(ang)*span,dy=Math.sin(ang)*span;
+          fracs+=`<polygon points="${points([iso(-dx,-dy,2),iso(dx,dy,2),iso(dx,dy,hv-2),iso(-dx,-dy,hv-2)])}" fill="#f36c00" fill-opacity=".18" stroke="#f36c00" stroke-opacity=".72"/>`;
+          if(i===0){const fa=iso(-dx,-dy,hv/2),fb=iso(dx,dy,hv/2);dims+=dimArrow(fa,fb,`xf = ${fmt(p.xf,0)} м`,{off:-12,ty:-3,color:"#cf5700"});}
+        }
+      }
+      return `<svg viewBox="0 0 340 255" role="img" aria-label="Изометрическая схема скважины с подвеской насоса">
         <defs><linearGradient id="slabTop" x1="0" x2="1"><stop stop-color="#dcecf7"/><stop offset="1" stop-color="#bcd8ea"/></linearGradient><filter id="sh"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#003d73" flood-opacity=".14"/></filter></defs>
         <polygon points="${points([top[3],top[2],bot[2],bot[3]])}" fill="#a9c9dd"/><polygon points="${points([top[1],top[2],bot[2],bot[1]])}" fill="#91b8d1"/>
-        <polygon points="${points(top)}" fill="url(#slabTop)" stroke="#7ca8c5" filter="url(#sh)"/>${drainage}${fracs}${well}${pumpMark}
-        <g font-family="Outfit,sans-serif" font-size="9" fill="#5c6770"><rect x="8" y="196" width="304" height="44" rx="9" fill="#fff" fill-opacity=".88"/>
-        <text x="18" y="212"><tspan fill="#0057a8" font-weight="700">${r.completion}</tspan><tspan dx="10">h ${fmt(p.h,1)} м</tspan><tspan dx="10">L ${fmt(p.L,0)} м</tspan><tspan dx="10">rₑ ${fmt(r.re_used,0)} м</tspan></text>
-        <text x="18" y="228"><tspan fill="#f36c00" font-weight="700">${r.regime}</tspan><tspan dx="10">${n} порт.</tspan><tspan dx="10">${n?p.FracDir:"без ГРП"}</tspan><tspan dx="10">Hподв ${fmt(pump.Hpump,0)} м</tspan></text></g></svg>`
+        <polygon points="${points(top)}" fill="url(#slabTop)" stroke="#7ca8c5" filter="url(#sh)"/>${drainage}${fracs}${well}${pumpMark}${dims}
+        <g font-family="${FONT}" font-size="9" fill="#5c6770"><rect x="8" y="204" width="324" height="44" rx="9" fill="#fff" fill-opacity=".9"/>
+        <text x="18" y="220"><tspan fill="#0057a8" font-weight="700">${r.completion}</tspan><tspan dx="10">h ${fmt(p.h,1)} м</tspan><tspan dx="10">L ${fmt(p.L,0)} м</tspan><tspan dx="10">rₑ ${fmt(r.re_used,0)} м</tspan></text>
+        <text x="18" y="236"><tspan fill="#f36c00" font-weight="700">${r.regime}</tspan><tspan dx="10">${n} порт.</tspan><tspan dx="10">${n?p.FracDir:"без ГРП"}</tspan><tspan dx="10">Hподв ${fmt(pump.Hpump,0)} м</tspan></text></g></svg>`;
     }
     function buildIPR(p,J){const a=[];for(let i=0;i<=50;i++){const Pwf=p.Pi*i/50;a.push({Pwf,Ql:Math.max(0,J*get_dP(p.Pb,Pwf,p.fw,p.Pi))})}return a}
     /** Упрощённый прогноз обводнённости: рост от заданного fw к асимптоте. */
@@ -318,27 +400,33 @@
       }
       return{pts,tmax,fwMark:fwAtTime(p.fw,p.tp,tmax)};
     }
-    function chart(pts,opP,opQ){
-      const W=360,H=205,p={l:43,r:14,t:13,b:36},mq=Math.max(...pts.map(x=>x.Ql),opQ,1e-8),mp=Math.max(...pts.map(x=>x.Pwf),opP,1),X=q=>p.l+q/mq*(W-p.l-p.r),Y=v=>p.t+(1-v/mp)*(H-p.t-p.b),path=pts.map((d,i)=>`${i?"L":"M"}${X(d.Ql).toFixed(1)},${Y(d.Pwf).toFixed(1)}`).join(" ");
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="IPR жидкости"><defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#0057a8" stop-opacity=".28"/><stop offset="1" stop-color="#0057a8" stop-opacity=".02"/></linearGradient></defs>
-      <g stroke="#d9e2e9">${[0,.5,1].map(v=>`<line x1="${p.l}" y1="${Y(mp*v)}" x2="${W-p.r}" y2="${Y(mp*v)}"/>`).join("")}</g>
-      <path d="${path} L${X(pts.at(-1).Ql)},${H-p.b} L${p.l},${H-p.b}Z" fill="url(#fill)"/><path d="${path}" fill="none" stroke="#0057a8" stroke-width="2.6" stroke-linecap="round"/>
-      <circle cx="${X(opQ)}" cy="${Y(opP)}" r="5" fill="#f36c00"/><circle cx="${X(opQ)}" cy="${Y(opP)}" r="10" fill="none" stroke="#f36c00" stroke-opacity=".35"/>
-      <g fill="#5c6770" font-family="Outfit,sans-serif" font-size="9"><text x="${W/2}" y="${H-7}" text-anchor="middle">Qₗ, м³/сут</text><text x="11" y="${H/2}" transform="rotate(-90 11 ${H/2})" text-anchor="middle">Pwf, атм</text><text x="${p.l}" y="${H-22}">0</text><text x="${W-p.r}" y="${H-22}" text-anchor="end">${fmt(mq,1)}</text><text x="${p.l-6}" y="${Y(mp)+3}" text-anchor="end">${fmt(mp,0)}</text></g></svg>`
+    function chart(pts,opP,opQ,zoom={x:1,y:1}){
+      const W=360,H=205,pad={l:43,r:14,t:13,b:36},mq0=Math.max(...pts.map(x=>x.Ql),opQ,1e-8),mp0=Math.max(...pts.map(x=>x.Pwf),opP,1),
+        mq=mq0/Math.max(zoom.x,1),mp=mp0/Math.max(zoom.y,1),
+        X=q=>pad.l+Math.min(q,mq)/mq*(W-pad.l-pad.r),Y=v=>pad.t+(1-Math.min(v,mp)/mp)*(H-pad.t-pad.b),
+        vis=pts.filter(d=>d.Ql<=mq*1.001),path=vis.map((d,i)=>`${i?"L":"M"}${X(d.Ql).toFixed(1)},${Y(d.Pwf).toFixed(1)}`).join(" ");
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="IPR жидкости"><defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#0057a8" stop-opacity=".28"/><stop offset="1" stop-color="#0057a8" stop-opacity=".02"/></linearGradient><clipPath id="iprClip"><rect x="${pad.l}" y="${pad.t}" width="${W-pad.l-pad.r}" height="${H-pad.t-pad.b}"/></clipPath></defs>
+      <g stroke="#d9e2e9">${[0,.5,1].map(v=>`<line x1="${pad.l}" y1="${Y(mp*v)}" x2="${W-pad.r}" y2="${Y(mp*v)}"/>`).join("")}</g>
+      <g clip-path="url(#iprClip)"><path d="${path} L${X(vis.at(-1)?.Ql||0)},${H-pad.b} L${pad.l},${H-pad.b}Z" fill="url(#fill)"/><path d="${path}" fill="none" stroke="#0057a8" stroke-width="2.6" stroke-linecap="round"/>
+      ${opQ<=mq&&opP<=mp?`<circle cx="${X(opQ)}" cy="${Y(opP)}" r="5" fill="#f36c00"/><circle cx="${X(opQ)}" cy="${Y(opP)}" r="10" fill="none" stroke="#f36c00" stroke-opacity=".35"/>`:""}</g>
+      <g fill="#5c6770" font-family="${FONT}" font-size="9"><text x="${W/2}" y="${H-7}" text-anchor="middle">Qₗ, м³/сут</text><text x="11" y="${H/2}" transform="rotate(-90 11 ${H/2})" text-anchor="middle">Pwf, атм</text><text x="${pad.l}" y="${H-22}">0</text><text x="${W-pad.r}" y="${H-22}" text-anchor="end">${fmt(mq,1)}</text><text x="${pad.l-6}" y="${Y(mp)+3}" text-anchor="end">${fmt(mp,0)}</text></g></svg>`
     }
-    function timeChart(pts,key,opT,opY,opts,factPts=[]){
-      const validFact=factPts.filter(d=>Number.isFinite(d.t)&&Number.isFinite(d.y)),W=360,H=200,pad={l:44,r:14,t:14,b:34},tmax=Math.max(...pts.map(d=>d.t),...validFact.map(d=>d.t),opT,1),
-        ymin=opts.min??0,ymax=Math.max(...pts.map(d=>d[key]),...validFact.map(d=>d.y),opY,opts.floor||1e-6),
-        X=t=>pad.l+t/tmax*(W-pad.l-pad.r),Y=v=>pad.t+(1-(v-ymin)/Math.max(ymax-ymin,1e-9))*(H-pad.t-pad.b),
-        path=pts.map((d,i)=>`${i?"L":"M"}${X(d.t).toFixed(1)},${Y(d[key]).toFixed(1)}`).join(" "),
-        area=`${path} L${X(pts.at(-1).t).toFixed(1)},${(H-pad.b).toFixed(1)} L${pad.l},${(H-pad.b).toFixed(1)} Z`;
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.title}"><defs><linearGradient id="${opts.gid}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${opts.color}" stop-opacity=".28"/><stop offset="1" stop-color="${opts.color}" stop-opacity=".02"/></linearGradient></defs>
+    function timeChart(pts,key,opT,opY,opts,factPts=[],zoom={x:1,y:1},bands=[]){
+      const validFact=factPts.filter(d=>Number.isFinite(d.t)&&Number.isFinite(d.y)),W=360,H=200,pad={l:44,r:14,t:14,b:34},
+        tmax0=Math.max(...pts.map(d=>d.t),...validFact.map(d=>d.t),opT,1),
+        ymin=opts.min??0,ymax0=Math.max(...pts.map(d=>d[key]),...validFact.map(d=>d.y),opY,opts.floor||1e-6),
+        tmax=tmax0/Math.max(zoom.x,1),ymax=ymin+(ymax0-ymin)/Math.max(zoom.y,1),
+        X=t=>pad.l+Math.min(t,tmax)/tmax*(W-pad.l-pad.r),Y=v=>pad.t+(1-(Math.min(Math.max(v,ymin),ymax)-ymin)/Math.max(ymax-ymin,1e-9))*(H-pad.t-pad.b),
+        vis=pts.filter(d=>d.t<=tmax*1.001),path=vis.map((d,i)=>`${i?"L":"M"}${X(d.t).toFixed(1)},${Y(d[key]).toFixed(1)}`).join(" "),
+        area=`${path} L${X(vis.at(-1)?.t||0).toFixed(1)},${(H-pad.b).toFixed(1)} L${pad.l},${(H-pad.b).toFixed(1)} Z`,
+        bandSvg=bands.filter(b=>b.t0<tmax).map(b=>{const x0=X(Math.max(0,b.t0)),x1=X(Math.min(b.t1,tmax));return`<rect x="${x0}" y="${pad.t}" width="${Math.max(0,x1-x0)}" height="${H-pad.t-pad.b}" fill="${b.color}" fill-opacity=".55"/>`}).join("");
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.title}"><defs><linearGradient id="${opts.gid}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${opts.color}" stop-opacity=".28"/><stop offset="1" stop-color="${opts.color}" stop-opacity=".02"/></linearGradient><clipPath id="clip_${opts.gid}"><rect x="${pad.l}" y="${pad.t}" width="${W-pad.l-pad.r}" height="${H-pad.t-pad.b}"/></clipPath></defs>
+        <g clip-path="url(#clip_${opts.gid})">${bandSvg}</g>
         <g stroke="#d9e2e9">${[0,.5,1].map(f=>`<line x1="${pad.l}" y1="${Y(ymin+f*(ymax-ymin))}" x2="${W-pad.r}" y2="${Y(ymin+f*(ymax-ymin))}"/>`).join("")}</g>
-        <path d="${area}" fill="url(#${opts.gid})"/><path d="${path}" fill="none" stroke="${opts.color}" stroke-width="2.5" stroke-linecap="round"/>
-        <line x1="${X(opT)}" y1="${pad.t}" x2="${X(opT)}" y2="${H-pad.b}" stroke="#f36c00" stroke-opacity=".35" stroke-dasharray="3 3"/>
-        <circle cx="${X(opT)}" cy="${Y(opY)}" r="5" fill="#f36c00"/><circle cx="${X(opT)}" cy="${Y(opY)}" r="10" fill="none" stroke="#f36c00" stroke-opacity=".35"/>
-        ${validFact.map(d=>`<circle cx="${X(d.t)}" cy="${Y(d.y)}" r="4.5" fill="#f36c00" stroke="#172433" stroke-width="1.3"><title>Факт: t=${fmt(d.t,1)}, ${fmt(d.y,2)}</title></circle>`).join("")}
-        <g fill="#5c6770" font-family="Outfit,sans-serif" font-size="9">
+        <g clip-path="url(#clip_${opts.gid})"><path d="${area}" fill="url(#${opts.gid})"/><path d="${path}" fill="none" stroke="${opts.color}" stroke-width="2.5" stroke-linecap="round"/>
+        ${opT<=tmax?`<line x1="${X(opT)}" y1="${pad.t}" x2="${X(opT)}" y2="${H-pad.b}" stroke="#f36c00" stroke-opacity=".35" stroke-dasharray="3 3"/><circle cx="${X(opT)}" cy="${Y(opY)}" r="5" fill="#f36c00"/><circle cx="${X(opT)}" cy="${Y(opY)}" r="10" fill="none" stroke="#f36c00" stroke-opacity=".35"/>`:""}
+        ${validFact.filter(d=>d.t<=tmax).map(d=>`<circle cx="${X(d.t)}" cy="${Y(d.y)}" r="4.5" fill="#f36c00" stroke="#172433" stroke-width="1.3"><title>Факт: t=${fmt(d.t,1)}, ${fmt(d.y,2)}</title></circle>`).join("")}</g>
+        <g fill="#5c6770" font-family="${FONT}" font-size="9">
           <text x="${W/2}" y="${H-7}" text-anchor="middle">t, сут</text>
           <text x="11" y="${H/2}" transform="rotate(-90 11 ${H/2})" text-anchor="middle">${opts.ylab}</text>
           <text x="${pad.l}" y="${H-22}">0</text>
@@ -354,22 +442,41 @@
       bars.push({label:"Факт",from:0,to:factQo,total:true});
       const vals=bars.flatMap(b=>[b.from,b.to]),min=Math.min(0,...vals),max=Math.max(1,...vals),range=Math.max(max-min,1),X=i=>p.l+i*(bw+gap),Y=v=>p.t+(max-v)/range*(H-p.t-p.b),zero=Y(0);
       return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Факторный анализ план факт">
-        <text x="${p.l}" y="16" fill="#003d73" font-family="Syne,sans-serif" font-size="12" font-weight="700">ФА план/факт</text>
+        <text x="${p.l}" y="16" fill="#003d73" font-family="${FONT}" font-size="12" font-weight="700">ФА план/факт</text>
         <line x1="${p.l}" y1="${zero}" x2="${W-p.r}" y2="${zero}" stroke="#89939b"/>
-        ${bars.map((b,i)=>{const x=X(i),top=Y(Math.max(b.from,b.to)),height=Math.max(1,Math.abs(Y(b.from)-Y(b.to))),color=b.total?"#0057a8":b.delta>0?"#f36c00":"#5c6770",val=b.total?b.to:b.delta;return`${i>0&&i<bars.length-1?`<line x1="${X(i-1)+bw}" y1="${Y(b.from)}" x2="${x}" y2="${Y(b.from)}" stroke="#aab3ba" stroke-dasharray="2 2"/>`:""}<rect x="${x}" y="${top}" width="${bw}" height="${height}" rx="3" fill="${color}"><title>${b.label}: ${fmt(val,2)}</title></rect><text x="${x+bw/2}" y="${Math.max(27,top-4)}" text-anchor="middle" fill="#172433" font-size="8" font-family="Outfit">${val>0&&!b.total?"+":""}${fmt(val,1)}</text><text x="${x+bw/2}" y="${H-p.b+10}" transform="rotate(-38 ${x+bw/2} ${H-p.b+10})" text-anchor="end" fill="#5c6770" font-size="8" font-family="Outfit">${b.label}</text>`}).join("")}
-        <text x="11" y="${H/2}" transform="rotate(-90 11 ${H/2})" text-anchor="middle" fill="#5c6770" font-size="9" font-family="Outfit">Qₒ, т/сут</text>
+        ${bars.map((b,i)=>{const x=X(i),top=Y(Math.max(b.from,b.to)),height=Math.max(1,Math.abs(Y(b.from)-Y(b.to))),color=b.total?"#0057a8":b.delta>0?"#f36c00":"#5c6770",val=b.total?b.to:b.delta;return`${i>0&&i<bars.length-1?`<line x1="${X(i-1)+bw}" y1="${Y(b.from)}" x2="${x}" y2="${Y(b.from)}" stroke="#aab3ba" stroke-dasharray="2 2"/>`:""}<rect x="${x}" y="${top}" width="${bw}" height="${height}" rx="3" fill="${color}"><title>${b.label}: ${fmt(val,2)}</title></rect><text x="${x+bw/2}" y="${Math.max(27,top-4)}" text-anchor="middle" fill="#172433" font-size="8" font-family="${FONT}">${val>0&&!b.total?"+":""}${fmt(val,1)}</text><text x="${x+bw/2}" y="${H-p.b+10}" transform="rotate(-38 ${x+bw/2} ${H-p.b+10})" text-anchor="end" fill="#5c6770" font-size="8" font-family="${FONT}">${b.label}</text>`}).join("")}
+        <text x="11" y="${H/2}" transform="rotate(-90 11 ${H/2})" text-anchor="middle" fill="#5c6770" font-size="9" font-family="${FONT}">Qₒ, т/сут</text>
         <text x="${p.l-5}" y="${Y(max)+3}" text-anchor="end" fill="#5c6770" font-size="8">${fmt(max,1)}</text><text x="${p.l-5}" y="${zero+3}" text-anchor="end" fill="#5c6770" font-size="8">0</text></svg>`
     }
     function regimeTrack(r){const segs=r.base==="ГС"?["1-рад.","1-лин.","2-рад.","2-лин.","п/уст."]:["неуст.","уст."];return`<div class="regime-track ${r.base==="ННС"?"short":""}">${segs.map(s=>`<div class="regime ${s===r.regime?"active":""}">${s}</div>`).join("")}</div>`}
+    let chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}},lastView=null,cachedCharts=null;
+    function buildChartBundle(r,opts={}){
+      const ipr=buildIPR(r.p,r.J),dyn=buildDynamics(r.p),bands=getRegimeTimeline(r.p,dyn.tmax);
+      return{ipr,dyn,bands,opts};
+    }
+    function paintCharts(){
+      if(!lastView||!cachedCharts)return;
+      const {r}=lastView,{ipr,dyn,bands,opts}=cachedCharts;
+      const iprHost=document.getElementById("chartIPR"),qlHost=document.getElementById("chartQl"),fwHost=document.getElementById("chartFw");
+      if(iprHost)iprHost.innerHTML=chart(ipr,r.p.Pwf,r.Ql,chartZoom.ipr);
+      if(qlHost)qlHost.innerHTML=timeChart(dyn.pts,"Ql",r.p.tp,r.Ql,{title:"Дебит жидкости во времени",ylab:"Qₗ, м³/сут",color:"#0057a8",gid:"qlFill",yd:1},opts.qlPts||[],chartZoom.ql,bands);
+      if(fwHost)fwHost.innerHTML=timeChart(dyn.pts,"fw",r.p.tp,dyn.fwMark,{title:"Обводнённость во времени",ylab:"fw, %",color:"#f36c00",gid:"fwFill",yd:0,min:0,floor:1},opts.fwPts||[],chartZoom.fw,bands);
+      document.querySelectorAll(".zoom-bar").forEach(bar=>{
+        const id=bar.getAttribute("data-zoom"),z=chartZoom[id];if(!z)return;
+        const vx=bar.querySelector("[data-valx]"),vy=bar.querySelector("[data-valy]");
+        if(vx)vx.textContent=fmt(z.x,1)+"×";if(vy)vy.textContent=fmt(z.y,1)+"×";
+      });
+    }
     function render(r,opts={}){
-      const ipr=buildIPR(r.p,r.J),dyn=buildDynamics(r.p),box=document.getElementById("results"),pu=r.pump;box.classList.add("has-data");
+      lastView={r,opts};cachedCharts=buildChartBundle(r,opts);
+      const {dyn,bands}=cachedCharts,box=document.getElementById("results"),pu=r.pump;box.classList.add("has-data");
       const pumpWarn=[!pu.okDepth?"Hподв ≥ Hпласт":"",!pu.okSub?"погружение < 80 м":"",!pu.okBeta?`β на приёме ${fmt(pu.betaPct,1)}% выше допуска`:""].filter(Boolean).join(" · ");
       document.getElementById("resultsBody").innerHTML=`<div class="result-top"><h2 class="result-title">Результат расчёта</h2><span class="completion">${r.completion}</span></div>
       <div class="kpis">${opts.fa?`<div class="kpi"><div class="kpi-name">Qₒ · план</div><div class="kpi-value">${fmt(opts.planQo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Qₒ · факт</div><div class="kpi-value">${fmt(opts.factQo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Σ факторов</div><div class="kpi-value">${fmt(opts.factors.reduce((s,f)=>s+f.delta,0),2)} <span class="unit">т/сут</span></div></div>`:`<div class="kpi"><div class="kpi-name">Qₒ · нефть</div><div class="kpi-value">${fmt(r.Qo,2)} <span class="unit">т/сут</span></div></div><div class="kpi"><div class="kpi-name">Qₗ · жидкость</div><div class="kpi-value">${fmt(r.Ql,2)} <span class="unit">м³/сут</span></div></div><div class="kpi"><div class="kpi-name">J</div><div class="kpi-value">${fmt(r.J,3)} <span class="unit">м³/сут/атм</span></div></div><div class="kpi"><div class="kpi-name">ΔP</div><div class="kpi-value">${fmt(r.dP,2)} <span class="unit">атм</span></div></div>`}</div>
       ${opts.fa?`<section class="block chart waterfall show"><div class="block-title"><span>ФА план/факт</span><span>План → Факт</span></div>${waterfallChart(opts.planQo,opts.factors,opts.factQo)}<div class="caption">Оранжевый — прирост, серый — снижение; «подбор» отмечает восстановленный параметр.</div></section>`:""}
       <section class="block schematic"><div class="block-title"><span>Скважина и зона притока</span><span>ISO</span></div>${schematic(r)}</section>
       <section class="block"><div class="block-title"><span>Спецификация насоса</span><span>УЭЦН</span></div>
-        <div class="kpis" style="margin-bottom:10px"><div class="kpi" style="grid-column:1/-1;background:linear-gradient(145deg,#003d73,#0057a8);color:#fff"><div class="kpi-name">Наименование оборудования</div><div class="kpi-value" style="font-size:1.05rem;letter-spacing:-.02em">${pu.equip}</div></div></div>
+        <div class="kpis" style="margin-bottom:10px"><div class="kpi" style="grid-column:1/-1;background:linear-gradient(145deg,#003d73,#0057a8);color:#fff"><div class="kpi-name">Наименование оборудования</div><div class="kpi-value" style="font-size:1.05rem;letter-spacing:-.01em">${pu.equip}</div></div></div>
         <table>
           <tr><th>Hподв / Hпласт, м</th><td>${fmt(pu.Hpump,0)} / ${fmt(pu.Hform,0)}</td></tr>
           <tr><th>Hдин / погружение, м</th><td>${fmt(pu.Hdyn,0)} / ${fmt(pu.hSub,0)}</td></tr>
@@ -382,12 +489,13 @@
         </table>
         <div class="caption">${pumpWarn?`Внимание: ${pumpWarn}. `:""}ГФ на приёме: R<sub>s</sub>=ГФ·min(1,Pпр/P<sub>b</sub>); свободный газ = ГФ−R<sub>s</sub>; β = Vг/(Vг+Vж). При β&gt;15% рекомендован газосепаратор.</div>
       </section>
-      <section class="block chart"><div class="block-title"><span>IPR · жидкость</span><span>Pwf → Qₗ</span></div>${chart(ipr,r.p.Pwf,r.Ql)}<div class="caption">Оранжевая точка — заданный режим работы.</div></section>
-      <section class="block chart"><div class="block-title"><span>Динамика Qₗ</span><span>0…${fmt(dyn.tmax,0)} сут</span></div>${timeChart(dyn.pts,"Ql",r.p.tp,r.Ql,{title:"Дебит жидкости во времени",ylab:"Qₗ, м³/сут",color:"#0057a8",gid:"qlFill",yd:1},opts.qlPts||[])}<div class="caption">Модель — план; точки с чёрной обводкой — фактические замеры.</div></section>
-      <section class="block chart"><div class="block-title"><span>Динамика обводнённости</span><span>f<sub>w</sub>(t)</span></div>${timeChart(dyn.pts,"fw",r.p.tp,dyn.fwMark,{title:"Обводнённость во времени",ylab:"fw, %",color:"#f36c00",gid:"fwFill",yd:0,min:0,floor:1},opts.fwPts||[])}<div class="caption">Плановый тренд f<sub>w</sub>; фактические точки рассчитаны и из Qₗ/Qₒ, если fw не задан.</div></section>
+      <section class="block chart"><div class="block-title"><span>IPR · жидкость</span><span>Pwf → Qₗ</span></div><div id="chartIPR"></div>${zoomBarHtml("ipr",chartZoom.ipr.x,chartZoom.ipr.y)}<div class="caption">Оранжевая точка — заданный режим. Ползунки масштабируют оси.</div></section>
+      <section class="block chart"><div class="block-title"><span>Динамика Qₗ</span><span>0…${fmt(dyn.tmax,0)} сут</span></div><div id="chartQl"></div>${zoomBarHtml("ql",chartZoom.ql.x,chartZoom.ql.y)}${regimeLegendHtml(bands)}<div class="caption">Цветовые полосы — режимы притока (ГС/ННС ± ГРП). Точки с обводкой — факт.</div></section>
+      <section class="block chart"><div class="block-title"><span>Динамика обводнённости</span><span>f<sub>w</sub>(t)</span></div><div id="chartFw"></div>${zoomBarHtml("fw",chartZoom.fw.x,chartZoom.fw.y)}${regimeLegendHtml(bands)}<div class="caption">Плановый тренд f<sub>w</sub>; области режимов те же, что на Qₗ(t).</div></section>
       <section class="block"><div class="block-title"><span>Режим притока</span><span>${r.regime}</span></div>${regimeTrack(r)}</section>
       <section class="block"><div class="block-title"><span>Расчётные детали</span></div><table>
-      <tr><th>Заканчивание</th><td>${r.completion}</td></tr><tr><th>S<sub>w</sub></th><td>${fmt(r.Sw,4)}</td></tr><tr><th>μ эфф., сПз</th><td>${fmt(r.mu,4)}</td></tr><tr><th>c<sub>t</sub>, 1/атм</th><td>${fmt(r.c_t,6)}</td></tr><tr><th>B эфф.</th><td>${fmt(r.B,4)}</td></tr><tr><th>P<sub>d</sub> / J<sub>d</sub></th><td>${fmt(r.Pd,4)} / ${fmt(r.Jd,4)}</td></tr><tr><th>t<sub>d</sub></th><td>${fmt(r.t_d_p,4)}</td></tr><tr><th>r<sub>e</sub> исп., м</th><td>${fmt(r.re_used,2)}</td></tr><tr><th>Qₒ·E<sub>f</sub> / с C<sub>park</sub></th><td>${fmt(r.Qo_p,2)} / ${fmt(r.Qo_park,2)}</td></tr><tr><th>N / N<sub>r</sub>, тыс. т</th><td>${fmt(r.N,3)} / ${fmt(r.Nr,3)}</td></tr></table></section>`
+      <tr><th>Заканчивание</th><td>${r.completion}</td></tr><tr><th>S<sub>w</sub></th><td>${fmt(r.Sw,4)}</td></tr><tr><th>μ эфф., сПз</th><td>${fmt(r.mu,4)}</td></tr><tr><th>c<sub>t</sub>, 1/атм</th><td>${fmt(r.c_t,6)}</td></tr><tr><th>B эфф.</th><td>${fmt(r.B,4)}</td></tr><tr><th>P<sub>d</sub> / J<sub>d</sub></th><td>${fmt(r.Pd,4)} / ${fmt(r.Jd,4)}</td></tr><tr><th>t<sub>d</sub></th><td>${fmt(r.t_d_p,4)}</td></tr><tr><th>r<sub>e</sub> исп., м</th><td>${fmt(r.re_used,2)}</td></tr><tr><th>Qₒ·E<sub>f</sub> / с C<sub>park</sub></th><td>${fmt(r.Qo_p,2)} / ${fmt(r.Qo_park,2)}</td></tr><tr><th>N / N<sub>r</sub>, тыс. т</th><td>${fmt(r.N,3)} / ${fmt(r.Nr,3)}</td></tr></table></section>`;
+      paintCharts();
     }
     const form=document.getElementById("calcForm"),names=Object.keys(BASE),faToggle=document.getElementById("faToggle");
     document.querySelectorAll(".fields .field").forEach(field=>{
@@ -400,10 +508,41 @@
     const factParams=()=>Object.fromEntries(names.flatMap(n=>{const el=form.elements[n+"_f"];if(!el)return[];if(n==="FracDir")return el.value?[[n,el.value]]:[];const v=Number.parseFloat(el.value);return Number.isFinite(v)?[[n,v]]:[]}));
     function validate(p){if(!Object.values(p).every(v=>typeof v==="string"||Number.isFinite(v)))throw Error("Заполните все плановые числовые поля.");if(p.L>0&&p.ik2<=0)throw Error("Для ГС требуется iₖ₂ > 0.");if(p.rw<=0||p.h<=0||p.kh<=0)throw Error("Проверьте kₕ, h и rw: значения должны быть больше нуля.");if(p.Pi<=0||p.Pwf<0)throw Error("Проверьте пластовое и забойное давления.");if(p.Hform<=0)throw Error("Глубина пласта Hпласт должна быть больше нуля.");if(p.Hpump<=0)throw Error("Глубина подвески Hподв должна быть больше нуля.");if(p.Hpump>=p.Hform)throw Error("Hподв должна быть меньше Hпласт (насос выше интервала притока).");if(p.Gf<0)throw Error("Газовый фактор не может быть отрицательным.");if(p.Dtub<=0)throw Error("Диаметр НКТ должен быть больше нуля.")}
     function addMeasureRow(){
-      const tr=document.createElement("tr");tr.innerHTML=["t","Ql","Qo","fw"].map(n=>`<td><input name="m_${n}" type="number" step="any" placeholder="—" aria-label="${n} факт"></td>`).join("");document.getElementById("measureRows").append(tr)
+      const tr=document.createElement("tr");
+      tr.innerHTML=["t","Ql","Qo","fw","Pst","Pdyn","Pann"].map(n=>`<td><input name="m_${n}" type="number" step="any" placeholder="${n==="Pann"?"опц.":"—"}" aria-label="${n} факт"></td>`).join("");
+      document.getElementById("measureRows").append(tr);
+      tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>syncMeasureRow(tr)));
+    }
+    function numOrNaN(el){const v=Number.parseFloat(el.value);return Number.isFinite(v)?v:NaN}
+    function syncMeasureRow(tr){
+      const qlEl=tr.querySelector('[name="m_Ql"]'),qoEl=tr.querySelector('[name="m_Qo"]'),fwEl=tr.querySelector('[name="m_fw"]');
+      if(!qlEl||!qoEl||!fwEl)return;
+      const rho=Number.parseFloat(form.elements.ro_o?.value)||.85;
+      const wasCalc=el=>el.dataset.calc==="1";
+      // Снять автозаполнение перед пересчётом
+      [qlEl,qoEl,fwEl].forEach(el=>{
+        if(wasCalc(el)){el.value="";delete el.dataset.calc}
+        el.disabled=false;el.classList.remove("calc-fill");
+      });
+      const ql=numOrNaN(qlEl),qo=numOrNaN(qoEl),fw=numOrNaN(fwEl);
+      const hasQl=Number.isFinite(ql),hasQo=Number.isFinite(qo),hasFw=Number.isFinite(fw);
+      const fill=(el,v)=>{el.value=String(v);el.disabled=true;el.classList.add("calc-fill");el.dataset.calc="1"};
+      if(hasQl&&hasQo&&ql>0){
+        fill(fwEl,Number(Math.max(0,Math.min(100,100*(1-qo/(ql*rho)))).toFixed(2)));
+      }else if(hasFw&&hasQl&&!hasQo){
+        fill(qoEl,Number(Math.max(0,ql*rho*(1-fw/100)).toFixed(3)));
+      }else if(hasFw&&hasQo&&!hasQl&&rho*(1-fw/100)>1e-9){
+        fill(qlEl,Number(Math.max(0,qo/(rho*(1-fw/100))).toFixed(3)));
+      }else if(hasFw&&!hasQl&&!hasQo){
+        qlEl.disabled=true;qoEl.disabled=true;
+      }
     }
     function measurements(){
-      return [...document.querySelectorAll("#measureRows tr")].flatMap(tr=>{const val=n=>Number.parseFloat(tr.querySelector(`[name="m_${n}"]`).value),t=val("t"),Ql=val("Ql"),Qo=val("Qo"),fw=val("fw");return Number.isFinite(t)&&(Number.isFinite(Ql)||Number.isFinite(Qo))?[{t,Ql,Qo,fw}]:[]})
+      return [...document.querySelectorAll("#measureRows tr")].flatMap(tr=>{
+        const val=n=>Number.parseFloat(tr.querySelector(`[name="m_${n}"]`).value);
+        const t=val("t"),Ql=val("Ql"),Qo=val("Qo"),fw=val("fw"),Pst=val("Pst"),Pdyn=val("Pdyn"),Pann=val("Pann");
+        return Number.isFinite(t)&&(Number.isFinite(Ql)||Number.isFinite(Qo)||Number.isFinite(fw))?[{t,Ql,Qo,fw,Pst,Pdyn,Pann}]:[]
+      })
     }
     function factPoints(rows,p){
       return{qlPts:rows.filter(x=>Number.isFinite(x.Ql)).map(x=>({t:x.t,y:x.Ql})),fwPts:rows.flatMap(x=>{let y=x.fw;if(!Number.isFinite(y)&&Number.isFinite(x.Ql)&&x.Ql>0&&Number.isFinite(x.Qo)&&p.ro_o>0)y=100*(1-x.Qo/(x.Ql*p.ro_o));return Number.isFinite(y)?[{t:x.t,y:Math.max(0,Math.min(100,y))}]:[]})}
@@ -433,15 +572,20 @@
       const visible=[],tiny=factors.filter(f=>Math.abs(f.delta)<=.01).reduce((s,f)=>s+f.delta,0);visible.push(...factors.filter(f=>Math.abs(f.delta)>.01));if(Math.abs(tiny)>.001){const rest=visible.find(f=>f.label==="остаток");if(rest)rest.delta+=tiny;else visible.push({label:"остаток",delta:tiny})}
       return{planQo,factQo,factors:visible}
     }
-    form.addEventListener("submit",e=>{e.preventDefault();try{const p=params();validate(p);const rows=faToggle.checked?measurements():[],pts=factPoints(rows,p);render(calculate(p),pts);scrollResults()}catch(err){showError(err)}});
-    document.getElementById("runFA").addEventListener("click",()=>{try{const p=params();validate(p);const rows=measurements(),fa=runFactorAnalysis(p,factParams(),rows),pts=factPoints(rows,p);render(calculate(p),{...pts,...fa,fa:true});scrollResults()}catch(err){showError(err)}});
+    form.addEventListener("submit",e=>{e.preventDefault();try{const p=params();validate(p);const rows=faToggle.checked?measurements():[],pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),pts);scrollResults()}catch(err){showError(err)}});
+    document.getElementById("runFA").addEventListener("click",()=>{try{const p=params();validate(p);const rows=measurements(),fa=runFactorAnalysis(p,factParams(),rows),pts=factPoints(rows,p);chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};render(calculate(p),{...pts,...fa,fa:true});scrollResults()}catch(err){showError(err)}});
+    document.getElementById("resultsBody").addEventListener("input",e=>{
+      const inp=e.target;if(inp?.type!=="range")return;const bar=inp.closest(".zoom-bar");if(!bar)return;
+      const id=bar.getAttribute("data-zoom"),axis=inp.getAttribute("data-axis");if(!chartZoom[id])return;
+      chartZoom[id][axis]=Number(inp.value)/10;paintCharts();
+    });
     faToggle.addEventListener("change",()=>{form.classList.toggle("fa-on",faToggle.checked)});
     document.getElementById("addMeasure").addEventListener("click",addMeasureRow);
     document.getElementById("clearMeasures").addEventListener("click",()=>{document.getElementById("measureRows").innerHTML="";for(let i=0;i<4;i++)addMeasureRow()});
     for(let i=0;i<4;i++)addMeasureRow();
-    document.getElementById("reset").addEventListener("click",()=>{form.reset();form.classList.remove("fa-on");document.getElementById("results").classList.remove("has-data");document.getElementById("measureRows").innerHTML="";for(let i=0;i<4;i++)addMeasureRow()});
+    document.getElementById("reset").addEventListener("click",()=>{form.reset();form.classList.remove("fa-on");document.getElementById("results").classList.remove("has-data");document.getElementById("measureRows").innerHTML="";for(let i=0;i<4;i++)addMeasureRow();chartZoom={ipr:{x:1,y:1},ql:{x:1,y:1},fw:{x:1,y:1}};lastView=null;cachedCharts=null});
     document.querySelectorAll("details").forEach(d=>d.addEventListener("toggle",()=>{if(d.open)document.querySelectorAll("details[open]").forEach(x=>{if(x!==d)x.open=false})}));
-    window.StartupCalc={calculate,calculatePump,CASES,waterfallChart,runFactorAnalysis,ESP_CATALOG};
+    window.StartupCalc={calculate,calculatePump,CASES,waterfallChart,runFactorAnalysis,ESP_CATALOG,getRegimeTimeline};
   })();
   </script>
 </body>
